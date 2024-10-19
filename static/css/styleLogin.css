@@ -1,0 +1,104 @@
+body {
+    margin: 20px;
+    background-color: #e2b171; /* Black background */
+    color: white;  
+    font-family: 'suse';
+    min-height: 100vh;
+}
+
+.suse {
+    font-family: "SUSE", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+  }
+
+.container {
+    text-align: center;
+    background-image: url("login_background.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    height: 800px;
+}
+
+section{
+    backdrop-filter: blur(30px);
+    border-radius: 30px;
+    width: 50%;
+    margin-top: 30px;
+    padding: 20px;
+    box-shadow: 0px 0px 20px rgba(26, 25, 25, 0.658);
+}
+ 
+h1 {
+    color: white;  
+    font-size:40px;
+    font-weight: 450;
+    margin: 0;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    color: white; 
+}
+
+input, button {
+    margin-top: 5px;
+    background-color: #e2d0ac; /* Dark gray background for inputs and button */
+    color: #000000; /* White text for inputs and button */
+    border: 2px solid #6A704C; /* Red border */
+    border-radius: 5px;
+    padding: 10px;
+    font-family: 'suse';
+}
+
+button {
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: #6A704C;
+    
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 5px;
+    padding: 10px;
+    background-color: #444; /* Darker gray for list items */
+    border-radius: 5px;
+    color: white; /* Red color for text in list items */
+}
+
+img{
+    width: 160px;
+    background-color: #e2b171;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #3E2723;
+}
+
+p, a{
+    color: #6A704C;
+}
+
+a:hover{
+    color:#e2b171;
+}

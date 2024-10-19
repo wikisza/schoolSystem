@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <title>Hotel Tropical</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+
+</head>
+<body>
+    <div class="header-section">
+
+        <div class="header" >
+            <h3> Witaj <span class="username">{{ username }}</span></h3>
+            <a href="/">
+                <img src="{{ url_for('static', filename='logo-no-background.png') }}" alt="HOTEL TROPICAL">
+            </a>
+            <h3><a href="/logout">Wyloguj</a></h3>
+            
+        </div>
+        
+        <div class="menu_bar">
+            <div class="dropdown">
+                <a href="/rooms">POKOJE</a>
+                <div class="dropdown-content">
+                    <a href="/freeRooms">Wolne</a>
+                    <a href="/takenRooms">Zajęte</a>
+                </div>
+            </div>
+            |
+            <div class="dropdown">
+                <a href="/reservations" >REZERWACJE </a>
+                <div class="dropdown-content">
+                    <a href="/currentReservations">Aktualne rezerwacje</a>
+                    <a href="/previousReservations">Historia rezerwacji</a>
+                </div>
+            </div>
+            |
+            <a href="/accomodations" >ZAKWATEROWANIE </a>|
+            <a href="/orders" >ZAMÓWIENIA </a>|
+            <a href="/bills">RACHUNKI</a>|
+            <a href="/tasks" >ZADANIA</a>
+            
+        </div>
+    </div>
+
+    <div class="content-section">
+
+        <div class="container">
+            
+            {% block content %}
+
+            <div id='calendar'></div>
+            
+            {% endblock %}
+        </div>
+    </div>
+
+    
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+            firstDay: 1,
+            initialView: 'dayGridMonth',  
+            events: function(fetchInfo, successCallback, failureCallback) {
+                Promise.all([
+                fetch('/get_reservations').then(response => response.json()),
+                fetch('/get_old_reservations').then(response => response.json())
+                ])
+                .then(dataArray => {
+                    const [newReservations, oldReservations] = dataArray;
+
+                    // Nadanie kolorów dla nowych rezerwacji
+                    newReservations.forEach((event, index) => {
+                        event.backgroundColor = getCustomColor(index); 
+                        event.borderColor = event.backgroundColor;
+                    });
+
+                    // Nadanie koloru dla starych rezerwacji
+                    oldReservations.forEach(event => {
+                        event.backgroundColor = 'gray';
+                        event.borderColor = event.backgroundColor;
+                    });
+
+                    // Połączenie obu wydarzeń i przekazanie do kalendarza
+                    const allEvents = [...newReservations, ...oldReservations];
+                    successCallback(allEvents);
+                })
+                .catch(error => failureCallback(error));
+            },
+            locale: 'pl',  
+            headerToolbar: { 
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            
+            });
+
+        calendar.render(); 
+
+        function getCustomColor(index) {
+            var colors = ['#800000', '#5200cc', '#008000', '#cc7a00', '#ff3333'];
+            return colors[index % colors.length]; 
+        }
+        });
+    </script>
+
+<script>
+        
+    function sortTable(table, column, ascending) {
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+    
+        // Sortuj wiersze
+        rows.sort((a, b) => {
+            const cellA = a.children[column].textContent.trim();
+            const cellB = b.children[column].textContent.trim();
+            
+            const valueA = column === 5 ? parseFloat(cellA.replace('zł', '').trim()) : cellA;
+            const valueB = column === 5 ? parseFloat(cellB.replace('zł', '').trim()) : cellB;
+
+            if (!isNaN(valueA) && !isNaN(valueB)) {
+                // Sortowanie numeryczne
+                return ascending ? valueA - valueB : valueB - valueA;
+            } else {
+                // Sortowanie alfabetyczne
+                return ascending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+            }
+        });
+    
+        // Dodaj posortowane wiersze z powrotem do tabeli
+        rows.forEach(row => tbody.appendChild(row));
+    }
+    
+    // Funkcja obsługująca kliknięcie w nagłówek
+    function addSortingEventListeners() {
+        const table = document.querySelector('.table');
+        const headers = table.querySelectorAll('th');
+        let ascending = true;  // Początkowo sortujemy rosnąco
+    
+        headers.forEach((header, index) => {
+            header.addEventListener('click', () => {
+                sortTable(table, index, ascending);
+                ascending = !ascending;  // Zmień kierunek sortowania
+            });
+        });
+    }
+    
+    // Dodanie event listenera po załadowaniu dokumentu
+    document.addEventListener('DOMContentLoaded', addSortingEventListeners);
+    </script>
+
+</body>
+</html>
