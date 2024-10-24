@@ -1,14 +1,14 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
-    background-color: #e2b171; 
+    background-color: #ececec; 
     color: black;
 }
 
 .content-section {
     text-align: center;
     font-family: 'Times New Roman', Times, serif;
-    background-color:#ad834b; 
+    background-color:#0d4e98; 
     color: white;
     border-radius: 10px;
     box-shadow: 0 0 10px #3E2723;
