@@ -20,7 +20,7 @@ body {
 
 section{
     background-color: #0d4e98;
-    backdrop-filter: blur(30px);
+    /*backdrop-filter: blur(30px);*/
     border-radius: 30px;
     width: 50%;
     margin-top: 30px;
