@@ -1,10 +1,11 @@
 from flask_login import UserMixin
 
 class User(UserMixin):
-    def __init__(self, id, username, password):
+    def __init__(self, id, username, password, profession):
         self.id = id
         self.username = username
         self.password = password
+        self.profession = profession
 
     def is_authenticated(self):
         return True
@@ -17,3 +18,6 @@ class User(UserMixin):
 
     def get_id(self):
         return str(self.id)
+    
+    def get_profession(self):
+        return str(self.profession)

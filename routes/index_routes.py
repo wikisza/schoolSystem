@@ -9,7 +9,7 @@ index_blueprint = Blueprint('index', __name__)
 @index_blueprint.route('/')
 @login_required
 def index():
-    return render_template('index.html', username=current_user.username)
+    return render_template('index.html', username=current_user.username, profession=current_user.profession)
 
 '''
 @index_blueprint.route('/get_reservations')

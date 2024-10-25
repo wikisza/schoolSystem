@@ -40,7 +40,10 @@
             <a href="/orders" >ZAMÓWIENIA </a>|
             <a href="/bills">RACHUNKI</a>|
             <a href="/tasks" >ZADANIA</a>
-            
+            {% if profession == 'admin' %}
+                <a href="/register">Stwórz konto</a>
+            {% endif %}
+
         </div>
     </div>
 
