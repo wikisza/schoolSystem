@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -13,7 +14,7 @@
         <div class="header" >
             <h3> Witaj <span class="username">{{ username }}</span></h3>
             <a href="/">
-                <img src="{{ url_for('static', filename='logo-no-background.png') }}" alt="ClassMate">
+                <img src="{{ url_for('static', filename='logo-no-background.png') }}" alt="CLASSMATE">
             </a>
             <h3><a href="/logout">Wyloguj</a></h3>
             
@@ -158,5 +159,215 @@
     document.addEventListener('DOMContentLoaded', addSortingEventListeners);
     </script>
 
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassMate - Dziennik Szkolny</title>
+    <style>
+        /* wyjebac do pliku tylko mi jak zawsze kurwa nie dziala */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: whitesmoke;
+            color: #FF9F1C;
+        }
+
+        
+            .header {
+    background-color: #1f7e75;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    color: white;
+    position: fixed; 
+    top:40px;
+    width: 80%;
+    max-width: 1200px;
+    z-index: 1000; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    border-radius: 10px; 
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+/* .logo {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+} */
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.welcome {
+    margin-right: 20px;
+    font-size: 1em;
+}
+
+.logout {
+    color: black;
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #CBF3F0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.logout:hover {
+    background-color: #1c6f67;
+}
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            display: flex;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        
+        .sidebar {
+            width: 20%;
+            background-color:#FFBF69;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .sidebar h2 {
+            font-size: 1.4em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #FF9F1C;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #2EC4B6;
+        }
+
+        
+        .main-content {
+            width: 80%;
+            padding: 40px;
+        }
+
+        .main-content h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #FF9F1C;
+        }
+
+        .notifications {
+            margin-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .notification {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f8fafc;
+            border-left: 4px solid #FF9F1C;
+            border-radius: 4px;
+        }
+
+        .notification h3 {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .notification p {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <h1>CLASSMATE</h1>
+        </div>
+        <div class="header-right">
+            <span class="welcome">Witaj, Użytkowniku!</span>
+            <a href="/logout" class="logout">Wyloguj</a>
+        </div>
+    </header>
+    <div class="container">
+        <!-- chuj wie jakie nazwy -->
+        <div class="sidebar">
+            <a href="#">Plan zajęć</a>
+            <a href="#">Oceny</a>
+            <a href="#">Frekwencja</a>
+            <a href="#">Wiadomości</a>
+            <a href="#">...</a>
+            <a href="#">...</a>
+            <a href="#">Ustawienia</a>
+            <a href="#">Wyloguj</a>
+        </div>
+
+        
+        <div class="main-content">
+            <h1>Witaj w CLASSMATE!</h1>
+            <p>Witamy w elektronicznym dzienniku szkolnym</p>
+            
+            <!-- proponuje dac powiadomienia na głównej, narazie to tylko prototyp *? -->
+            <div class="notifications">
+                <h2>Powiadomienia</h2>
+                <div class="notification">
+                    <h3>Nowa ocena z matematyki</h3>
+                    <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
+                </div>
+                <div class="notification">
+                    <h3>Nieobecność na lekcji</h3>
+                    <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
+                </div>
+                <div class="notification">
+                    <h3>Nowa wiadomość od nauczyciela</h3>
+                    <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
