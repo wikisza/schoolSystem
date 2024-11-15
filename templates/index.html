@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+
+    <script src="{{ url_for('static', filename='js/js_script.js') }}"></script>
 
     <title>ClassMate - Dziennik Szkolny</title>
 </head>
+
 <body>
     <header class="header">
         <div class="header-left">
-            <a href="/"><h1>CLASSMATE</h1></a>
+            <a href="/">
+                <h1>CLASSMATE</h1>
+            </a>
         </div>
         <div class="header-right">
             <span class="welcome">Witaj {{ username }}!</span>
@@ -30,11 +38,14 @@
             <a href="/logout">Wyloguj</a>
         </div>
 
-        {% block content %}
+
         <div class="main-content">
+            {% block content %} <!-- będzie się w tym miejscu pojawiać zawartość linków powyżej-->
+
+
             <h1>Witaj w CLASSMATE!</h1>
             <p>Witamy w elektronicznym dzienniku szkolnym</p>
-            
+
             <!-- proponuje dac powiadomienia na głównej, narazie to tylko prototyp *? -->
             <div class="notifications">
                 <h2>Powiadomienia</h2>
@@ -74,10 +85,17 @@
                     <h3>Nowa wiadomość od nauczyciela</h3>
                     <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
                 </div>
-                
+
             </div>
+
+
+
+            {% endblock %}
         </div>
-        {% endblock %}
+
     </div>
+
+
 </body>
+
 </html>

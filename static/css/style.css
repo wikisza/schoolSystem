@@ -456,6 +456,14 @@ background-color: #1c6f67;
     overflow: hidden;
 }
 
+.partialView{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
 
 .sidebar {
     width: 20%;
