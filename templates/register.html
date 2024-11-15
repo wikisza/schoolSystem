@@ -3,39 +3,42 @@
 <head>
     <meta charset="utf-8">
     <title>Rejestracja</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/styleRegister.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/styleLogin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&amp;display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+        <!--<img src="{{ url_for('static', filename='logo-no-background.png') }}" alt="HOTEL TROPICAL"> -->
 
-        <img src="{{ url_for('static', filename='logo-no-background.png') }}" alt="HOTEL TROPICAL">
+        <section>
 
-        <h1>Rejestracja</h1>
-        <form method="POST" action="/register">
-            <label for="username">Nazwa użytkownika:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Hasło:</label>
-            <input type="password" id="password" name="password" required><br>
-            <label for="profession">Konto dla:</label>
-            <select id="profession" name="profession">
-                <option value="administracja">Administracja</option>
-                <option value="nauczyciel">Nauczyciel</option>
-                <option value="uczen">Uczeń</option>
-                <option value="rodzic">Rodzic</option>
-            </select>
-            
-            <button type="submit">Zarejestruj się</button>
-        </form>
-        <p>Masz już konto? <a href="/login">Zaloguj się</a></p>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-    </div>
+            <h1>Rejestracja</h1>
+            <form method="POST" action="/register">
+                <label for="username">Nazwa użytkownika:</label>
+                <input type="text" id="username" name="username" required>
+                <label for="password">Hasło:</label>
+                <input type="password" id="password" name="password" required><br>
+                <label for="profession">Konto dla:</label>
+                <select id="profession" name="profession">
+                    <option value="administracja">Administracja</option>
+                    <option value="nauczyciel">Nauczyciel</option>
+                    <option value="uczen">Uczeń</option>
+                    <option value="rodzic">Rodzic</option>
+                </select>
+                
+                <button type="submit">Zarejestruj się</button>
+            </form>
+            <p>Masz już konto? <a href="/login">Zaloguj się</a></p>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+        </section>
 </body>
 </html>
