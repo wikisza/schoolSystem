@@ -10,7 +10,7 @@
 <body>
     <header class="header">
         <div class="header-left">
-            <h1>CLASSMATE</h1>
+            <a href="/"><h1>CLASSMATE</h1></a>
         </div>
         <div class="header-right">
             <span class="welcome">Witaj {{ username }}!</span>
@@ -21,13 +21,13 @@
         <!-- chuj wie jakie nazwy -->
         <div class="sidebar">
             <a href="/classSchedule">Plan zajęć</a>
-            <a href="#">Oceny</a>
-            <a href="#">Frekwencja</a>
-            <a href="#">Wiadomości</a>
+            <a href="/grades">Oceny</a>
+            <a href="/attendance">Frekwencja</a>
+            <a href="/messages">Wiadomości</a>
             <a href="#">...</a>
             <a href="#">...</a>
-            <a href="#">Ustawienia</a>
-            <a href="#">Wyloguj</a>
+            <a href="/settings">Ustawienia</a>
+            <a href="/logout">Wyloguj</a>
         </div>
 
         {% block content %}
@@ -50,6 +50,31 @@
                     <h3>Nowa wiadomość od nauczyciela</h3>
                     <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
                 </div>
+                <div class="notification">
+                    <h3>Nowa ocena z matematyki</h3>
+                    <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
+                </div>
+                <div class="notification">
+                    <h3>Nieobecność na lekcji</h3>
+                    <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
+                </div>
+                <div class="notification">
+                    <h3>Nowa wiadomość od nauczyciela</h3>
+                    <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
+                </div>
+                <div class="notification">
+                    <h3>Nowa ocena z matematyki</h3>
+                    <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
+                </div>
+                <div class="notification">
+                    <h3>Nieobecność na lekcji</h3>
+                    <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
+                </div>
+                <div class="notification">
+                    <h3>Nowa wiadomość od nauczyciela</h3>
+                    <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
+                </div>
+                
             </div>
         </div>
         {% endblock %}
