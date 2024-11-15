@@ -532,3 +532,9 @@ background-color: #1c6f67;
     font-size: 0.9em;
     color: #666;
 }
+
+#calendar {
+    width: 100%;
+    max-width: 1200px; /* Maksymalna szerokość */
+    margin: 0 auto;    /* Wycentrowanie */
+}

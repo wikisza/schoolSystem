@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
         firstDay: 1,
+        height: 650,
         initialView: 'dayGridMonth',
         events: [
             {
