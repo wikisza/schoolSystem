@@ -376,11 +376,13 @@ body {
 body {
     font-family: Arial, sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     background-color: whitesmoke;
     color: #FF9F1C;
+    padding: 2rem;
 }
 
 .header {
@@ -390,18 +392,23 @@ justify-content: space-between;
 align-items: center;
 padding: 10px 20px;
 color: white;
-position: fixed; 
 top:40px;
-width: 80%;
-max-width: 1200px;
-z-index: 1000; 
+width: 90%;
+max-width: 100rem;
+z-index: 1000;
 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
 border-radius: 10px; 
+margin-bottom: 1rem;
 }
 
 .header-left {
 display: flex;
 align-items: center;
+}
+
+.header-left a{
+    text-decoration: none;
+    color: white;
 }
 
 /* .logo {
@@ -440,8 +447,8 @@ background-color: #1c6f67;
 }
 
 .container {
-    width: 80%;
-    max-width: 1200px;
+    width: 90%;
+    max-width: 100rem;
     display: flex;
     background: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
