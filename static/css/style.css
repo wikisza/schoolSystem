@@ -1,3 +1,4 @@
+/* 
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -31,7 +32,7 @@ body {
 }
 
 .menu_bar > div {
-    position: relative; /* Ustawiamy pozycjonowanie względne dla div-a z rozwijanym menu */
+    position: relative; 
 }
 
 .menu_bar a {
@@ -90,10 +91,10 @@ body {
 
 .header {
     display: flex;
-    align-items: flex-end; /* Wyrównuje elementy w pionie, jeśli mają różne wysokości */
-    justify-content: space-between; /* Rozstawia elementy maksymalnie na boki */
-    padding: 10px; /* Dodaje trochę przestrzeni wokół elementów */
-    color: black; /* Kolor tekstu */
+    align-items: flex-end; 
+    justify-content: space-between; 
+    padding: 10px; 
+    color: black; 
     font-family: centaur;
     border-bottom: 10px solid #3E2723;
     padding-bottom: 5px;
@@ -150,9 +151,9 @@ form {
 
 input, button {
     margin-top: 5px;
-    background-color: #333; /* Dark gray background for inputs and button */
-    color: #fff; /* White text for inputs and button */
-    border: 2px solid #6A704C; /* Red border */
+    background-color: #333; 
+    color: #fff; 
+    border: 2px solid #6A704C;
     border-radius: 5px;
     padding: 10px;
     cursor: pointer;
@@ -179,8 +180,8 @@ ul {
     list-style-type: none;
     padding: 0;
     display: flex;
-    flex-wrap: wrap;  /* Umożliwia zawijanie elementów */
-    justify-content: space-between;  /* Rozstawia elementy równomiernie */
+    flex-wrap: wrap;  
+    justify-content: space-between;  
     margin: 10px;
 }
 
@@ -194,8 +195,8 @@ li {
     background-color: #3E2723;
     border-radius: 5px;
     color: white;
-    width: 30%;  /* Ustawia szerokość elementów <li> na 30% kontenera */
-    box-sizing: border-box;  /* Upewnia się, że padding nie dodaje się do szerokości elementu */
+    width: 30%;  
+    box-sizing: border-box; 
 }
 
 
@@ -222,62 +223,62 @@ opi{
 
 .table {
     width: 100%; 
-    border-collapse: collapse; /* Usunięcie odstępów między komórkami */
-    background-color: #f9f9f9; /* Kolor tła tabeli */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Cień dla tabeli */
+    border-collapse: collapse; 
+    background-color: #f9f9f9; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+
 }
 
-/* Style dla nagłówków tabeli */
+
 .table thead th {
-    background-color: #6A704C; /* Kolor tła nagłówków */
-    color: white; /* Kolor tekstu w nagłówkach */
-    padding: 10px; /* Odstęp wewnętrzny w nagłówkach */
-    text-align: left; /* Wyrównanie tekstu do lewej */
-    border-bottom: 2px solid #ddd; /* Dolna ramka w nagłówkach */
+    background-color: #6A704C;
+    color: white; 
+    padding: 10px; 
+    text-align: left; 
+    border-bottom: 2px solid #ddd;
     cursor: pointer;
 }
 
-/* Style dla komórek tabeli */
+
 .table tbody td {
     color:#333;
-    padding: 10px; /* Odstęp wewnętrzny w komórkach */
-    border-bottom: 1px solid #440a0a; /* Dolna ramka w komórkach */
-    text-align: left; /* Wyrównanie tekstu do lewej */
+    padding: 10px; 
+    border-bottom: 1px solid #440a0a; 
+    text-align: left;
 }
 
-/* Style dla wierszy nieparzystych */
+
 .table tbody tr:nth-child(odd) {
-    background-color: #f2f2f2; /* Kolor tła wierszy nieparzystych */
+    background-color: #f2f2f2; 
 }
 
-/* Style dla wierszy parzystych */
+
 .table tbody tr:nth-child(even) {
-    background-color: #ffffff; /* Kolor tła wierszy parzystych */
+    background-color: #ffffff; 
 }
 
-/* Styl dla kolumny z numerem pokoju */
 .table tbody td:first-child {
-    font-weight: bold; /* Pogrubienie tekstu */
+    font-weight: bold; 
 }
 
-/* Styl dla kolumny z ceną */
+
 .table tbody td:nth-child(6) {
-    color: #e67e22; /* Kolor tekstu dla ceny */
+    color: #e67e22; 
 }
 
-/* Styl dla komórek ze statusem */
+
 .table tbody td:last-child {
-    font-weight: bold; /* Pogrubienie tekstu */
-    text-align: center; /* Wyśrodkowanie tekstu */
+    font-weight: bold; 
+    text-align: center; 
     
 }
 
 .wolny{
-    color: #5cb85c; /* Kolor tekstu dla wolnych pokoi */
+    color: #5cb85c; 
 }
 
 .zajety{
-    color: #ec1d16; /* Kolor tekstu dla zajętych pokoi */
+    color: #ec1d16; 
 }
 
 .okno_zakwaterowanie{
@@ -339,4 +340,180 @@ opi{
     .podsumowanieRachunku {
         width: 100%;
     }
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f6f8;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    display: flex;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+} */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: whitesmoke;
+    color: #FF9F1C;
+}
+
+.header {
+background-color: #1f7e75;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 10px 20px;
+color: white;
+position: fixed; 
+top:40px;
+width: 80%;
+max-width: 1200px;
+z-index: 1000; 
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+border-radius: 10px; 
+}
+
+.header-left {
+display: flex;
+align-items: center;
+}
+
+/* .logo {
+height: 40px;
+margin-right: 10px;
+}
+
+.logo-text {
+font-size: 1.5em;
+font-weight: bold;
+color: white;
+text-decoration: none;
+} */
+
+.header-right {
+display: flex;
+align-items: center;
+}
+
+.welcome {
+margin-right: 20px;
+font-size: 1em;
+}
+
+.logout {
+color: black;
+text-decoration: none;
+padding: 5px 10px;
+background-color: #CBF3F0;
+border-radius: 5px;
+transition: background-color 0.3s;
+}
+
+.logout:hover {
+background-color: #1c6f67;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    display: flex;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+
+.sidebar {
+    width: 20%;
+    background-color:#FFBF69;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    color: #fff;
+}
+
+.sidebar h2 {
+    font-size: 1.4em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1em;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #FF9F1C;
+    transition: background-color 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #2EC4B6;
+}
+
+
+.main-content {
+    width: 80%;
+    padding: 40px;
+}
+
+.main-content h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #FF9F1C;
+}
+
+.notifications {
+    margin-top: 30px;
+    border-top: 2px solid #e0e0e0;
+    padding-top: 20px;
+}
+
+.notification {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f8fafc;
+    border-left: 4px solid #FF9F1C;
+    border-radius: 4px;
+}
+
+.notification h3 {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.notification p {
+    font-size: 0.9em;
+    color: #666;
 }
