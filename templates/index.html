@@ -18,6 +18,9 @@
         <div class="header-left">
             <a href="/">
                 <h1>CLASSMATE</h1>
+                {% if profession != null %}
+                <h3>Zalogowany: {{ profession }} </h3>
+                {% endif %}
             </a>
         </div>
         <div class="header-right">
@@ -26,7 +29,13 @@
         </div>
     </header>
     <div class="container">
-        <!-- chuj wie jakie nazwy -->
+        <!-- chuj wie jakie nazwy 
+         konta do testów: admin - admin
+         administracja: annakow - 12345
+         nauczyciel: jan_kowalski - 12345
+         uczeń: dominik_nowak - 12345
+         rodzic: dn_rodzic - 12345
+         -->
         <div class="sidebar">
             <a href="/classSchedule">Plan zajęć</a>
             <a href="/grades">Oceny</a>
@@ -35,6 +44,11 @@
             <a href="#">...</a>
             <a href="#">...</a>
             <a href="/settings">Ustawienia</a>
+
+            {% if profession == "administracja" %} 
+                <a href="/register">Stwórz konto</a>
+            {% endif %}
+
             <a href="/logout">Wyloguj</a>
         </div>
 
