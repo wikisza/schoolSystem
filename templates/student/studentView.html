@@ -1,0 +1,73 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<div class="sidebar">
+    <a href="/scheduleStudent">Plan zajęć</a>
+    <a href="/gradesStudent">Oceny</a>
+    <a href="/attendanceStudent">Frekwencja</a>
+    <a href="/messagesStudent">Wiadomości</a>
+    <a href="#">...</a>
+    <a href="#">...</a>
+    <a href="/settings">Ustawienia</a>
+    <a href="/logout">Wyloguj</a>
+</div>
+
+
+<div class="main-content">
+
+
+    {% block mainContent %}
+
+
+    <h1>Witaj w CLASSMATE!</h1>
+    <p>Witamy w elektronicznym dzienniku szkolnym</p>
+
+    <!-- proponuje dac powiadomienia na głównej, narazie to tylko prototyp *? -->
+    <div class="notifications">
+        <h2>Powiadomienia</h2>
+        <div class="notification">
+            <h3>Nowa ocena z matematyki</h3>
+            <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
+        </div>
+        <div class="notification">
+            <h3>Nieobecność na lekcji</h3>
+            <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
+        </div>
+        <div class="notification">
+            <h3>Nowa wiadomość od nauczyciela</h3>
+            <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
+        </div>
+        <div class="notification">
+            <h3>Nowa ocena z matematyki</h3>
+            <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
+        </div>
+        <div class="notification">
+            <h3>Nieobecność na lekcji</h3>
+            <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
+        </div>
+        <div class="notification">
+            <h3>Nowa wiadomość od nauczyciela</h3>
+            <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
+        </div>
+        <div class="notification">
+            <h3>Nowa ocena z matematyki</h3>
+            <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
+        </div>
+        <div class="notification">
+            <h3>Nieobecność na lekcji</h3>
+            <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
+        </div>
+        <div class="notification">
+            <h3>Nowa wiadomość od nauczyciela</h3>
+            <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
+        </div>
+
+    </div>
+    {% endblock %}
+
+
+
+</div>
+
+{% endblock %}

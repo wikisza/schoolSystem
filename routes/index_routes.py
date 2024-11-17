@@ -11,6 +11,26 @@ index_blueprint = Blueprint('index', __name__)
 def index():
     return render_template('index.html', username=current_user.username, profession=current_user.profession)
 
+@index_blueprint.route('/teacherView')
+@login_required
+def teacherView_route():
+    return render_template('/teacher/teacherView.html', username=current_user.username, profession=current_user.profession)
+
+@index_blueprint.route('/studentView')
+@login_required
+def studentView_route():
+    return render_template('/student/studentView.html', username=current_user.username, profession=current_user.profession)
+
+@index_blueprint.route('/parentView')
+@login_required
+def parentView_route():
+    return render_template('/parent/parentView.html', username=current_user.username, profession=current_user.profession)
+
+@index_blueprint.route('/administrationView')
+@login_required
+def administrationView_route():
+    return render_template('/administration/administrationView.html', username=current_user.username, profession=current_user.profession)
+
 '''
 @index_blueprint.route('/get_reservations')
 def get_reservations_route():

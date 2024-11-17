@@ -11,6 +11,7 @@
     <script src="{{ url_for('static', filename='js/js_script.js') }}"></script>
 
     <title>ClassMate - Dziennik Szkolny</title>
+
 </head>
 
 <body>
@@ -28,85 +29,43 @@
             <a href="/logout" class="logout">Wyloguj</a>
         </div>
     </header>
-    <div class="container">
-        <!-- chuj wie jakie nazwy 
+
+    <!-- 
          konta do testów: admin - admin
          administracja: annakow - 12345
          nauczyciel: jan_kowalski - 12345
          uczeń: dominik_nowak - 12345
          rodzic: dn_rodzic - 12345
          -->
-        <div class="sidebar">
-            <a href="/classSchedule">Plan zajęć</a>
-            <a href="/grades">Oceny</a>
-            <a href="/attendance">Frekwencja</a>
-            <a href="/messages">Wiadomości</a>
-            <a href="#">...</a>
-            <a href="#">...</a>
-            <a href="/settings">Ustawienia</a>
 
-            {% if profession == "administracja" %} 
-                <a href="/register">Stwórz konto</a>
+    <div class="container">
+
+        {% block content %}
+        
+        <div class="container">
+            {% if profession == 'nauczyciel' %}
+                <script>
+                    window.location.href = "/teacherView"; 
+                </script>
+            {% elif profession == 'uczen' %}
+                <script>
+                    window.location.href = "/studentView"; 
+                </script>
+            {% elif profession == 'administracja' %}
+                <script>
+                    window.location.href = "/administrationView"; 
+                </script>
+            {& elif profession == 'rodzic' %}
+                <script>
+                    window.location.href = "/parentView";
+                </script>
+            {% else %}
+                <p>Nieznana rola użytkownika. Proszę się skontaktować z administratorem.</p>
             {% endif %}
-
-            <a href="/logout">Wyloguj</a>
         </div>
+        
 
-
-        <div class="main-content">
-            {% block content %} <!-- będzie się w tym miejscu pojawiać zawartość linków powyżej-->
-
-
-            <h1>Witaj w CLASSMATE!</h1>
-            <p>Witamy w elektronicznym dzienniku szkolnym</p>
-
-            <!-- proponuje dac powiadomienia na głównej, narazie to tylko prototyp *? -->
-            <div class="notifications">
-                <h2>Powiadomienia</h2>
-                <div class="notification">
-                    <h3>Nowa ocena z matematyki</h3>
-                    <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nieobecność na lekcji</h3>
-                    <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nowa wiadomość od nauczyciela</h3>
-                    <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nowa ocena z matematyki</h3>
-                    <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nieobecność na lekcji</h3>
-                    <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nowa wiadomość od nauczyciela</h3>
-                    <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nowa ocena z matematyki</h3>
-                    <p>Otrzymałeś ocenę 5 z ostatniego testu z matematyki.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nieobecność na lekcji</h3>
-                    <p>Opuściłeś lekcję biologii dnia 10.11.2024.</p>
-                </div>
-                <div class="notification">
-                    <h3>Nowa wiadomość od nauczyciela</h3>
-                    <p>Sprawdź nową wiadomość od nauczyciela z historii.</p>
-                </div>
-
-            </div>
-
-
-
-            {% endblock %}
-        </div>
-
+        {% endblock %}
     </div>
 
 
