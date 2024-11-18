@@ -553,14 +553,16 @@ background-color: #1c6f67;
     border-radius: 5px;
     transition: background-color 0.3s;
     border:1px solid #333;
+    margin-top: 1rem;
 }
 
-.mainWindow{
+.addGradesBar{
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
-.mainWindow a{
+.addGradesBar a{
     color: black;
     font-size: medium;
     text-decoration: none;
@@ -571,7 +573,10 @@ background-color: #1c6f67;
     border:1px solid #333;
 }
 
-.addingGrade select, .addingGrade input{
+.addingGrade{
+    padding-top: 1rem;
+}
+.addingGrade select, .addingGrade input, .addingGrade button{
     color: black;
     font-size: medium;
     text-decoration: none;
