@@ -555,7 +555,23 @@ background-color: #1c6f67;
     border:1px solid #333;
 }
 
-.addingGrades a{
+.mainWindow{
+    display: flex;
+    justify-content: space-between;
+}
+
+.mainWindow a{
+    color: black;
+    font-size: medium;
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #CBF3F0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border:1px solid #333;
+}
+
+.addingGrade select, .addingGrade input{
     color: black;
     font-size: medium;
     text-decoration: none;
