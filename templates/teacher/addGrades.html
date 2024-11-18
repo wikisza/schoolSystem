@@ -2,10 +2,29 @@
 
 {% block mainContent %}
 
-<div class="addingGrades">
+<div class="mainWindow">
+
+    <div class="addingGrade">
+        <form>
+            <select name="classes" id="classes">
+                <option selected hidden>Wybierz klasę</option>
+                <option value="class1">Klasa 1</option>
+                <option value="class2">Klasa 2</option>
+                <option value="class3">Klasa 3</option>
+                <option value="class4">Klasa 4</option>
+                <option value="class5">Klasa 5</option>
+                <option value="class6">Klasa 6</option>
+                <option value="class7">Klasa 7</option>
+                <option value="class8">Klasa 8</option>
+            </select>
+
+            <label for="inputGrade">Podaj ocenę:</label>
+            <input name="inputGrade" id="inputGrade" type="text">
+
+        </form>
+    </div>
 
 <a href="/gradesTeacher">Wróć</a>
-wstawianie oceny
 
 </div>
 
