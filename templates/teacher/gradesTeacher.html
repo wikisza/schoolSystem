@@ -2,5 +2,20 @@
 
 {% block mainContent %}
 
-<h3>tu nauczyciel wstawia oceny</h3>
+<div class="decision-bar">
+    <select name="cars" id="cars">
+        <option selected hidden>Wybierz klasę</option>
+        <option value="klasa1">Klasa 1</option>
+        <option value="klasa2">Klasa 2</option>
+        <option value="klasa3">Klasa 3</option>
+        <option value="klasa4">Klasa 4</option>
+        <option value="klasa5">Klasa 5</option>
+        <option value="klasa6">Klasa 6</option>
+        <option value="klasa7">Klasa 7</option>
+        <option value="klasa8">Klasa 8</option>
+    </select>
+
+    <a href="/addGrades">Dodaj nową ocenę</a>
+</div>
+
 {% endblock %}

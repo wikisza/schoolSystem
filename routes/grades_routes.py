@@ -27,3 +27,9 @@ def gradesParent():
     return render_template('parent/gradesParent.html', username=current_user.username, profession=current_user.profession)
 
 
+
+@grades_blueprint.route('/addGrades')
+def addGrades_route():
+    return render_template('teacher/addGrades.html', username=current_user.username, profession=current_user.profession)
+
+

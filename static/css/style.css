@@ -538,3 +538,31 @@ background-color: #1c6f67;
     max-width: 1200px; /* Maksymalna szerokość */
     margin: 0 auto;    /* Wycentrowanie */
 }
+
+.decision-bar{
+    display: flex;
+    justify-content: space-between;
+}
+
+.decision-bar select, .decision-bar a{
+    color: black;
+    font-size: medium;
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #CBF3F0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border:1px solid #333;
+}
+
+.addingGrades a{
+    color: black;
+    font-size: medium;
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #CBF3F0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border:1px solid #333;
+}
+
