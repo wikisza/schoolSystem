@@ -4,7 +4,7 @@
 
     <h3>Spis ocen</h3>
     <div class="decision-bar">
-        <select name="classes" id="classes">
+        <select id="classSelect">
             <option selected hidden>Wybierz klasę</option>
             <option value="class1">Klasa 1</option>
             <option value="class2">Klasa 2</option>
@@ -17,6 +17,24 @@
         </select>
 
         <a href="/addGrades">Dodaj nową ocenę</a>
+    </div>
+
+    <div id="gradesContainer">
+        <table>
+            <thead>
+                <tr>
+                    <th>Imię i nazwisko</th>
+                    <th>Sprawdzian</th>
+                    <th>Kartkówka</th>
+                    <th>Praca klasowa</th>
+                    <th>Zadanie domowe</th>
+                    <th>Inne</th>
+                </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+                <!-- Wiersze będą generowane dynamicznie -->
+            </tbody>
+        </table>
     </div>
 
 {% endblock %}
