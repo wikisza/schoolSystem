@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ///////////////////////// OBSŁUGA DIALOGU
     const openDialogButton = document.getElementById('openDialog');
     const gradeDialog = document.getElementById('gradeDialog');
+    const confirmGrades = document.getElementById("confirmGrades");
 
     // Otwieranie dialogu
     openDialogButton.addEventListener('click', () => {
@@ -180,23 +181,17 @@ document.addEventListener('DOMContentLoaded', function () {
         bodyAddGrade.querySelectorAll("tr").forEach(row => {
             const newCell = document.createElement("td");
 
-            // Jeśli ocena jest indywidualna, dodaj pole input
-            if (selectedType === "individual") {
-                const input = document.createElement("input");
-                input.type = "number";
-                input.min = 1;
-                input.max = 6; // Przykład: oceny 1-6
-                newCell.appendChild(input);
-            } else {
-                newCell.textContent = "-"; // Wypełniamy placeholder
-            }
-
+            const input = document.createElement("input");
+            input.type = "text";
+            newCell.appendChild(input);
             row.appendChild(newCell);
             gradeDialog.close();
+
+            confirmGrades.style.display = "block";
         });
 
-         // Zamknięcie dialogu
     });
+    
 
 });
 

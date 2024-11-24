@@ -668,3 +668,7 @@ dialog::backdrop {
     background-color: #4CAF50;
     color: white;
 }
+
+#confirmGrades{
+    display: none;
+}
