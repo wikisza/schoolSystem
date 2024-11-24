@@ -386,27 +386,27 @@ body {
 }
 
 .header {
-background-color: #1f7e75;
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 10px 20px;
-color: white;
-top:40px;
-width: 90%;
-max-width: 100rem;
-z-index: 1000;
-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-border-radius: 10px; 
-margin-bottom: 1rem;
+    background-color: #1f7e75;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    color: white;
+    top: 40px;
+    width: 90%;
+    max-width: 100rem;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 1rem;
 }
 
 .header-left {
-display: flex;
-align-items: center;
+    display: flex;
+    align-items: center;
 }
 
-.header-left a{
+.header-left a {
     text-decoration: none;
     color: white;
 }
@@ -424,26 +424,26 @@ text-decoration: none;
 } */
 
 .header-right {
-display: flex;
-align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .welcome {
-margin-right: 20px;
-font-size: 1em;
+    margin-right: 20px;
+    font-size: 1em;
 }
 
 .logout {
-color: black;
-text-decoration: none;
-padding: 5px 10px;
-background-color: #CBF3F0;
-border-radius: 5px;
-transition: background-color 0.3s;
+    color: black;
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #CBF3F0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
 .logout:hover {
-background-color: #1c6f67;
+    background-color: #1c6f67;
 }
 
 .container {
@@ -456,18 +456,18 @@ background-color: #1c6f67;
     overflow: hidden;
 }
 
-.partialView{
+.partialView {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
+
 }
 
 
 .sidebar {
     width: 20%;
-    background-color:#FFBF69;
+    background-color: #FFBF69;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -535,16 +535,19 @@ background-color: #1c6f67;
 
 #calendar {
     width: 100%;
-    max-width: 1200px; /* Maksymalna szerokość */
-    margin: 0 auto;    /* Wycentrowanie */
+    max-width: 1200px;
+    /* Maksymalna szerokość */
+    margin: 0 auto;
+    /* Wycentrowanie */
 }
 
-.decision-bar{
+.decision-bar {
     display: flex;
     justify-content: space-between;
 }
 
-.decision-bar select, .decision-bar a{
+.decision-bar select,
+.decision-bar a {
     color: black;
     font-size: medium;
     text-decoration: none;
@@ -552,17 +555,17 @@ background-color: #1c6f67;
     background-color: #CBF3F0;
     border-radius: 5px;
     transition: background-color 0.3s;
-    border:1px solid #333;
+    border: 1px solid #333;
     margin-top: 1rem;
 }
 
-.addGradesBar{
+.addGradesBar {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.addGradesBar a{
+.addGradesBar a {
     color: black;
     font-size: medium;
     text-decoration: none;
@@ -570,13 +573,16 @@ background-color: #1c6f67;
     background-color: #CBF3F0;
     border-radius: 5px;
     transition: background-color 0.3s;
-    border:1px solid #333;
+    border: 1px solid #333;
 }
 
-.addingGrade{
+.addingGrade {
     padding-top: 1rem;
 }
-.addingGrade select, .addingGrade input, .addingGrade button{
+
+.addingGrade select,
+.addingGrade input,
+.addingGrade button {
     color: black;
     font-size: medium;
     text-decoration: none;
@@ -584,7 +590,7 @@ background-color: #1c6f67;
     background-color: #CBF3F0;
     border-radius: 5px;
     transition: background-color 0.3s;
-    border:1px solid #333;
+    border: 1px solid #333;
 }
 
 table {
@@ -593,7 +599,8 @@ table {
     margin-top: 20px;
 }
 
-th, td {
+th,
+td {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
@@ -604,8 +611,60 @@ th {
     font-weight: bold;
 }
 
-#gradesContainer{
+#gradesContainer {
     margin-top: 3rem;
     display: none;
 }
 
+#tableAddGrade {
+    margin-top: 3rem;
+    display: none;
+}
+
+#openDialog {
+    display: none;
+}
+
+dialog {
+    position: fixed;
+    /* Ustawienie dialogu w kontekście całego viewportu */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Wyśrodkowanie */
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    background: white;
+    /* Tło dialogu */
+    z-index: 10;
+    /* Aby był na wierzchu */
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dialog-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dialog-buttons button.cancel {
+    background-color: #ccc;
+}
+
+.dialog-buttons button.confirm {
+    background-color: #4CAF50;
+    color: white;
+}
