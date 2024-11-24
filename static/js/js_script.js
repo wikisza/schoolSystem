@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-// OBSŁUGA OCEN
+/////////// wyswietlanie ocen
 
 // Przykładowe dane uczniów dla poszczególnych klas
 const classData = {
@@ -58,43 +58,140 @@ const classData = {
 
 // Elementy DOM
 document.addEventListener('DOMContentLoaded', function () {
-const classSelect = document.getElementById("classSelect");
-const gradesContainer = document.getElementById("gradesContainer");
-const studentsTableBody = document.getElementById("studentsTableBody");
+    const classSelect = document.getElementById("classSelect");
+    const gradesContainer = document.getElementById("gradesContainer");
+    const studentsTableBody = document.getElementById("studentsTableBody");
 
-// Funkcja do renderowania uczniów i ocen
-function renderTable(classKey) {
-    const students = classData[classKey];
-    studentsTableBody.innerHTML = ""; // Wyczyszczenie tabeli
+    // Funkcja do renderowania uczniów i ocen
+    function renderTable(classKey) {
+        const students = classData[classKey];
+        studentsTableBody.innerHTML = ""; // Wyczyszczenie tabeli
 
-    students.forEach((student, index) => {
-        const row = document.createElement("tr");
-        
-        // Imię i nazwisko
-        const nameCell = document.createElement("td");
-        nameCell.textContent = student.name;
-        row.appendChild(nameCell);
+        students.forEach((student, index) => {
+            const row = document.createElement("tr");
 
-        // Kategorie ocen
-        ["sprawdzian", "kartkowka", "pracaKlasowa", "zadanieDomowe", "inne"].forEach(category => {
-            const categoryCell = document.createElement("td");
+            // Imię i nazwisko
+            const nameCell = document.createElement("td");
+            nameCell.textContent = student.name;
+            row.appendChild(nameCell);
 
-            // Wyświetlanie ocen w kategorii
-            categoryCell.textContent = student.grades[category].join(", ");
-            row.appendChild(categoryCell);
+            // Kategorie ocen
+            ["sprawdzian", "kartkowka", "pracaKlasowa", "zadanieDomowe", "inne"].forEach(category => {
+                const categoryCell = document.createElement("td");
+
+                // Wyświetlanie ocen w kategorii
+                categoryCell.textContent = student.grades[category].join(", ");
+                row.appendChild(categoryCell);
+            });
+
+            studentsTableBody.appendChild(row);
         });
 
-        studentsTableBody.appendChild(row);
+        gradesContainer.style.display = "block";
+    }
+
+    // Obsługa wyboru klasy
+    classSelect.addEventListener("change", (e) => {
+        const selectedClass = e.target.value;
+        renderTable(selectedClass);
     });
 
-    gradesContainer.style.display = "block";
-}
-
-// Obsługa wyboru klasy
-classSelect.addEventListener("change", (e) => {
-    const selectedClass = e.target.value;
-    renderTable(selectedClass);
 });
+
+///////////////// dodawanie oceny
+
+// Elementy DOM
+document.addEventListener('DOMContentLoaded', function () {
+    const classSelect = document.getElementById("classSelect");
+    const tableAddGrade = document.getElementById("tableAddGrade");
+    const bodyAddGrade = document.getElementById("bodyAddGrade");
+    const headAddGrade = document.getElementById("headAddGrade");
+    const openDialog = document.getElementById("openDialog");
+
+    function renderTable2(classKey) {
+        const students = classData[classKey];
+        bodyAddGrade.innerHTML = ""; // Wyczyszczenie tabeli
+
+        students.forEach((student, index) => {
+            const row = document.createElement("tr");
+
+            // Imię i nazwisko
+            const nameCell = document.createElement("td");
+            nameCell.textContent = student.name;
+            row.appendChild(nameCell);
+
+            bodyAddGrade.appendChild(row);
+        });
+
+        tableAddGrade.style.display = "block";
+        openDialog.style.display = "block";
+    }
+
+    // Obsługa wyboru klasy
+    classSelect.addEventListener("change", (e) => {
+        const selectedClass = e.target.value;
+        renderTable2(selectedClass);
+    });
+
+
+    ///////////////////////// OBSŁUGA DIALOGU
+    const openDialogButton = document.getElementById('openDialog');
+    const gradeDialog = document.getElementById('gradeDialog');
+    const confirmGrades = document.getElementById("confirmGrades");
+
+    // Otwieranie dialogu
+    openDialogButton.addEventListener('click', () => {
+        gradeDialog.showModal();
+    });
+
+    // Obsługa przycisków w dialogu
+    const cancelButton = gradeDialog.querySelector('.cancel');
+    const confirmButton = gradeDialog.querySelector('.confirm');
+
+    cancelButton.addEventListener('click', () => {
+        gradeDialog.close();
+    });
+
+    gradeDialog.addEventListener('close', () => {
+        const selectedType = gradeDialog.returnValue; // Zwraca 'confirm' jeśli kliknięto potwierdź
+        console.log("Dialog zamknięty:", selectedType);
+    });
+
+    gradeDialog.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const selectedType = gradeDialog.querySelector('input[name="gradeType"]:checked').value;
+        console.log("Wybrano typ oceny:", selectedType);
+
+        gradeDialog.close(selectedType);
+    });
+
+    confirmButton.addEventListener('click', (e) => {
+        e.preventDefault(); // Zapobiegamy wysyłaniu formularza
+
+        // Pobranie danych z dialogu
+        const selectedCategory = gradeDialog.querySelector('#gradesTypes').value;
+        const gradeDescription = gradeDialog.querySelector('input[type="text"]').value;
+
+        // Dodanie nowej kolumny do tabeli
+        const category = document.createElement("th");
+        category.textContent = `${selectedCategory}`;
+        headAddGrade.querySelector("tr").appendChild(category);
+
+        // Dodanie pustych komórek dla każdego ucznia
+        bodyAddGrade.querySelectorAll("tr").forEach(row => {
+            const newCell = document.createElement("td");
+
+            const input = document.createElement("input");
+            input.type = "text";
+            newCell.appendChild(input);
+            row.appendChild(newCell);
+            gradeDialog.close();
+
+            confirmGrades.style.display = "block";
+        });
+
+    });
+    
 
 });
 
