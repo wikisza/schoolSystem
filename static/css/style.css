@@ -587,3 +587,25 @@ background-color: #1c6f67;
     border:1px solid #333;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+#gradesContainer{
+    margin-top: 3rem;
+    display: none;
+}
+
