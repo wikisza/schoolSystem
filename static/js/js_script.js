@@ -35,8 +35,17 @@ document.addEventListener('DOMContentLoaded', function () {
             month: 'Miesiąc',
             week: 'Tydzień',
             day: 'Dzień'
-        }
+        },
+        eventClick: function (info) {
+            const dialog = document.getElementById('eventDialog');
+            const dialogTitle = dialog.querySelector('.dialog-title');
+            const dialogDescription = dialog.querySelector('.dialog-description');
 
+            dialogTitle.textContent = info.event.title;
+            dialogDescription.textContent = info.event.extendedProps.description;
+
+            dialog.showModal();
+        }
     });
     calendar.render();
 });

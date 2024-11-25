@@ -672,3 +672,39 @@ dialog::backdrop {
 #confirmGrades{
     display: none;
 }
+
+dialog {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.dialog-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.dialog-content {
+    margin-bottom: 15px;
+}
+
+.dialog-footer {
+    text-align: right;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
