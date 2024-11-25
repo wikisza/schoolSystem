@@ -50,18 +50,34 @@ document.addEventListener('DOMContentLoaded', function () {
             const dialogTitle = dialog.querySelector('.dialog-title');
             const dialogDescription = dialog.querySelector('.dialog-description');
             const dialogDetails = dialog.querySelector('.dialog-details');
+            
+            // Pobieranie daty i godziny z wydarzenia
+            const startDate = new Date(info.event.start);
+            const endDate = new Date(info.event.end);
+
+            // Formatowanie daty
+            const date = startDate.toLocaleDateString('pl-PL', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                weekday: 'long'
+            });
+
+            // Formatowanie godzin
+            const startTime = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+            const endTime = endDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
 
             dialogTitle.textContent = info.event.title;
             dialogDescription.textContent = info.event.extendedProps.description;
 
-            dialog.showModal();
-
             dialogDetails.innerHTML = `
-                <p><strong>Od:</strong> ${new Date(info.event.start).toLocaleString()}</p>
-                <p><strong>Do:</strong> ${new Date(info.event.end).toLocaleString()}</p>
-                <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
-                <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
+            <p><strong>Dzień:</strong> ${date}</p>
+            <p><strong>Godzina:</strong> ${startTime} - ${endTime}</p>
+            <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
+            <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
             `;
+
+            dialog.showModal();
         }
     });
     calendar.render();
