@@ -8,20 +8,28 @@ document.addEventListener('DOMContentLoaded', function () {
         firstDay: 1,
         height: 650,
         initialView: 'dayGridMonth',
+        slotMinTime: '08:00:00', // Minimalna godzina zajec
+        slotMaxTime: '17:00:00', // Maksymalna godzina zajec
         events: [
             {
                 title: 'Język polski',
-                start: '2024-11-20',
-                end: '2024-11-22',
+                start: '2024-11-20T08:00:00',
+                end: '2024-11-20T10:00:00',
                 backgroundColor: '#800000',
-                borderColor: '#800000'
+                borderColor: '#800000',
+                description: 'Zajęcia w sali 7A.',
+                teacher: 'Jan Kowalski',
+                room: '7A'
             },
             {
                 title: 'Static Event 2',
-                start: '2024-11-25',
-                end: '2024-11-30',
+                start: '2024-11-25T10:00:00',
+                end: '2024-11-25T13:00:00',
                 backgroundColor: '#800000',
-                borderColor: '#800000'
+                borderColor: '#800000',
+                description: 'Zajęcia w sali 102.',
+                teacher: 'Anna Nowak',
+                room: '102'
             }
         ],
         locale: 'pl',
@@ -36,15 +44,24 @@ document.addEventListener('DOMContentLoaded', function () {
             week: 'Tydzień',
             day: 'Dzień'
         },
+        // Zawartosc wyskakujacego okienka po kliknieciu na zajęcie w planie zajęć
         eventClick: function (info) {
             const dialog = document.getElementById('eventDialog');
             const dialogTitle = dialog.querySelector('.dialog-title');
             const dialogDescription = dialog.querySelector('.dialog-description');
+            const dialogDetails = dialog.querySelector('.dialog-details');
 
             dialogTitle.textContent = info.event.title;
             dialogDescription.textContent = info.event.extendedProps.description;
 
             dialog.showModal();
+
+            dialogDetails.innerHTML = `
+                <p><strong>Od:</strong> ${new Date(info.event.start).toLocaleString()}</p>
+                <p><strong>Do:</strong> ${new Date(info.event.end).toLocaleString()}</p>
+                <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
+                <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
+            `;
         }
     });
     calendar.render();
