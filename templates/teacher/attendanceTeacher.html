@@ -1,11 +1,186 @@
 {% extends "teacher/teacherView.html" %}
 
 {% block mainContent %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela obecności</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
 
-<div class="partialView">
-    frekwencja
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            user-select: none; /* Zapobiega zaznaczaniu tekstu */
+        }
 
-</div>
+        th {
+            background-color: #f4f4f4;
+        }
 
+        .editable {
+            cursor: pointer;
+        }
+
+        .selected {
+            border: 2px solid #000;
+        }
+
+        .status-btn {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .status-btn.selected {
+            background-color: #ccc;
+        }
+
+        .legend {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Obecność uczniów</h2>
+        <div class="menu">
+            <label for="class-select">Wybierz klasę:</label>
+            <select id="class-select">
+                <option value="1a">1a</option>
+                <option value="1b">1b</option>
+                <option value="2a">2a</option>
+                <option value="2b">2b</option>
+            </select>
+
+            <label for="subject-select">Wybierz przedmiot:</label>
+            <select id="subject-select">
+                <option value="matematyka">Matematyka</option>
+                <option value="polski">Język Polski</option>
+                <option value="angielski">Język Angielski</option>
+                <option value="biologia">Biologia</option>
+            </select>
+        </div>
+    </div>
+
+    <button id="edit-mode-btn">Edycja</button>
+
+    <div class="legend">
+        <span>Legenda:</span>
+        <button class="status-btn" data-status="O">O</button>
+        <button class="status-btn" data-status="-">-</button>
+        <button class="status-btn" data-status="U">U</button>
+        <button class="status-btn" data-status="S">S</button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Uczeń</th>
+                    <th>28.11</th>
+                    <th>29.11</th>
+                    <th>30.11</th>
+                    <th>01.12</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Jan Kowalski</td>
+                    <td class="editable"></td>
+                    <td class="editable"></td>
+                    <td class="editable"></td>
+                    <td class="editable"></td>
+                </tr>
+                <tr>
+                    <td>Anna Nowak</td>
+                    <td class="editable"></td>
+                    <td class="editable"></td>
+                    <td class="editable"></td>
+                    <td class="editable"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const editModeBtn = document.getElementById('edit-mode-btn');
+            const statusButtons = document.querySelectorAll('.status-btn');
+            const table = document.querySelector('table');
+            let isEditMode = false;
+            let selectedStatus = '';
+            const attendanceData = {};
+
+            // Toggle edit mode
+            editModeBtn.addEventListener('click', () => {
+                isEditMode = !isEditMode;
+                editModeBtn.textContent = isEditMode ? 'Zakończ edycję' : 'Edycja';
+                document.querySelectorAll('.editable').forEach(cell => {
+                    if (isEditMode) {
+                        cell.setAttribute('contenteditable', 'true');
+                        cell.style.pointerEvents = 'auto'; // Włączenie kliknięcia
+                        cell.style.backgroundColor = ''; // Przywrócenie tła komórek
+                    } else {
+                        cell.removeAttribute('contenteditable');
+                        cell.style.pointerEvents = 'none'; // Zablokowanie kliknięcia
+                        cell.style.backgroundColor = '#f4f4f4'; // Tło dla komórek tylko do odczytu
+                    }
+                });
+            });
+
+            // Handle status selection and visual feedback in legend
+            statusButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    statusButtons.forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedStatus = button.dataset.status;
+                });
+            });
+
+            // Handle cell click for changing status
+            table.addEventListener('click', (event) => {
+                const cell = event.target;
+                if (cell.classList.contains('editable') && isEditMode) {
+                    if (selectedStatus) {
+                        cell.textContent = selectedStatus;
+                        switch (selectedStatus) {
+                            case 'O':
+                                cell.style.backgroundColor = 'green';
+                                break;
+                            case '-':
+                                cell.style.backgroundColor = 'yellow';
+                                break;
+                            case 'U':
+                                cell.style.backgroundColor = 'red';
+                                break;
+                            case 'S':
+                                cell.style.backgroundColor = 'blue';
+                                break;
+                            default:
+                                cell.style.backgroundColor = '';
+                        }
+                    }
+                }
+            });
+
+            // Handle cell selection for mass editing
+            table.addEventListener('click', (event) => {
+                const cell = event.target;
+                if (cell.classList.contains('editable') && isEditMode) {
+                    cell.classList.toggle('selected');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
 
 {% endblock %}
