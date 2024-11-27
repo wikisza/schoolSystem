@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Przykładowe dane uczniów dla poszczególnych klas
 const classData = {
     class1: [
-        { name: "Stanisław Gustaw", grades: { sprawdzian: [5], kartkowka: [4], pracaKlasowa: [3], zadanieDomowe: [4], inne: [] } },
+        { name: "Stanisław Gustaw", grades: { sprawdzian: [[5], [6]], kartkowka: [[4], [2]], pracaKlasowa: [3], zadanieDomowe: [4], inne: [] } },
         { name: "Anna Nowak", grades: { sprawdzian: [4], kartkowka: [5], pracaKlasowa: [4], zadanieDomowe: [3], inne: [] } },
     ],
     class2: [
@@ -104,12 +104,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const gradesContainer = document.getElementById("gradesContainer");
     const studentsTableBody = document.getElementById("studentsTableBody");
 
+    let activeTooltip = null; // Zmienna przechowująca aktywny tooltip
+
     // Funkcja do renderowania uczniów i ocen
     function renderTable(classKey) {
         const students = classData[classKey];
         studentsTableBody.innerHTML = ""; // Wyczyszczenie tabeli
 
-        students.forEach((student, index) => {
+        students.forEach(student => {
             const row = document.createElement("tr");
 
             // Imię i nazwisko
@@ -122,7 +124,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 const categoryCell = document.createElement("td");
 
                 // Wyświetlanie ocen w kategorii
-                categoryCell.textContent = student.grades[category].join(", ");
+                student.grades[category].forEach(grade => {
+                    const gradeBox = document.createElement("div");
+                    gradeBox.classList.add("grade-box");
+                    gradeBox.textContent = grade;
+
+                    // Tworzenie tooltipa
+                    const tooltip = document.createElement("div");
+                    tooltip.classList.add("tooltip");
+                    tooltip.textContent = `Informacje o ocenie: ${grade}`;
+
+                    gradeBox.appendChild(tooltip);
+
+                    // Obsługa kliknięcia na ocenę
+                    gradeBox.addEventListener("click", (e) => {
+                        e.stopPropagation(); // Zatrzymanie propagacji, aby kliknięcie poza tooltipem działało poprawnie
+                        
+                        // Ukryj poprzedni tooltip, jeśli istnieje
+                        if (activeTooltip && activeTooltip !== tooltip) {
+                            activeTooltip.classList.remove("show");
+                        }
+
+                        // Przełącz wyświetlanie obecnego tooltipa
+                        tooltip.classList.toggle("show");
+
+                        // Zaktualizuj aktywny tooltip
+                        activeTooltip = tooltip.classList.contains("show") ? tooltip : null;
+                    });
+
+                    categoryCell.appendChild(gradeBox);
+                });
+
                 row.appendChild(categoryCell);
             });
 
@@ -132,12 +164,19 @@ document.addEventListener('DOMContentLoaded', function () {
         gradesContainer.style.display = "block";
     }
 
+    // Ukrywanie tooltipa po kliknięciu gdzieś indziej
+    document.addEventListener("click", () => {
+        if (activeTooltip) {
+            activeTooltip.classList.remove("show");
+            activeTooltip = null;
+        }
+    });
+
     // Obsługa wyboru klasy
     classSelect.addEventListener("change", (e) => {
         const selectedClass = e.target.value;
         renderTable(selectedClass);
     });
-
 });
 
 ///////////////// dodawanie oceny
