@@ -236,6 +236,75 @@ document.addEventListener('DOMContentLoaded', function () {
     
 
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+    const editModeBtn = document.getElementById('edit-mode-btn');
+    const statusButtons = document.querySelectorAll('.status-btn');
+    const table = document.querySelector('table');
+    let isEditMode = false;
+    let selectedStatus = '';
+    const attendanceData = {};
+
+    // Toggle edit mode
+    editModeBtn.addEventListener('click', () => {
+        isEditMode = !isEditMode;
+        editModeBtn.textContent = isEditMode ? 'Zakończ edycję' : 'Edycja';
+        document.querySelectorAll('.editable').forEach(cell => {
+            if (isEditMode) {
+                cell.setAttribute('contenteditable', 'true');
+                cell.style.pointerEvents = 'auto'; // Włączenie kliknięcia
+                cell.style.backgroundColor = ''; // Przywrócenie tła komórek
+            } else {
+                cell.removeAttribute('contenteditable');
+                cell.style.pointerEvents = 'none'; // Zablokowanie kliknięcia
+                cell.style.backgroundColor = '#f4f4f4'; // Tło dla komórek tylko do odczytu
+            }
+        });
+    });
+
+    // Handle status selection and visual feedback in legend
+    statusButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            statusButtons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            selectedStatus = button.dataset.status;
+        });
+    });
+
+    // Handle cell click for changing status
+    table.addEventListener('click', (event) => {
+        const cell = event.target;
+        if (cell.classList.contains('editable') && isEditMode) {
+            if (selectedStatus) {
+                cell.textContent = selectedStatus;
+                switch (selectedStatus) {
+                    case 'O':
+                        cell.style.backgroundColor = 'green';
+                        break;
+                    case '-':
+                        cell.style.backgroundColor = 'yellow';
+                        break;
+                    case 'U':
+                        cell.style.backgroundColor = 'red';
+                        break;
+                    case 'S':
+                        cell.style.backgroundColor = 'blue';
+                        break;
+                    default:
+                        cell.style.backgroundColor = '';
+                }
+            }
+        }
+    });
+
+    // Handle cell selection for mass editing
+    table.addEventListener('click', (event) => {
+        const cell = event.target;
+        if (cell.classList.contains('editable') && isEditMode) {
+            cell.classList.toggle('selected');
+        }
+    });
+});
 //JULIA-FREKFENCJA
 
 let editMode = false;

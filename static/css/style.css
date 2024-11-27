@@ -339,3 +339,42 @@ dialog {
     font-size: 16px;
     cursor: pointer;
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    user-select: none; /* Zapobiega zaznaczaniu tekstu */
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.editable {
+    cursor: pointer;
+}
+
+.selected {
+    border: 2px solid #000;
+}
+
+.status-btn {
+    margin: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.status-btn.selected {
+    background-color: #ccc;
+}
+
+.legend {
+    margin-top: 20px;
+}
