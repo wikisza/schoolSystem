@@ -10,19 +10,22 @@
 
 <div class="addingGrade">
 
-    <select name="classSelect" id="classSelect">
-        <option selected hidden>Wybierz klasę</option>
-        <option value="class1">Klasa 1</option>
-        <option value="class2">Klasa 2</option>
-        <option value="class3">Klasa 3</option>
-        <option value="class4">Klasa 4</option>
-        <option value="class5">Klasa 5</option>
-        <option value="class6">Klasa 6</option>
-        <option value="class7">Klasa 7</option>
-        <option value="class8">Klasa 8</option>
-    </select>
+    <div class="decision-bar">
 
-    <button id="openDialog" name="openDialog" type="button">Dodaj nowe oceny</button>
+        <select name="classSelect" id="classSelect">
+            <option selected hidden>Wybierz klasę</option>
+            <option value="class1">Klasa 1</option>
+            <option value="class2">Klasa 2</option>
+            <option value="class3">Klasa 3</option>
+            <option value="class4">Klasa 4</option>
+            <option value="class5">Klasa 5</option>
+            <option value="class6">Klasa 6</option>
+            <option value="class7">Klasa 7</option>
+            <option value="class8">Klasa 8</option>
+        </select>
+        
+        <button id="openDialog" name="openDialog" type="button">Dodaj nowe oceny</button>
+    </div>
 
     <dialog id="gradeDialog">
         <form method="dialog">
@@ -59,8 +62,13 @@
         </table>
     </div>
 
-    <button name="confirmGrades" id="confirmGrades">Potwierdź oceny</button>
+    <!-- tu bedzie dodana funkcja dodawania ocen do bazy danych-->
 
+    <div class="submitGradeButton">
+
+        <button name="confirmGrades" id="confirmGrades">Potwierdź oceny</button>
+        
+    </div>
 
 </div>
 

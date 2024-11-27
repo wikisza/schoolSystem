@@ -175,6 +175,8 @@ text-decoration: none;
 .decision-bar {
     display: flex;
     justify-content: space-between;
+    margin:0;
+    align-items: center;
 }
 
 .decision-bar select,
@@ -377,4 +379,38 @@ th {
 
 .legend {
     margin-top: 20px;
+}
+
+.grade-box {
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 2px 5px;
+    margin: 2px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Styl dla okienka informacji */
+.tooltip {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: none;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.tooltip.show {
+    display: block;
+}
+
+.submitGradeButton{
+    display: flex;
+    justify-content: right;
+    margin-top:1rem;
 }
