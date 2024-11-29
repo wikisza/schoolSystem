@@ -13,7 +13,42 @@
         </select>
     </div>
 
-    <div id="calendar"></div>
+    <div class="mainContent">
+        <!-- Kalendarz -->
+        <div id="calendar"></div>
+
+        <!-- Formularz zastępstw -->
+        <div class="replacementForm">
+            <h2>Dodaj zastępstwo</h2>
+            <form id="replacementForm">
+                <label for="class">Klasa:</label>
+                <select id="class-select-replacement">
+                    <option value="1a">1a</option>
+                    <option value="2b">2b</option>
+                </select>
+                <br>
+                <label for="subject">Przedmiot:</label>
+                <input type="text" id="subject" placeholder="Nazwa przedmiotu" required>
+                <br>
+                <label for="teacher">Nauczyciel:</label>
+                <input type="text" id="teacher" placeholder="Imię i nazwisko nauczyciela" required>
+                <br>
+                <label for="date">Data:</label>
+                <input type="date" id="date" required>
+                <br>
+                <label for="startTime">Godzina rozpoczęcia:</label>
+                <input type="time" id="startTime" required min="08:00" max="17:00">
+                <br>
+                <label for="endTime">Godzina zakończenia:</label>
+                <input type="time" id="endTime" required min="08:00" max="17:00">
+                <br>
+                <label for="room">Sala:</label>
+                <input type="text" id="room" placeholder="Numer sali" required>
+                <br>
+                <button type="submit">Dodaj zastępstwo</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Dialog szczegółów wydarzenia -->
     <dialog id="eventDialog">
@@ -23,6 +58,7 @@
         <button onclick="document.getElementById('eventDialog').close();">Zamknij</button>
     </dialog>
 </div>
+
 
 
 

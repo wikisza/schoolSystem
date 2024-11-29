@@ -414,3 +414,74 @@ th {
     justify-content: right;
     margin-top:1rem;
 }
+/* Formularz zastępstw */
+.replacementForm {
+    margin-top:10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Form dostosowuje się do szerokości kontenera */
+    max-width: 400px; /* Ustawiamy maksymalną szerokość formularza */
+    margin: 20px 0; /* Odstęp od innych elementów */
+}
+
+/* Nagłówek formularza */
+.replacementForm h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+/* Styl dla etykiet formularza */
+.replacementForm form label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    color: #555;
+}
+
+/* Styl dla pól formularza (input, select) */
+.replacementForm form input,
+.replacementForm form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Styl przycisku formularza */
+.replacementForm form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.replacementForm form button:hover {
+    background-color: #0056b3;
+}
+
+/* Styl dla błędów walidacji (opcjonalne) */
+.replacementForm form input:invalid,
+.replacementForm form select:invalid {
+    border: 1px solid red;
+}
+
+/* Styl dla pomocniczych komunikatów */
+.replacementForm form .error {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+}

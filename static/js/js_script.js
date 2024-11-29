@@ -3,6 +3,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     var classSelect = document.getElementById('class-select');
+    var replacementForm = document.getElementById('replacementForm');
+    var classSelectReplacement = document.getElementById('class-select-replacement');
+
     var defaultClass = '1a'; // Domyślna klasa
 
     var calendars = {
@@ -18,24 +21,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 room: '7A'
             },
             {
-                title: 'Matematyka - 1A',
-                start: '2024-11-20T10:15:00',
-                end: '2024-11-20T11:45:00',
-                backgroundColor: '#007000',
-                borderColor: '#007000',
-                description: 'Zajęcia w sali 5B.',
-                teacher: 'Anna Nowak',
-                room: '5B'
-            },
-            {
-                title: 'Historia - 1A',
-                start: '2024-11-21T09:00:00',
-                end: '2024-11-21T10:30:00',
-                backgroundColor: '#000080',
-                borderColor: '#000080',
-                description: 'Zajęcia w sali 3C.',
-                teacher: 'Marek Wiśniewski',
-                room: '3C'
+                title: 'Język angielski - 1A',
+                start: '2024-11-29T08:00:00',
+                end: '2024-11-29T10:00:00',
+                backgroundColor: '#800000',
+                borderColor: '#800000',
+                description: 'Zajęcia w sali 8A.',
+                teacher: 'Jan Rico',
+                room: '8A'
             }
         ],
         '2b': [
@@ -52,15 +45,13 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
     };
 
-    // Funkcja inicjalizująca kalendarz
     function renderCalendar(className) {
         if (window.currentCalendar) {
-            // Jeśli kalendarz istnieje, usuń go przed utworzeniem nowego
             window.currentCalendar.destroy();
         }
 
-        const events = className && calendars[className] ? calendars[className] : []; // Domyślnie pusty kalendarz
-
+        const events = className && calendars[className] ? calendars[className] : [];
+        
         window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
             firstDay: 1,
             height: 650,
@@ -116,9 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.currentCalendar.render();
     }
 
-    // Obsługa przełącznika klas (jeśli istnieje)
     if (classSelect) {
-        // Ustaw domyślną wartość w select
         if (!classSelect.value) {
             classSelect.value = defaultClass;
         }
@@ -127,13 +116,47 @@ document.addEventListener('DOMContentLoaded', function () {
             renderCalendar(this.value);
         });
 
-        // Renderuj kalendarz dla domyślnej klasy (pierwsza opcja w select lub defaultClass)
         renderCalendar(classSelect.value || defaultClass);
     } else {
-        // Brak przełącznika klas - renderuj kalendarz dla domyślnej klasy
         renderCalendar(defaultClass);
     }
+
+    // Obsługa formularza zastępstw
+    replacementForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const selectedClass = classSelectReplacement.value;
+        const subject = document.getElementById('subject').value;
+        const teacher = document.getElementById('teacher').value;
+        const date = document.getElementById('date').value;
+        const startTime = document.getElementById('startTime').value;
+        const endTime = document.getElementById('endTime').value;
+        const room = document.getElementById('room').value;
+
+        if (!calendars[selectedClass]) {
+            calendars[selectedClass] = [];
+        }
+
+        calendars[selectedClass].push({
+            title: `${subject} (Zastępstwo)`,
+            start: `${date}T${startTime}`,
+            end: `${date}T${endTime}`,
+            backgroundColor: '#FF0000',
+            borderColor: '#FF0000',
+            description: `Zastępstwo w sali ${room}.`,
+            teacher: teacher,
+            room: room
+        });
+
+        if (classSelect && classSelect.value === selectedClass) {
+            renderCalendar(selectedClass); // Odśwież widok kalendarza, jeśli wybrana klasa jest aktywna
+        }
+
+        replacementForm.reset(); // Wyczyść formularz
+        alert('Zastępstwo zostało dodane!');
+    });
 });
+
 
 
 
