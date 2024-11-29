@@ -25,3 +25,8 @@ def scheduleStudent_route():
 @login_required
 def scheduleParent_route():
     return render_template('parent/scheduleParent.html', username=current_user.username, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/scheduleAdmin')
+@login_required
+def scheduleAdmin_route():
+    return render_template('administration/scheduleAdmin.html', username=current_user.username, profession=current_user.profession)
