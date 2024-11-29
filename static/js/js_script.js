@@ -1,18 +1,14 @@
 
 //OBSŁUGA KALENDARZY 
-
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
+    var classSelect = document.getElementById('class-select');
+    var defaultClass = '1a'; // Domyślna klasa
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        firstDay: 1,
-        height: 650,
-        initialView: 'dayGridMonth',
-        slotMinTime: '08:00:00', // Minimalna godzina zajec
-        slotMaxTime: '17:00:00', // Maksymalna godzina zajec
-        events: [
+    var calendars = {
+        '1a': [
             {
-                title: 'Język polski',
+                title: 'Język polski - 1A',
                 start: '2024-11-20T08:00:00',
                 end: '2024-11-20T10:00:00',
                 backgroundColor: '#800000',
@@ -22,66 +18,125 @@ document.addEventListener('DOMContentLoaded', function () {
                 room: '7A'
             },
             {
-                title: 'Static Event 2',
+                title: 'Matematyka - 1A',
+                start: '2024-11-20T10:15:00',
+                end: '2024-11-20T11:45:00',
+                backgroundColor: '#007000',
+                borderColor: '#007000',
+                description: 'Zajęcia w sali 5B.',
+                teacher: 'Anna Nowak',
+                room: '5B'
+            },
+            {
+                title: 'Historia - 1A',
+                start: '2024-11-21T09:00:00',
+                end: '2024-11-21T10:30:00',
+                backgroundColor: '#000080',
+                borderColor: '#000080',
+                description: 'Zajęcia w sali 3C.',
+                teacher: 'Marek Wiśniewski',
+                room: '3C'
+            }
+        ],
+        '2b': [
+            {
+                title: 'Matematyka - 2B',
                 start: '2024-11-25T10:00:00',
                 end: '2024-11-25T13:00:00',
-                backgroundColor: '#800000',
-                borderColor: '#800000',
+                backgroundColor: '#007000',
+                borderColor: '#007000',
                 description: 'Zajęcia w sali 102.',
                 teacher: 'Anna Nowak',
                 room: '102'
             }
-        ],
-        locale: 'pl',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        buttonText: {
-            today: 'Dziś',
-            month: 'Miesiąc',
-            week: 'Tydzień',
-            day: 'Dzień'
-        },
-        // Zawartosc wyskakujacego okienka po kliknieciu na zajęcie w planie zajęć
-        eventClick: function (info) {
-            const dialog = document.getElementById('eventDialog');
-            const dialogTitle = dialog.querySelector('.dialog-title');
-            const dialogDescription = dialog.querySelector('.dialog-description');
-            const dialogDetails = dialog.querySelector('.dialog-details');
-            
-            // Pobieranie daty i godziny z wydarzenia
-            const startDate = new Date(info.event.start);
-            const endDate = new Date(info.event.end);
+        ]
+    };
 
-            // Formatowanie daty
-            const date = startDate.toLocaleDateString('pl-PL', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                weekday: 'long'
-            });
-
-            // Formatowanie godzin
-            const startTime = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-            const endTime = endDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-
-            dialogTitle.textContent = info.event.title;
-            dialogDescription.textContent = info.event.extendedProps.description;
-
-            dialogDetails.innerHTML = `
-            <p><strong>Dzień:</strong> ${date}</p>
-            <p><strong>Godzina:</strong> ${startTime} - ${endTime}</p>
-            <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
-            <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
-            `;
-
-            dialog.showModal();
+    // Funkcja inicjalizująca kalendarz
+    function renderCalendar(className) {
+        if (window.currentCalendar) {
+            // Jeśli kalendarz istnieje, usuń go przed utworzeniem nowego
+            window.currentCalendar.destroy();
         }
-    });
-    calendar.render();
+
+        const events = className && calendars[className] ? calendars[className] : []; // Domyślnie pusty kalendarz
+
+        window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+            firstDay: 1,
+            height: 650,
+            initialView: 'dayGridMonth',
+            slotMinTime: '08:00:00',
+            slotMaxTime: '17:00:00',
+            events: events,
+            locale: 'pl',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            buttonText: {
+                today: 'Dziś',
+                month: 'Miesiąc',
+                week: 'Tydzień',
+                day: 'Dzień'
+            },
+            eventClick: function (info) {
+                const dialog = document.getElementById('eventDialog');
+                const dialogTitle = dialog.querySelector('.dialog-title');
+                const dialogDescription = dialog.querySelector('.dialog-description');
+                const dialogDetails = dialog.querySelector('.dialog-details');
+
+                const startDate = new Date(info.event.start);
+                const endDate = new Date(info.event.end);
+
+                const date = startDate.toLocaleDateString('pl-PL', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    weekday: 'long'
+                });
+
+                const startTime = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+                const endTime = endDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+
+                dialogTitle.textContent = info.event.title;
+                dialogDescription.textContent = info.event.extendedProps.description;
+
+                dialogDetails.innerHTML = `
+                <p><strong>Dzień:</strong> ${date}</p>
+                <p><strong>Godzina:</strong> ${startTime} - ${endTime}</p>
+                <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
+                <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
+                `;
+
+                dialog.showModal();
+            }
+        });
+
+        window.currentCalendar.render();
+    }
+
+    // Obsługa przełącznika klas (jeśli istnieje)
+    if (classSelect) {
+        // Ustaw domyślną wartość w select
+        if (!classSelect.value) {
+            classSelect.value = defaultClass;
+        }
+
+        classSelect.addEventListener('change', function () {
+            renderCalendar(this.value);
+        });
+
+        // Renderuj kalendarz dla domyślnej klasy (pierwsza opcja w select lub defaultClass)
+        renderCalendar(classSelect.value || defaultClass);
+    } else {
+        // Brak przełącznika klas - renderuj kalendarz dla domyślnej klasy
+        renderCalendar(defaultClass);
+    }
 });
+
+
+
 
 
 /////////// wyswietlanie ocen

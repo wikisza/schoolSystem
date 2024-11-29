@@ -1,0 +1,29 @@
+{% extends "parent/parentView.html" %}
+
+{% block mainContent %}
+
+<div class="partialView">
+    <h1>Zastępstwa</h1>
+
+    <div class="menu">
+        <label for="class-select">Wybierz klasę:</label>
+        <select id="class-select">
+            <option value="1a" selected>1a</option>
+            <option value="2b">2b</option>
+        </select>
+    </div>
+
+    <div id="calendar"></div>
+
+    <!-- Dialog szczegółów wydarzenia -->
+    <dialog id="eventDialog">
+        <h2 class="dialog-title"></h2>
+        <p class="dialog-description"></p>
+        <div class="dialog-details"></div>
+        <button onclick="document.getElementById('eventDialog').close();">Zamknij</button>
+    </dialog>
+</div>
+
+
+
+{% endblock %}
