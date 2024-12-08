@@ -1,11 +1,21 @@
 {% extends "teacher/teacherView.html" %}
 
 {% block mainContent %}
-
-<div class="partialView">
-    wiadomości nauczyciel
-
+<div class="container-messages">
+    <div class="sidebar-messages">
+        <div class="header-messages">
+            <h4>Wiadomosci</h4>
+            <button id="create-room-button"><i class="fa-solid fa-square-plus"></i></button>
+        </div>
+        <br/>
+        <div id="room-list"></div>
+    </div>
+    <div class="chat-area">
+        <div class="messages" id="messages"></div>
+        <div class="input-message-box">
+            <input type="text" id="message-input" placeholder="Wpisz wiadomosc...">
+            <button id="send-message-btn">Send</button>
+        </div>
+    </div>
 </div>
-
-
 {% endblock %}
