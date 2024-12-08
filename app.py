@@ -10,7 +10,7 @@ from routes.attendance_routes import attendance_blueprint
 from routes.messages_routes import messages_blueprint
 from routes.settings_routes import settings_blueprint
 from controllers.auth_controller import load_user
-
+from flask_socketio import SocketIO  
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -29,5 +29,7 @@ login_manager.init_app(app)
 login_manager.user_loader(load_user)
 login_manager.login_view = 'auth.login'
 
+socketio = SocketIO(app)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

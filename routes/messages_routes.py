@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, request, session, redirect
 from flask_login import login_required, current_user
 from controllers.messages_controller import *
 from datetime import datetime, timedelta
-
+from flask_socketio import join_room, leave_room, send, SocketIO
 
 messages_blueprint = Blueprint('messages', __name__)
 
@@ -25,3 +25,5 @@ def messagesStudent():
 @login_required
 def messagesParent():
     return render_template('parent/messagesParent.html', username=current_user.username, profession=current_user.profession)
+
+
