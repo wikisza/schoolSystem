@@ -1,0 +1,13 @@
+{% extends "administration/administrationView.html" %}
+
+{% block mainContent %}
+
+<h1>Dodawanie nowego przedmiotu:</h1>
+
+<form method="POST" action="/addClass">
+    <label for="className">Nazwa przedmiotu:</label>
+    <input type="text" id="className" name="className" required> 
+    <button type="submit">Dodaj przedmiot</button>
+</form>
+
+{% endblock %}
