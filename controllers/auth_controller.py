@@ -15,7 +15,7 @@ def load_user(user_id):
     conn.close()
 
     if user:
-        return User(user[0], user[1], user[2], user[3])  # Tworzysz obiekt User z wartościami z bazy danych
+        return User(user[0], user[1], user[2], user[3], user[4], user[5], user[6], user[7], user[8])  # Tworzysz obiekt User z wartościami z bazy danych
     return None
 
 def authenticate(username, password):
@@ -26,17 +26,31 @@ def authenticate(username, password):
     conn.close()
     
     if user and check_password_hash(user[2], password):
-        user_obj = User(user[0], user[1], user[2], user[3])
+        user_obj = User(user[0], user[1], user[2], user[3], user[4], user[5], user[6], user[7], user[8])
         login_user(user_obj)
         return True
     return False
 
-def register_user(username, password, profession):
+def register_user( username, password, profession,email, firstName, lastName,  phoneNumber, address):
     hashed_password = generate_password_hash(password).decode('utf-8')
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     try:
-        cursor.execute('INSERT INTO users (username, password, profession) VALUES (?, ?, ?)', (username, hashed_password, profession))
+        cursor.execute('INSERT INTO users (username, password, profession, email, firstName, lastName, phoneNumber, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (username, hashed_password, profession, email, firstName, lastName, phoneNumber, address))
+        
+        user_id = cursor.lastrowid
+
+        if profession == 'uczen':
+            cursor.execute('INSERT INTO students (id_user, id_parent, PESEL, id_class) VALUES (?, ?, ?, ?)', (user_id, 0, '0', 0))
+
+        elif profession == 'rodzic':
+            cursor.execute('INSERT INTO parents (id_user) VALUES (?)', (user_id,))
+
+        elif profession == 'nauczyciel':
+            cursor.execute('INSERT INTO teachers (id_user) VALUES (?)', (user_id,))
+
+        elif profession == 'administracja':
+            cursor.execute('INSERT INTO admins (id_user) VALUES (?)', (user_id,))
         conn.commit()
         return True
     except sqlite3.IntegrityError:

@@ -9,27 +9,27 @@ index_blueprint = Blueprint('index', __name__)
 @index_blueprint.route('/')
 @login_required
 def index():
-    return render_template('index.html', username=current_user.username, profession=current_user.profession)
+    return render_template('index.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 @index_blueprint.route('/teacherView')
 @login_required
 def teacherView_route():
-    return render_template('/teacher/teacherView.html', username=current_user.username, profession=current_user.profession)
+    return render_template('/teacher/teacherView.html',  firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 @index_blueprint.route('/studentView')
 @login_required
 def studentView_route():
-    return render_template('/student/studentView.html', username=current_user.username, profession=current_user.profession)
+    return render_template('/student/studentView.html',  firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 @index_blueprint.route('/parentView')
 @login_required
 def parentView_route():
-    return render_template('/parent/parentView.html', username=current_user.username, profession=current_user.profession)
+    return render_template('/parent/parentView.html',  firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 @index_blueprint.route('/administrationView')
 @login_required
 def administrationView_route():
-    return render_template('/administration/administrationView.html', username=current_user.username, profession=current_user.profession)
+    return render_template('/administration/administrationView.html',  firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 '''
 @index_blueprint.route('/get_reservations')

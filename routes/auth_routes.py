@@ -22,7 +22,12 @@ def register():
         username = request.form['username']
         password = request.form['password']
         profession = request.form['profession']
-        if register_user(username, password, profession):
+        email = request.form['email']
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        phoneNumber = request.form['phoneNumber']
+        address = request.form['address']
+        if register_user(username, password, profession, email, firstName, lastName, phoneNumber, address):
             return redirect(url_for('auth.login'))
         else:
             flash('Login już zajęty.')

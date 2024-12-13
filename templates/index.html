@@ -33,7 +33,7 @@
             </a>
         </div>
         <div class="header-right">
-            <span class="welcome">Witaj {{ username }}!</span>
+            <span class="welcome">Witaj {{ firstName }} {{ lastName }}!</span>
             <a href="/logout" class="logout">Wyloguj</a>
         </div>
     </header>
@@ -63,7 +63,7 @@
                 <script>
                     window.location.href = "/administrationView"; 
                 </script>
-            {& elif profession == 'rodzic' %}
+            {% elif profession == 'rodzic' %}
                 <script>
                     window.location.href = "/parentView";
                 </script>
