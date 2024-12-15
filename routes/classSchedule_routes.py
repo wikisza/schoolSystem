@@ -42,3 +42,14 @@ def addClass_route():
     result = addClass(className)
 
     return render_template('/administration/addNewClass.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/createSchedule')
+@login_required
+def createSchedule_route():
+    return render_template('administration/createSchedule.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/classManagement')
+@login_required
+def classManagement_route():
+    return render_template('administration/classManagement.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
