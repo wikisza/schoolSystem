@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup
+from controllers.classSchedule_controller import addClass, addGroup, search_items
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -63,4 +63,18 @@ def addGroup_route():
     result = addGroup(className)
 
     return render_template('administration/classManagement.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/editClass')
+@login_required
+def editClass_route():
+    return render_template('administration/editClass.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/search_items', methods=['GET'])
+def search_items_route():
+    result = search_items()
+
+    return render_template('administration/editClass.html',result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+
+
 
