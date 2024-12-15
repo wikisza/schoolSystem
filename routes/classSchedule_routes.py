@@ -71,9 +71,10 @@ def editClass_route():
 
 @classSchedule_blueprint.route('/search_items', methods=['GET'])
 def search_items_route():
-    result = search_items()
+    search_query = request.args.get('query')  # Pobranie zapytania z wyszukiwarki
+    result = search_items(search_query)
 
-    return render_template('administration/editClass.html',result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+    return result
 
 
 

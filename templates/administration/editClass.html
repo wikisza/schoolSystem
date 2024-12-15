@@ -34,10 +34,10 @@ function handleSearch(){
     const classBody = document.getElementById('classTableBody');
 
     if(searchInput === ""){
-        classTableBody.innerHtml = ''
+        classBody.innerHtml = ''
         return;
     }
-    fetch('/search_items?query=${searchInput}')
+    fetch(`/search_items?query=${searchInput}`)
         .then(response => response.json())
         .then(data => {
             classBody.innerHTML = '';

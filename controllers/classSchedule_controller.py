@@ -26,8 +26,7 @@ def addGroup(className):
     finally:
         conn.close()
 
-def search_items():
-    search_query = request.args.get('query')  # Pobranie zapytania z wyszukiwarki
+def search_items(search_query):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     # Jeśli pole wyszukiwania nie jest puste, wykonaj zapytanie SQL
