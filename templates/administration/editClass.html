@@ -1,0 +1,74 @@
+{% extends "administration/administrationView.html" %}
+
+{% block mainContent %}
+
+<h1>Edytowanie klasy</h1>
+
+<a href="/classManagement" class="btn">Wróć</a><br>
+
+<div class="searchSection">
+    <label for="search">Wyszukaj klasę</label>
+    <input type="text" id="search" name="search" placeholder="Wpisz nazwę klasy..." onkeyup="handleSearch()">
+</div>
+
+<div class="classList">
+    <table id="classTable" class="table">
+        <thead>
+            <tr>
+                <th>Nazwa klasy</th>
+                <th>Wychowawca</th>
+                <th>Opcje</th>
+            </tr>
+        </thead>
+        <tbody id="classTableBody">
+
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+
+function handleSearch(){
+    const searchInput = document.getElementById('search').value;
+    const classBody = document.getElementById('classTableBody');
+
+    if(searchInput === ""){
+        classBody.innerHtml = ''
+        return;
+    }
+    fetch(`/search_items?query=${searchInput}`)
+        .then(response => response.json())
+        .then(data => {
+            classBody.innerHTML = '';
+            data.forEach(element => {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                nameCell.textContent = element[0];
+                row.appendChild(nameCell);
+
+                const teacherCell = document.createElement('td');
+                teacherCell.textContent = element[1];
+                row.appendChild(teacherCell);
+
+                const actionCell = document.createElement('td');
+                const addButton = document.createElement('button');
+                addButton.textContent = 'Edytuj';
+                addButton.id = 'editThisClass';
+                addButton.className = 'btn';
+                actionCell.appendChild(addButton);
+                row.appendChild(actionCell);
+                classBody.appendChild(row);
+                
+            });
+        })
+        .catch(error => {
+            console.error('Błąd podczas wyszukiwania:', error);
+        });
+}
+
+
+
+</script>
+
+{% endblock %}

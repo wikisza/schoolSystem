@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass
+from controllers.classSchedule_controller import addClass, addGroup, search_items
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -42,3 +42,40 @@ def addClass_route():
     result = addClass(className)
 
     return render_template('/administration/addNewClass.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/createSchedule')
+@login_required
+def createSchedule_route():
+    return render_template('administration/createSchedule.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/classManagement')
+@login_required
+def classManagement_route():
+    return render_template('administration/classManagement.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/addNewGroup')
+def addNewGroup_route():
+    return render_template('administration/addNewGroup.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/addGroup', methods=['POST'])
+def addGroup_route():
+    className = request.form['className']
+    result = addGroup(className)
+
+    return render_template('administration/classManagement.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/editClass')
+@login_required
+def editClass_route():
+    return render_template('administration/editClass.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/search_items', methods=['GET'])
+def search_items_route():
+    search_query = request.args.get('query')  # Pobranie zapytania z wyszukiwarki
+    result = search_items(search_query)
+
+    return result
+
+
+
+
