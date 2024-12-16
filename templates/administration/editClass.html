@@ -7,5 +7,29 @@
 <a href="/classManagement" class="btn">Wróć</a><br>
 
 
+<form method="POST">
+    <label for="class_name">Nazwa klasy:</label>
+    <input type="text" id="class_name" name="class_name" value=" {{ class_data[2] }}"  required>
+
+    <label for="id_teacher">Wychowawca:</label>
+    <input type="text" id="id_teacher" name="id_teacher" value=" {{ class_data[1] }}" >
+        
+    </select>
+
+    <h2>Uczniowie w klasie:</h2>
+    <ul>
+        {% for student in students %}
+            <li>{{ student['student_name'] }}</li>
+        {% endfor %}
+    </ul>
+
+    <label for="new_student_name">Dodaj nowego ucznia:</label>
+    <input type="text" id="new_student_name" name="new_student_name" placeholder="Imię i nazwisko ucznia">
+
+    <button type="submit" class="btn">Zapisz zmiany</button>
+</form>
+
 
 {% endblock %}
+
+
