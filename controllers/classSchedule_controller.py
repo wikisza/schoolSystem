@@ -33,7 +33,7 @@ def search_items(search_query):
     if search_query:
         search_query = f"%{search_query}%"
         query = '''
-        SELECT classes.class_name, users.firstName 
+        SELECT classes.class_name, users.firstName||' '||users.lastName
         FROM classes
         JOIN teachers ON classes.id_teacher = teachers.id_teacher
         JOIN users ON teachers.id_user = users.id
@@ -43,7 +43,7 @@ def search_items(search_query):
     else:
         # Jeśli pole jest puste, zwróć wszystkie propozycje
         query = '''
-        SELECT classes.class_name, users.firstName 
+        SELECT classes.class_name, users.firstName||' '||users.lastName 
         FROM classes
         JOIN teachers ON classes.id_teacher = teachers.id_teacher
         JOIN users ON teachers.id_user = users.id

@@ -566,5 +566,5 @@ th {
 
 .classManagement_bar{
     display: flex;
-    justify-content: space-between;
+    justify-content: right;
 }
