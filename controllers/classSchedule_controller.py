@@ -78,12 +78,51 @@ def getStudentsInClass(id_class):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     try:
-        cursor.execute('SELECT student_name FROM students WHERE id_class = ?', (id_class,))
-        students = cursor.fetchall()  # Pobiera wszystkie wiersze
-        return [{"student_name": student[0]} for student in students]
+        query = '''
+        SELECT users.firstName||' '||users.lastName 
+        FROM students 
+        JOIN users ON students.id_user = users.id
+        WHERE id_class = ?
+        '''
+        cursor.execute(query, (id_class,))
+        students = cursor.fetchall()  
+        return [student[0] for student in students]
     except Exception as e:
         print(f"Błąd podczas pobierania uczniów: {e}")
         return []
+    finally:
+        conn.close()
+
+def getUnassignedStudents():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    try:
+        query = '''
+        SELECT users.id, users.firstName || ' ' || users.lastName 
+        FROM users
+        JOIN students ON students.id_user = users.id
+        WHERE students.id_class = 0
+        '''
+        cursor.execute(query)
+        students = cursor.fetchall()  # Zwraca listę krotek (id, imię i nazwisko)
+        return [{'id': student[0], 'name': student[1]} for student in students]  # Zwracamy listę słowników
+    except Exception as e:
+        print(f"Błąd podczas pobierania uczniów: {e}")
+        return []
+    finally:
+        conn.close()
+
+def assign_students_to_class(data, student_ids, class_id):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    try:
+        for student_id in student_ids:
+            cursor.execute('UPDATE students SET id_class = ? WHERE id_user = ?', (class_id, student_id))
+        conn.commit()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        print(f"Błąd podczas przypisywania uczniów: {e}")
+        return jsonify({"success": False}), 500
     finally:
         conn.close()
 
