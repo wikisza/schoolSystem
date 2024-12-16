@@ -58,7 +58,9 @@ function handleSearch(){
                 const addButton = document.createElement('button');
                 addButton.textContent = 'Edytuj';
                 addButton.id = 'editClass';
-                addButton.action='/editClass';
+                addButton.onclick = () => {
+                    window.location.href = `/editClass?id=${element[2]}`; // Dodaj parametry, np. ID klasy
+                };
                 addButton.className = 'btn';
                 actionCell.appendChild(addButton);
                 row.appendChild(actionCell);

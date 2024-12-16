@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -67,7 +67,37 @@ def addGroup_route():
 @classSchedule_blueprint.route('/editClass')
 @login_required
 def editClass_route():
-    return render_template('administration/editClass.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+    if request.method == 'POST':
+        # Obsługa zapisu zmian
+        id_class = request.form.get('id_class')
+        class_name = request.form.get('class_name')
+        id_teacher = request.form.get('id_teacher')
+        edit_success = editThisClass(id_class, id_teacher, class_name)
+
+        if edit_success:
+            flash("Zmiany zostały zapisane!")
+            return redirect('/classManagement')
+        else:
+            flash("Nie udało się zapisać zmian.")
+            return redirect(f'/editThisClass?id={id_class}')
+
+    # Obsługa ładowania danych klasy (GET)
+    id_class = request.args.get('id')  # Pobranie ID klasy z parametru URL
+    class_data = getClassData(id_class)  # Pobranie danych klasy z bazy danych
+    students = getStudentsInClass(id_class)  # Pobranie uczniów w klasie
+
+    return render_template(
+        'administration/editClass.html',
+        class_data=class_data, 
+        students=students
+    )
+
+@classSchedule_blueprint.route('/editThisClass', methods=['GET', 'POST'])
+def editThisClass_route():
+    id_class = request.form.get('id_class')
+    class_name = request.form.get('class_name')
+    id_teacher = request.form.get('id_teacher')
+    result = editThisClass(id_class, id_teacher, class_name)
 
 @classSchedule_blueprint.route('/search_items', methods=['GET'])
 def search_items_route():
