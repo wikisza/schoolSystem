@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, assign_students_to_class
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -89,8 +89,38 @@ def editClass_route():
     return render_template(
         'administration/editClass.html',
         class_data=class_data, 
-        students=students
+        students=students,
+        firstName=current_user.firstName, 
+        lastName=current_user.lastName
     )
+
+@classSchedule_blueprint.route('/getUnassignedStudents', methods=['GET'])
+def get_unassigned_students_route():
+    unassigned_students = getUnassignedStudents()
+    return jsonify(unassigned_students)
+
+@classSchedule_blueprint.route('/assignStudentsToClass', methods=['POST'])
+def assign_students_to_class_route():
+    data = request.get_json()
+    student_ids = data.get('student_ids')
+    class_id = data.get('class_id')
+
+    result = assign_students_to_class(data, student_ids, class_id)
+
+    # Obsługa ładowania danych klasy (GET)
+    id_class = request.args.get('id')  # Pobranie ID klasy z parametru URL
+    class_data = getClassData(id_class)  # Pobranie danych klasy z bazy danych
+    students = getStudentsInClass(id_class)
+
+    return render_template(
+        'administration/editClass.html',
+        class_data=class_data, 
+        students=students,
+        result=result,
+        firstName=current_user.firstName, 
+        lastName=current_user.lastName
+    )
+
 
 @classSchedule_blueprint.route('/editThisClass', methods=['GET', 'POST'])
 def editThisClass_route():
