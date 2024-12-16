@@ -33,24 +33,29 @@ def search_items(search_query):
     if search_query:
         search_query = f"%{search_query}%"
         query = '''
-        SELECT classes.class_name, users.firstName||' '||users.lastName, classes.id_class
+        SELECT classes.class_name, 
+               COALESCE(users.firstName || ' ' || users.lastName, 'brak przypisanego wychowawcy'), 
+               classes.id_class
         FROM classes
-        JOIN teachers ON classes.id_teacher = teachers.id_teacher
-        JOIN users ON teachers.id_user = users.id
+        LEFT JOIN teachers ON classes.id_teacher = teachers.id_teacher
+        LEFT JOIN users ON teachers.id_user = users.id
         WHERE classes.class_name LIKE ?
         '''
         cursor.execute(query, (search_query,))
     else:
         # Jeśli pole jest puste, zwróć wszystkie propozycje
         query = '''
-        SELECT classes.class_name, users.firstName||' '||users.lastName 
+        SELECT classes.class_name, 
+               COALESCE(users.firstName || ' ' || users.lastName, 'brak przypisanego wychowawcy')
         FROM classes
-        JOIN teachers ON classes.id_teacher = teachers.id_teacher
-        JOIN users ON teachers.id_user = users.id
+        LEFT JOIN teachers ON classes.id_teacher = teachers.id_teacher
+        LEFT JOIN users ON teachers.id_user = users.id
         '''
         cursor.execute(query)
+    
     items = cursor.fetchall()
     conn.close()
+    
     # Zwróć wyniki jako JSON
     return jsonify(items)
 
@@ -59,7 +64,8 @@ def getClassData(id_class):
     cursor = conn.cursor()
     try:
         query = '''
-        SELECT id_class, users.firstName||' '||users.lastName, class_name 
+        SELECT classes.class_name, 
+               COALESCE(users.firstName || ' ' || users.lastName, 'brak przypisanego wychowawcy')
         FROM classes 
         JOIN teachers ON classes.id_teacher = teachers.id_teacher
         JOIN users ON teachers.id_user = users.id
@@ -73,6 +79,7 @@ def getClassData(id_class):
         return None
     finally:
         conn.close()
+
 
 def getStudentsInClass(id_class):
     conn = sqlite3.connect('database.db')
