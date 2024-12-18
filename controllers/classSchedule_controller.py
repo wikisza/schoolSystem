@@ -68,7 +68,8 @@ def getClassData(id_class):
            CASE
                WHEN users.firstName IS NOT NULL THEN users.firstName || ' ' || users.lastName
                ELSE 'Brak przypisanego wychowawcy'
-           END AS teacher_name
+           END AS teacher_name,
+           classes.id_class
     FROM classes
     LEFT JOIN teachers ON classes.id_teacher = teachers.id_teacher
     LEFT JOIN users ON teachers.id_user = users.id
@@ -140,9 +141,10 @@ def editThisClass(id_class, id_teacher, class_name):
     try:
         cursor.execute('UPDATE classes SET id_teacher = ?, class_name = ? WHERE id_class = ? ', (id_teacher,class_name, id_class,))
         conn.commit()
-        return True
-    except sqlite3.IntegrityError:
-        return False
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        print(f"Błąd podczas przypisywania uczniów: {e}")
+        return jsonify({"success": False}), 500
     finally:
         conn.close()
 

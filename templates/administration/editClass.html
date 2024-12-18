@@ -8,14 +8,17 @@
 <button type="button" id="addStudentsButton" class="btn">Dodaj uczniów</button><br>
 
 
-<form method="POST">
+<form method="POST" action="/editThisClass">
     <label for="class_name">Nazwa klasy:</label>
+    <input type="hidden" id="id_class" name="id_class" value=" {{ class_data[3] }}">
     <input type="text" id="class_name" name="class_name" value=" {{ class_data[0] }}"  required>
 
-    <label for="id_teacher">Wychowawca:</label>
-    <input type="text" id="id_teacher" name="id_teacher" value=" {{ class_data[2] }}">
+    <label for="teacher_name">Wychowawca:</label>
+    <input type="hidden" id="id_teacher" name="id_teacher" value=" {{ class_data[1]}}">
+    <input type="text" id="teacher_name" name="teacher_name" value=" {{ class_data[2] }}">
     <button type="button" id="changeTeacherButton" class="btn">Zmień</button>
     
+    <button type="submit" class="btn">Zapisz zmiany</button>
     <!-- Modal -->
     <div id="teacherModal" class="modal">
         <div class="modal-content">
@@ -79,7 +82,6 @@
 </div>
 
 
-    <button type="submit" class="btn">Zapisz zmiany</button>
 </form>
 
 
@@ -89,6 +91,7 @@
 document.getElementById('changeTeacherButton').onclick = function () {
         const modal = document.getElementById('teacherModal');
         const myInput = document.getElementById('id_teacher');
+        const teacherName = document.getElementById('teacher_name');
         modal.style.display = 'block';
 
         // Pobierz listę nauczycieli
@@ -131,9 +134,10 @@ document.getElementById('changeTeacherButton').onclick = function () {
         const selectedTeacher = document.querySelector('#teachersTableBody input[name="teacher"]:checked');
         if (selectedTeacher) {
             const teacherName = selectedTeacher.dataset.name;
-
-            // Zapisanie ID wychowawcy do pola formularza
-            document.getElementById('id_teacher').value = teacherName;
+            const id_teacher = selectedTeacher.value;
+            
+            document.getElementById('id_teacher').value = id_teacher;
+            document.getElementById('teacher_name').value = teacherName;
 
             // Zamknięcie modala
             document.getElementById('teacherModal').style.display = 'none';

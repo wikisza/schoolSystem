@@ -122,12 +122,14 @@ def assign_students_to_class_route():
     )
 
 
-@classSchedule_blueprint.route('/editThisClass', methods=['GET', 'POST'])
+@classSchedule_blueprint.route('/editThisClass', methods=['POST'])
 def editThisClass_route():
-    id_class = request.form.get('id_class')
+    id_class = request.form.get('id_class');  # Pobranie ID klasy z parametru URL
     class_name = request.form.get('class_name')
     id_teacher = request.form.get('id_teacher')
     result = editThisClass(id_class, id_teacher, class_name)
+    return render_template('administration/classManagement.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
 
 @classSchedule_blueprint.route('/search_items', methods=['GET'])
 def search_items_route():
