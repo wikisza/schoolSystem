@@ -137,5 +137,8 @@ def search_items_route():
     return result
 
 
+@classSchedule_blueprint.route('/getTeachersList', methods=['GET'])
+def getTeachersList_route():
+    return getTeachersList()
 
 

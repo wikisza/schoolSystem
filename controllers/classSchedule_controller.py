@@ -62,23 +62,23 @@ def search_items(search_query):
 def getClassData(id_class):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    try:
-        query = '''
-        SELECT classes.class_name, 
-               COALESCE(users.firstName || ' ' || users.lastName, 'brak przypisanego wychowawcy')
-        FROM classes 
-        JOIN teachers ON classes.id_teacher = teachers.id_teacher
-        JOIN users ON teachers.id_user = users.id
-        WHERE id_class = ?
-        '''
-        cursor.execute(query, (id_class,))
-        class_data = cursor.fetchone()  # Pobranie danych (krotka)
-        return class_data
-    except Exception as e:
-        print(f"Błąd podczas pobierania danych klasy: {e}")
-        return None
-    finally:
-        conn.close()
+    query = '''
+    SELECT classes.class_name,
+           classes.id_teacher,
+           CASE
+               WHEN users.firstName IS NOT NULL THEN users.firstName || ' ' || users.lastName
+               ELSE 'Brak przypisanego wychowawcy'
+           END AS teacher_name
+    FROM classes
+    LEFT JOIN teachers ON classes.id_teacher = teachers.id_teacher
+    LEFT JOIN users ON teachers.id_user = users.id
+    WHERE classes.id_class = ?
+    '''
+    cursor.execute(query, (id_class,))
+    class_data = cursor.fetchone()
+    conn.close()
+    return class_data
+
 
 
 def getStudentsInClass(id_class):
@@ -145,3 +145,22 @@ def editThisClass(id_class, id_teacher, class_name):
         return False
     finally:
         conn.close()
+
+def getTeachersList():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    
+    # Pobieranie nauczycieli z filtrem `id_teacher != 0`
+    query = '''
+    SELECT teachers.id_teacher, users.firstName || ' ' || users.lastName AS name
+    FROM teachers
+    JOIN users ON teachers.id_user = users.id
+    WHERE teachers.id_teacher != 0
+    '''
+    cursor.execute(query)
+    teachers = cursor.fetchall()
+    conn.close()
+    
+    # Konwersja wyników do listy słowników dla lepszej obsługi w JSON
+    teachers_list = [{'id': t[0], 'name': t[1]} for t in teachers]
+    return jsonify(teachers_list)

@@ -13,9 +13,30 @@
     <input type="text" id="class_name" name="class_name" value=" {{ class_data[2] }}"  required>
 
     <label for="id_teacher">Wychowawca:</label>
-    <input type="text" id="id_teacher" name="id_teacher" value=" {{ class_data[1] }}" >
-        
-    </select>
+    <input type="text" id="id_teacher" name="id_teacher" value=" {{ class_data[1] }}">
+    <button type="button" id="changeTeacherButton" class="btn">Zmień</button>
+    
+    <!-- Modal -->
+    <div id="teacherModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Wybierz wychowawcę</h2>
+            <form id="changeTeacherForm">
+                <table id="teachersTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Wybierz</th>
+                            <th>Imię i nazwisko</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teachersTableBody">
+                        <!-- Lista nauczycieli zostanie załadowana przez JS -->
+                    </tbody>
+                </table>
+                <button type="button" id="confirmChangeTeacher" class="btn">Zmień wychowawcę</button>
+            </form>
+        </div>
+    </div>
 
     <h2>Uczniowie w klasie:</h2>
     <table id="studentTable" class="table">
@@ -63,6 +84,65 @@
 
 
 <script>
+
+
+document.getElementById('changeTeacherButton').onclick = function () {
+        const modal = document.getElementById('teacherModal');
+        const myInput = document.getElementById('id_teacher');
+        modal.style.display = 'block';
+
+        // Pobierz listę nauczycieli
+        fetch('/getTeachersList')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('teachersTableBody');
+                tbody.innerHTML = ''; // Wyczyść poprzednie dane
+                data.forEach(teacher => {
+                    const row = document.createElement('tr');
+
+                    // Checkbox
+                    const checkboxCell = document.createElement('td');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'radio';
+                    checkbox.name = 'teacher'; // Tylko jeden wybór
+                    checkbox.value = teacher.id; // Przechowuje ID nauczyciela
+                    checkbox.dataset.name = teacher.name;
+                    checkboxCell.appendChild(checkbox);
+                    row.appendChild(checkboxCell);
+
+                    // Imię i nazwisko
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = teacher.name;
+                    row.appendChild(nameCell);
+
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Błąd podczas pobierania nauczycieli:', error));
+    };
+
+    // Zamknięcie modala
+    document.querySelector('.close').onclick = function () {
+        document.getElementById('teacherModal').style.display = 'none';
+    };
+
+    // Zatwierdzenie zmiany wychowawcy
+    document.getElementById('confirmChangeTeacher').onclick = function () {
+        const selectedTeacher = document.querySelector('#teachersTableBody input[name="teacher"]:checked');
+        if (selectedTeacher) {
+            const teacherName = selectedTeacher.dataset.name;
+
+            // Zapisanie ID wychowawcy do pola formularza
+            document.getElementById('id_teacher').value = teacherName;
+
+            // Zamknięcie modala
+            document.getElementById('teacherModal').style.display = 'none';
+        } else {
+            alert('Proszę wybrać wychowawcę.');
+        }
+    };
+
+    //modal do uczniow
     document.getElementById('addStudentsButton').onclick = function() {
         const modal = document.getElementById('studentModal');
         modal.style.display = 'block';
