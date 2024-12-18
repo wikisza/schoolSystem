@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, assign_students_to_class
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -81,7 +81,7 @@ def editClass_route():
             flash("Nie udało się zapisać zmian.")
             return redirect(f'/editThisClass?id={id_class}')
 
-    # Obsługa ładowania danych klasy (GET)
+    
     id_class = request.args.get('id')  # Pobranie ID klasy z parametru URL
     class_data = getClassData(id_class)  # Pobranie danych klasy z bazy danych
     students = getStudentsInClass(id_class)  # Pobranie uczniów w klasie
@@ -121,13 +121,23 @@ def assign_students_to_class_route():
         lastName=current_user.lastName
     )
 
+@classSchedule_blueprint.route('/getTeachersList', methods=['GET'])
+def get_teachers_list_route():
+    teachers = get_teachers()
+    return jsonify(teachers)
 
-@classSchedule_blueprint.route('/editThisClass', methods=['GET', 'POST'])
+
+@classSchedule_blueprint.route('/editThisClass', methods=['POST'])
 def editThisClass_route():
-    id_class = request.form.get('id_class')
+    id_class = request.form.get('id_class');  # Pobranie ID klasy z parametru URL
     class_name = request.form.get('class_name')
     id_teacher = request.form.get('id_teacher')
+
+    print(class_name, id_teacher)
+    
     result = editThisClass(id_class, id_teacher, class_name)
+    return render_template('administration/classManagement.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
 
 @classSchedule_blueprint.route('/search_items', methods=['GET'])
 def search_items_route():
@@ -137,5 +147,8 @@ def search_items_route():
     return result
 
 
+@classSchedule_blueprint.route('/getTeachersList', methods=['GET'])
+def getTeachersList_route():
+    return getTeachersList()
 
 
