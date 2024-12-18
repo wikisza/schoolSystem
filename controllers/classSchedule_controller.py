@@ -134,6 +134,21 @@ def assign_students_to_class(data, student_ids, class_id):
     finally:
         conn.close()
 
+def get_teachers():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    query = '''
+    SELECT teachers.id_teacher, users.firstName || ' ' || users.lastName AS name
+    FROM teachers
+    JOIN users ON teachers.id_user = users.id
+    WHERE teachers.id_teacher != 0
+    '''
+    cursor.execute(query)
+    teachers = cursor.fetchall()
+    conn.close()
+
+    return [{'id': teacher[0], 'name': teacher[1]} for teacher in teachers]
+
 
 def editThisClass(id_class, id_teacher, class_name):
     conn = sqlite3.connect('database.db')
