@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for
 from controllers.auth_controller import authenticate, register_user
 from flask_login import login_required, logout_user
+from routes.index_routes import administrationView_route
 
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -28,7 +29,7 @@ def register():
         phoneNumber = request.form['phoneNumber']
         address = request.form['address']
         if register_user(username, password, profession, email, firstName, lastName, phoneNumber, address):
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('index.administrationView_route'))
         else:
             flash('Login już zajęty.')
             return redirect(url_for('auth.register'))

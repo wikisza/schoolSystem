@@ -13,6 +13,8 @@
 
         <section>
 
+            <a href="/administrationView" class="btn">Wróć</a>
+
             <h1>Rejestracja</h1>
             <form method="POST" action="/register">
                 <label for="firstName">Imię:</label>
@@ -47,9 +49,9 @@
                     <option value="rodzic">Rodzic</option>
                 </select>
                 
-                <button type="submit">Zarejestruj się</button>
+                <button type="submit">Zarejestruj</button>
             </form>
-            <p>Masz już konto? <a href="/login">Zaloguj się</a></p>
+
             {% with messages = get_flashed_messages() %}
             {% if messages %}
             <ul>

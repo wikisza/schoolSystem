@@ -198,7 +198,7 @@ document.getElementById('changeTeacherButton').onclick = function () {
             fetch('/assignStudentsToClass', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ student_ids: selectedIds, class_id: '{{ class_data[0] }}' })
+                body: JSON.stringify({ student_ids: selectedIds, class_id: '{{ class_data[3] }}' })
             })
                 .then(response => {
                     if (response.ok) {
