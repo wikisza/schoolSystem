@@ -57,3 +57,32 @@ def register_user( username, password, profession,email, firstName, lastName,  p
         return False
     finally:
         conn.close()
+
+
+
+#kontrolery do listy użytkowników
+
+def getUsersData(selectId):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    query = '''
+    SELECT users.firstName || ' ' || users.lastName AS fullName, 
+           users.phoneNumber, users.address, users.email
+    FROM users
+    WHERE users.profession = ?
+    '''
+    cursor.execute(query, (selectId,))
+    users_data = cursor.fetchall()  # Zmieniamy na fetchall(), aby zwrócić wiele rekordów
+    conn.close()
+
+    result = [
+        {
+            "fullName": row[0],
+            "phoneNumber": row[1],
+            "address": row[2],
+            "email": row[3]
+        }
+        for row in users_data
+    ]
+
+    return result

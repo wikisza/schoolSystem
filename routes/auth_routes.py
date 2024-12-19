@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for
-from controllers.auth_controller import authenticate, register_user
-from flask_login import login_required, logout_user
+from flask import Blueprint, render_template, request, redirect, flash, url_for,jsonify
+from controllers.auth_controller import authenticate, register_user, getUsersData
+from flask_login import login_required, logout_user, current_user
 from routes.index_routes import administrationView_route
 
 auth_blueprint = Blueprint('auth', __name__)
@@ -40,3 +40,19 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
+
+
+
+#ścieżki do listy pracowników i uczniów
+
+@auth_blueprint.route('/listOfUsers')
+@login_required
+def listOfUsers():
+    return render_template('administration/listOfUsers.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@auth_blueprint.route('/getUsersData', methods=['POST'])
+def getUsersData_route():
+    selectId = request.form.get('selectId')
+    users_data = getUsersData(selectId)
+
+    return jsonify(users_data)

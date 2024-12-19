@@ -1,0 +1,95 @@
+{% extends "administration/administrationView.html" %}
+
+{% block mainContent %}
+
+<h1>Lista użytkowników</h1>
+
+<label for="userTypeSelect">Wybierz typ użytkownika:</label>
+<select id="userTypeSelect">
+    <option value="administracja">Administracja</option>
+    <option value="nauczyciel">Nauczyciele</option>
+    <option value="rodzic">Rodzice</option>
+    <option value="uczen">Uczniowie</option>
+</select>
+
+<table id="userTable">
+    <thead>
+        <tr>
+            <th>Imię i nazwisko</th>
+            <th>Telefon</th>
+            <th>Adres</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectElement = document.getElementById('userTypeSelect');
+
+        // Obsługa zmiany w selekcie
+        selectElement.addEventListener('change', function () {
+            const selectedValue = selectElement.value;
+
+            fetch('/getUsersData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `selectId=${encodeURIComponent(selectedValue)}`
+            })
+                
+                .then(response => response.json())
+                .then(data => {
+                    const userTableBody = document.querySelector('#userTable tbody');
+                    userTableBody.innerHTML = ''; // Wyczyść tabelę przed dodaniem nowych danych
+
+                    if (data.length > 0) {
+                        data.forEach(user => {
+                            const row = document.createElement('tr');
+
+                            // Tworzenie komórek tabeli dla każdego użytkownika
+                            const fullNameCell = document.createElement('td');
+                            fullNameCell.textContent = user.fullName;
+
+                            const phoneCell = document.createElement('td');
+                            phoneCell.textContent = user.phoneNumber;
+
+                            const addressCell = document.createElement('td');
+                            addressCell.textContent = user.address;
+
+                            const emailCell = document.createElement('td');
+                            emailCell.textContent = user.email;
+
+                            // Dodanie komórek do wiersza
+                            row.appendChild(fullNameCell);
+                            row.appendChild(phoneCell);
+                            row.appendChild(addressCell);
+                            row.appendChild(emailCell);
+
+                            // Dodanie wiersza do tabeli
+                            userTableBody.appendChild(row);
+                        });
+                    } else {
+                        // Jeśli brak wyników, dodaj wiersz informujący o braku danych
+                        const row = document.createElement('tr');
+                        const noDataCell = document.createElement('td');
+                        noDataCell.textContent = 'Brak wyników.';
+                        noDataCell.colSpan = 4; // Rozciągnięcie komórki na 4 kolumny
+                        row.appendChild(noDataCell);
+                        userTableBody.appendChild(row);
+                    }
+                })
+                .catch(error => console.error('Błąd:', error));
+
+        });
+    });
+</script>
+
+
+{% endblock %}
