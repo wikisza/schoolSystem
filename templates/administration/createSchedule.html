@@ -4,5 +4,136 @@
 
 <h1>Tworzenie planu lekcji:</h1>
 
+<div class="menu">
+    <label for="class-select">Wybierz klasę:</label>
+    <select id="class-select"></select>
+</div>
 
+<div id="calendarPlan"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendarPlan');
+        var classSelect = document.getElementById('class-select');
+
+
+        function renderCalendar(id_class) {
+            if (window.currentCalendar) {
+                window.currentCalendar.destroy();
+            }
+
+            fetch('/get_lessons', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ classId: id_class })
+            })
+                .then(response => response.json())
+                .then(events => {
+                    window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+                        firstDay: 1,
+                        height: 650,
+                        initialView: 'dayGridMonth',
+                        slotMinTime: '08:00:00',
+                        slotMaxTime: '17:00:00',
+                        events: events,
+                        locale: 'pl',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        buttonText: {
+                            today: 'Dziś',
+                            month: 'Miesiąc',
+                            week: 'Tydzień',
+                            day: 'Dzień'
+                        },
+                        eventClick: function (info) {
+                            const dialog = document.getElementById('eventDialog');
+                            const dialogTitle = dialog.querySelector('.dialog-title');
+                            const dialogDescription = dialog.querySelector('.dialog-description');
+                            const dialogDetails = dialog.querySelector('.dialog-details');
+
+                            const startDate = new Date(info.event.start);
+                            const endDate = new Date(info.event.end);
+
+                            const date = startDate.toLocaleDateString('pl-PL', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                weekday: 'long'
+                            });
+
+                            const startTime = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+                            const endTime = endDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+
+                            dialogTitle.textContent = info.event.title;
+                            dialogDescription.textContent = info.event.extendedProps.description;
+
+                            dialogDetails.innerHTML = `
+                        <p><strong>Dzień:</strong> ${date}</p>
+                        <p><strong>Godzina:</strong> ${startTime} - ${endTime}</p>
+                        <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
+                        <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
+                        `;
+
+                            dialog.showModal();
+                        }
+                    });
+
+                    window.currentCalendar.render();
+                })
+                .catch(error => console.error('Błąd pobierania lekcji:', error));
+        }
+    });
+
+
+    //class select
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const classSelectMain = document.getElementById('class-select');
+        const replacementClassSelect = document.getElementById('replacement-class-select');
+
+        // Funkcja do wypełniania selectów
+        function populateClassSelects(classes) {
+            [classSelectMain, replacementClassSelect].forEach(select => {
+                if (select) {
+                    select.innerHTML = ''; // Wyczyść istniejące opcje
+
+                    classes.forEach(cls => {
+                        const option = document.createElement('option');
+                        option.value = cls.id_class; // Ustaw id_class jako wartość
+                        option.textContent = cls.class_name; // Wyświetl class_name
+                        select.appendChild(option);
+                    });
+
+                    // Ustaw pierwszą opcję jako domyślną
+                    if (classes.length > 0) {
+                        select.value = classes[0].id_class;
+                    }
+                }
+            });
+        }
+
+        // Pobierz klasy z backendu
+        fetch('/getAllClasses', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(classes => {
+                if (classes.length > 0) {
+                    populateClassSelects(classes);
+                } else {
+                    console.error('Brak dostępnych klas w bazie danych.');
+                }
+            })
+            .catch(error => console.error('Błąd podczas pobierania klas:', error));
+    });
+
+</script>
 {% endblock %}

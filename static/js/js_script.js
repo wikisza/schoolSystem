@@ -5,121 +5,79 @@ document.addEventListener('DOMContentLoaded', function () {
     var classSelect = document.getElementById('class-select');
     var replacementForm = document.getElementById('replacementForm');
     var classSelectReplacement = document.getElementById('class-select-replacement');
+    
 
-    var defaultClass = '1a'; // Domyślna klasa
-
-    var calendars = {
-        '1a': [
-            {
-                title: 'Język polski - 1A',
-                start: '2024-11-20T08:00:00',
-                end: '2024-11-20T10:00:00',
-                backgroundColor: '#800000',
-                borderColor: '#800000',
-                description: 'Zajęcia w sali 7A.',
-                teacher: 'Jan Kowalski',
-                room: '7A'
-            },
-            {
-                title: 'Język angielski - 1A',
-                start: '2024-11-29T08:00:00',
-                end: '2024-11-29T10:00:00',
-                backgroundColor: '#800000',
-                borderColor: '#800000',
-                description: 'Zajęcia w sali 8A.',
-                teacher: 'Jan Rico',
-                room: '8A'
-            }
-        ],
-        '2b': [
-            {
-                title: 'Matematyka - 2B',
-                start: '2024-11-25T10:00:00',
-                end: '2024-11-25T13:00:00',
-                backgroundColor: '#007000',
-                borderColor: '#007000',
-                description: 'Zajęcia w sali 102.',
-                teacher: 'Anna Nowak',
-                room: '102'
-            }
-        ]
-    };
-
-    function renderCalendar(className) {
+    function renderCalendar(id_class) {
         if (window.currentCalendar) {
             window.currentCalendar.destroy();
         }
-
-        const events = className && calendars[className] ? calendars[className] : [];
-        
-        window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
-            firstDay: 1,
-            height: 650,
-            initialView: 'dayGridMonth',
-            slotMinTime: '08:00:00',
-            slotMaxTime: '17:00:00',
-            events: events,
-            locale: 'pl',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    
+        fetch('/get_lessons', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
             },
-            buttonText: {
-                today: 'Dziś',
-                month: 'Miesiąc',
-                week: 'Tydzień',
-                day: 'Dzień'
-            },
-            eventClick: function (info) {
-                const dialog = document.getElementById('eventDialog');
-                const dialogTitle = dialog.querySelector('.dialog-title');
-                const dialogDescription = dialog.querySelector('.dialog-description');
-                const dialogDetails = dialog.querySelector('.dialog-details');
-
-                const startDate = new Date(info.event.start);
-                const endDate = new Date(info.event.end);
-
-                const date = startDate.toLocaleDateString('pl-PL', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    weekday: 'long'
+            body: JSON.stringify({ classId: id_class })
+        })
+            .then(response => response.json())
+            .then(events => {
+                window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+                    firstDay: 1,
+                    height: 650,
+                    initialView: 'dayGridMonth',
+                    slotMinTime: '08:00:00',
+                    slotMaxTime: '17:00:00',
+                    events: events,
+                    locale: 'pl',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    buttonText: {
+                        today: 'Dziś',
+                        month: 'Miesiąc',
+                        week: 'Tydzień',
+                        day: 'Dzień'
+                    },
+                    eventClick: function (info) {
+                        const dialog = document.getElementById('eventDialog');
+                        const dialogTitle = dialog.querySelector('.dialog-title');
+                        const dialogDescription = dialog.querySelector('.dialog-description');
+                        const dialogDetails = dialog.querySelector('.dialog-details');
+    
+                        const startDate = new Date(info.event.start);
+                        const endDate = new Date(info.event.end);
+    
+                        const date = startDate.toLocaleDateString('pl-PL', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            weekday: 'long'
+                        });
+    
+                        const startTime = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+                        const endTime = endDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    
+                        dialogTitle.textContent = info.event.title;
+                        dialogDescription.textContent = info.event.extendedProps.description;
+    
+                        dialogDetails.innerHTML = `
+                        <p><strong>Dzień:</strong> ${date}</p>
+                        <p><strong>Godzina:</strong> ${startTime} - ${endTime}</p>
+                        <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
+                        <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
+                        `;
+    
+                        dialog.showModal();
+                    }
                 });
-
-                const startTime = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-                const endTime = endDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-
-                dialogTitle.textContent = info.event.title;
-                dialogDescription.textContent = info.event.extendedProps.description;
-
-                dialogDetails.innerHTML = `
-                <p><strong>Dzień:</strong> ${date}</p>
-                <p><strong>Godzina:</strong> ${startTime} - ${endTime}</p>
-                <p><strong>Nauczyciel:</strong> ${info.event.extendedProps.teacher}</p>
-                <p><strong>Sala:</strong> ${info.event.extendedProps.room}</p>
-                `;
-
-                dialog.showModal();
-            }
-        });
-
-        window.currentCalendar.render();
+    
+                window.currentCalendar.render();
+            })
+            .catch(error => console.error('Błąd pobierania lekcji:', error));
     }
-
-    if (classSelect) {
-        if (!classSelect.value) {
-            classSelect.value = defaultClass;
-        }
-
-        classSelect.addEventListener('change', function () {
-            renderCalendar(this.value);
-        });
-
-        renderCalendar(classSelect.value || defaultClass);
-    } else {
-        renderCalendar(defaultClass);
-    }
+    
 
     // Obsługa formularza zastępstw
     replacementForm.addEventListener('submit', function (event) {
@@ -164,17 +122,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /////////// wyswietlanie ocen
 
-// Przykładowe dane uczniów dla poszczególnych klas
-const classData = {
-    class1: [
-        { name: "Stanisław Gustaw", grades: { sprawdzian: [[5], [6]], kartkowka: [[4], [2]], pracaKlasowa: [3], zadanieDomowe: [4], inne: [] } },
-        { name: "Anna Nowak", grades: { sprawdzian: [4], kartkowka: [5], pracaKlasowa: [4], zadanieDomowe: [3], inne: [] } },
-    ],
-    class2: [
-        { name: "Piotr Wiśniewski", grades: { sprawdzian: [3], kartkowka: [4], pracaKlasowa: [5], zadanieDomowe: [4], inne: [] } },
-        { name: "Ewa Zielińska", grades: { sprawdzian: [5], kartkowka: [5], pracaKlasowa: [4], zadanieDomowe: [3], inne: [] } },
-    ]
-};
 
 // Elementy DOM
 document.addEventListener('DOMContentLoaded', function () {

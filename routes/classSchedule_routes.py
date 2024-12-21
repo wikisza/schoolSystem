@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -141,7 +141,7 @@ def editThisClass_route():
 
 @classSchedule_blueprint.route('/search_items', methods=['GET'])
 def search_items_route():
-    search_query = request.args.get('query')  # Pobranie zapytania z wyszukiwarki
+    search_query = request.args.get('query')  
     result = search_items(search_query)
 
     return result
@@ -150,5 +150,27 @@ def search_items_route():
 @classSchedule_blueprint.route('/getTeachersList', methods=['GET'])
 def getTeachersList_route():
     return getTeachersList()
+
+
+
+
+##### POBIERANIE LEKCJI Z BAZY DANYCH
+
+import sqlite3
+from flask import jsonify, request
+
+@classSchedule_blueprint.route('/get_lessons', methods=['POST'])
+def get_lessons():
+    class_id = request.json.get('classId')
+
+    classes = get_lessons(class_id)
+
+    return jsonify(classes)
+
+@classSchedule_blueprint.route('/getAllClasses', methods=['GET'])
+def getAllClasses_route():
+    result = getAllClasses()
+    return result
+    
 
 

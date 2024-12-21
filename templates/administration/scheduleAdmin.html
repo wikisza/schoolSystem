@@ -7,10 +7,7 @@
 
     <div class="menu">
         <label for="class-select">Wybierz klasę:</label>
-        <select id="class-select">
-            <option value="1a" selected>1a</option>
-            <option value="2b">2b</option>
-        </select>
+        <select id="class-select"></select>
     </div>
 
     <div class="mainContent">
@@ -22,10 +19,7 @@
             <h2>Dodaj zastępstwo</h2>
             <form id="replacementForm">
                 <label for="class">Klasa:</label>
-                <select id="class-select-replacement">
-                    <option value="1a">1a</option>
-                    <option value="2b">2b</option>
-                </select>
+                <select id="replacement-class-select"></select>
                 <br>
                 <label for="subject">Przedmiot:</label>
                 <input type="text" id="subject" placeholder="Nazwa przedmiotu" required>
@@ -59,7 +53,49 @@
     </dialog>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const classSelectMain = document.getElementById('class-select');
+        const replacementClassSelect = document.getElementById('replacement-class-select');
 
+        // Funkcja do wypełniania selectów
+        function populateClassSelects(classes) {
+            [classSelectMain, replacementClassSelect].forEach(select => {
+                if (select) {
+                    select.innerHTML = ''; // Wyczyść istniejące opcje
 
+                    classes.forEach(cls => {
+                        const option = document.createElement('option');
+                        option.value = cls.id_class; // Ustaw id_class jako wartość
+                        option.textContent = cls.class_name; // Wyświetl class_name
+                        select.appendChild(option);
+                    });
+
+                    // Ustaw pierwszą opcję jako domyślną
+                    if (classes.length > 0) {
+                        select.value = classes[0].id_class;
+                    }
+                }
+            });
+        }
+
+        // Pobierz klasy z backendu
+        fetch('/getAllClasses', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(classes => {
+                if (classes.length > 0) {
+                    populateClassSelects(classes);
+                } else {
+                    console.error('Brak dostępnych klas w bazie danych.');
+                }
+            })
+            .catch(error => console.error('Błąd podczas pobierania klas:', error));
+    });
+</script>
 
 {% endblock %}

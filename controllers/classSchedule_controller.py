@@ -181,3 +181,66 @@ def getTeachersList():
     # Konwersja wyników do listy słowników dla lepszej obsługi w JSON
     teachers_list = [{'id': t[0], 'name': t[1]} for t in teachers]
     return jsonify(teachers_list)
+
+
+
+#### POBIERANIE LEKCJI Z BAZY DANYCH
+
+def get_lessons(class_id):
+    if not class_id:
+        return jsonify([])  # Brak danych, jeśli `classId` nie jest przesłane
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT 
+        lessons.subject,
+        lessons.start_time,
+        lessons.end_time,
+        lessons.room,
+        teachers.first_name || ' ' || teachers.last_name AS teacher_name
+    FROM lessons
+    JOIN teachers ON lessons.teacher_id = teachers.id
+    WHERE lessons.class_id = ?
+    '''
+    cursor.execute(query, (class_id,))
+    lessons = cursor.fetchall()
+    conn.close()
+
+    # Przekształcenie wyników w listę obiektów JSON
+    result = [
+        {
+            'title': lesson[0],
+            'start': lesson[1],
+            'end': lesson[2],
+            'room': lesson[3],
+            'teacher': lesson[4],
+            'description': f'Lekcja w sali {lesson[3]}'
+        }
+        for lesson in lessons
+    ]
+    return jsonify(result)
+
+
+#wszystkie klasy
+
+def getAllClasses():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''SELECT id_class, class_name FROM classes'''
+    cursor.execute(query)
+    classes = cursor.fetchall()
+    conn.close()
+
+    result = [
+        {
+            "id_class": row[0],
+            "class_name": row[1]
+        }
+        for row in classes
+    ]
+
+    return jsonify(result)
+
