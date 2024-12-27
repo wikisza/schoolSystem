@@ -488,6 +488,19 @@ th {
 
 
 /*styl dla widoku wiadomosci*/
+.messages {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+}
 .container-messages{
     display:flex;
     height: 100%;
@@ -545,6 +558,9 @@ th {
     width: 100%;
     height: 100%;
 }
+
+
+
 
 /*styl dla widoku wiadomosci*/
 
