@@ -1,6 +1,57 @@
 {% extends "teacher/teacherView.html" %}
 
 {% block mainContent %}
+<style>
+    #send-message-btn:hover {
+        background-color: brown;
+    }
+
+    #messages {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; /* Align messages to the right */
+        padding: 10px;
+        max-height: 400px; /* Adjust the height of the message container */
+        overflow-y: auto; /* Enable scrolling if the messages exceed the container height */
+    }
+
+    .message {
+        background-color: #f0f0f0; /* Light background for messages */
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 10px;
+        max-width: 60%; /* Adjust the width of the message */
+        word-wrap: break-word; /* Ensure long words are wrapped */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    }
+    #create-room-input{
+        width: 75%;
+        overflow-x: scroll;
+        height: 2rem;
+    }
+    #create-room-submit-btn,
+    #close-room-button {
+        width: 10%;
+        height: 2rem;
+    }
+    .create-room-div{
+        display: none;
+        padding: 10px;
+        background-color: lightyellow;
+    }
+    .room {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 10px;
+        max-width: 60%; /* Adjust the width of the message */
+        word-wrap: break-word; /* Ensure long words are wrapped */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    }   
+    .room-list{
+        width: 100%;
+    }
+</style>
+
 <div class="container-messages">
     <div class="sidebar-messages">
         <div class="header-messages">
@@ -11,6 +62,11 @@
         <div id="room-list"></div>
     </div>
     <div class="chat-area">
+        <div class="create-room-div">
+            <input type="text" id="create-room-input" placeholder="Enter user to create a room with...">
+            <button id="create-room-submit-btn">Stworz</button>
+            <button id="close-room-button">X</button>
+        </div>
         <div class="messages" id="messages"></div>
         <div class="input-message-box">
             <input type="text" id="message-input" placeholder="Wpisz wiadomosc...">
@@ -18,4 +74,53 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sendMessageBtn = document.getElementById("send-message-btn");
+        const container = document.getElementById("messages");
+        const messageInput = document.getElementById("message-input");
+        const createRoomButton = document.getElementById("create-room-button");
+        const createRoomInput = document.getElementById("create-room-input");
+        const createRoomSubmitButton = document.getElementById("create-room-submit-btn");
+        const closeRoomButton = document.getElementById("close-room-button");
+        const createRoomDiv = document.querySelector('.create-room-div');
+        const roomList = document.getElementById('room-list');
+
+        sendMessageBtn.addEventListener('click', function () {
+            const messageText = messageInput.value.trim();
+            if (!messageText) {
+                return;
+            }
+            const message = document.createElement('div');
+            message.classList.add('message');
+            message.textContent = messageInput.value;  
+            container.appendChild(message);
+            
+            messageInput.value = '';
+        });
+
+        createRoomButton.addEventListener('click', function () {
+            createRoomDiv.style.display = 'block'; // Show the input field for creating a room
+        });
+
+        closeRoomButton.addEventListener('click', function () {
+            createRoomDiv.style.display = 'none'; // Hide the input field for creating a room
+        });
+
+        createRoomSubmitButton.addEventListener('click', function () {
+            const roomName = createRoomInput.value.trim();
+            if (!roomName) {
+                return;
+            }
+            const room = document.createElement('div');
+            room.classList.add('room');
+            room.textContent = createRoomInput.value;
+            roomList.appendChild(room);
+            createRoomInput.value = '';
+            createRoomDiv.style.display = 'none'; // Hide the input field for creating a room
+        });
+    });
+</script>
+
 {% endblock %}
