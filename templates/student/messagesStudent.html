@@ -2,8 +2,94 @@
 
 {% block mainContent %}
 <style>
+    .messages {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+}
+.container-messages{
+    display:flex;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    border-radius: 10px;
+
+   
+}
+.sidebar-messages {
+    width: 20%;
+    background-color: #FFBF69;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    color: #fff;
+    height: 100%; /* Full height of the container */
+    overflow: hidden; /* Prevent overflow outside the container */
+    max-height: 400px;
+    border-top-left-radius:10px;
+    border-bottom-left-radius: 10px;
+}
+.chat-area{
+    width: 80%; 
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+#message-input{
+    width: 80%;
+    overflow-x: scroll;
+    height: 3rem;
+    border-radius: 5px;
+
+}
+#send-message-btn{
+    width:15%;
+    height: 3rem; 
+    
+
+
+}
+
+.messages{
+    height:100%;
+}
+.input-message-box{
+    padding: 10px;
+    background-color:  #1f7e75;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.header-messages {
+    display: flex; /* Align button and h3 horizontally */
+    align-items: center; /* Vertically align items in the same line */
+    gap: 10px; /* Space between the button and the h3 */
+    padding: 5px;
+    border-bottom: 2px solid #FF9F1C; 
+}
+
+.header-messages h4{
+    width: 80%;
+}
+
+#create-room-button i {
+    font-size: 24px; /* Increase icon size */
+    width: auto; 
+    height: auto;
+    transition: transform 0.3s ease; /* Optional: Add smooth scaling effect */
+    border: none;
+}
+
     #send-message-btn:hover {
-        background-color: brown;
+        background-color: #1c6f67;
     }
 
     #messages {
@@ -28,27 +114,54 @@
         width: 75%;
         overflow-x: scroll;
         height: 2rem;
+        border-radius: 5px;
     }
     #create-room-submit-btn,
     #close-room-button {
         width: 10%;
         height: 2rem;
     }
-    .create-room-div{
+    .create-room-div {
         display: none;
         padding: 10px;
-        background-color: lightyellow;
+        background-color: #1f7e75;
+        border: 1px solid #ccc;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        margin-bottom: 10px;
     }
+
     .room {
         padding: 10px;
         margin: 5px 0;
         border-radius: 10px;
-        max-width: 60%; /* Adjust the width of the message */
-        word-wrap: break-word; /* Ensure long words are wrapped */
+        background-color: #FF9F1C;
+        color: white; /* Darker text color for better readability */
+        cursor: pointer;
+        text-align: left; /* Align text to the left */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        
+    }
+    #room-list {
+        overflow-y: auto; /* Enable vertical scrolling */
+        flex-grow: 1; /* Allow it to expand within the sidebar */
+        padding-right: 10px; /* Optional: Add space to avoid scrollbar overlap */
+        word-wrap: break-word; /* Ensure text doesn't overflow */
+}
+    .room:hover {
+        background-color: #2EC4B6;
+        color: white;
+    }
+    button{
+        background-color: #CBF3F0;
+        border-radius: 10px;
+        border: none;
+        transition: background-color 0.3s ease; /* Smooth hover effect */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
-    }   
-    .room-list{
-        width: 100%;
+
+    }
+    input{
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
     }
 </style>
 
@@ -63,7 +176,7 @@
     </div>
     <div class="chat-area">
         <div class="create-room-div">
-            <input type="text" id="create-room-input" placeholder="Enter user to create a room with...">
+            <input type="text" id="create-room-input" placeholder="Wpisz nazwe użytkownika/ów aby stworzyć kownwersację...">
             <button id="create-room-submit-btn">Stworz</button>
             <button id="close-room-button">X</button>
         </div>
@@ -121,6 +234,7 @@
             createRoomDiv.style.display = 'none'; // Hide the input field for creating a room
         });
     });
+
 </script>
 
 {% endblock %}
