@@ -84,11 +84,9 @@ document.querySelector('form').addEventListener('submit', function (event) {
         })
         .then(result => {
             console.log('Success:', result);
-            alert(result.message); // Show success message
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error submitting form');
         });
 });
 
@@ -134,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
             teacherSelect.innerHTML = '<option value="" disabled selected>Wybierz nauczyciela</option>'; // Wyczyść istniejące opcje
             teachers.forEach(tch => {
                 const option = document.createElement('option');
-                option.value = tch.id_teacher;
+                option.value = tch.id;
                 option.textContent = tch.name; // Wyświetl nazwe nauczyciela
                 teacherSelect.appendChild(option);
             });

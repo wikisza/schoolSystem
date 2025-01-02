@@ -179,7 +179,7 @@ def getTeachersList():
     conn.close()
     
     # Konwersja wyników do listy słowników dla lepszej obsługi w JSON
-    teachers_list = [{'id_teacher': t[0], 'name': t[1]} for t in teachers]
+    teachers_list = [{'id': t[0], 'name': t[1]} for t in teachers]
     return jsonify(teachers_list)
 
 

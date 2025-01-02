@@ -191,16 +191,17 @@ def addNewSubjectToPlan_route():
     id_class = data.get('id_class')
     id_teacher = data.get('id_teacher')
     id_subject = data.get('id_subject')
-    day_of_week = data.get('day_select')
+    day_of_week = data.get('day_of_week')
     start_time = data.get('start_time')
     room_number = data.get('room_number')
 
     # Convert start_time to datetime
     start_dt = datetime.strptime(start_time, '%H:%M')
     end_dt = start_dt + timedelta(minutes=45)  # Add 45 minutes to start_time
-    end_time = end_dt.strftime('%H:%M')
+    end_time = end_dt.strftime('%H:%M:%S')  # Zmieniono format na uwzględniający sekundy
 
-    stime = start_dt.strftime('%H:%M')
+    stime = start_dt.strftime('%H:%M:%S')  # Zmieniono format na uwzględniający sekundy
+
 
     # Call your function to add the subject to the schedule
     result = addNewSubjectToPlan(id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number)
