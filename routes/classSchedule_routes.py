@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -173,6 +173,43 @@ def get_lessons_route():
 def getAllClasses_route():
     result = getAllClasses()
     return result
-    
+
+
+@classSchedule_blueprint.route('/addingSubjectToPlan')
+def addingSubjectToPlan_route():
+    return render_template('administration/addingSubjectToPlan.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+@classSchedule_blueprint.route('/getSubjectsList', methods=['GET'])
+def getSubjectsList_route():
+    return getSubjectsList()
+
+
+@classSchedule_blueprint.route('/addNewSubjectToPlan', methods=['POST'])
+def addNewSubjectToPlan_route():
+    # Get form data
+    data = request.get_json()
+    id_class = data.get('id_class')
+    id_teacher = data.get('id_teacher')
+    id_subject = data.get('id_subject')
+    day_of_week = data.get('day_select')
+    start_time = data.get('start_time')
+    room_number = data.get('room_number')
+
+    # Convert start_time to datetime
+    start_dt = datetime.strptime(start_time, '%H:%M')
+    end_dt = start_dt + timedelta(minutes=45)  # Add 45 minutes to start_time
+    end_time = end_dt.strftime('%H:%M')
+
+    stime = start_dt.strftime('%H:%M')
+
+    # Call your function to add the subject to the schedule
+    result = addNewSubjectToPlan(id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number)
+
+    # Render the result
+    return render_template('administration/createSchedule.html', 
+                           result=result, 
+                           firstName=current_user.firstName, 
+                           lastName=current_user.lastName, 
+                           profession=current_user.profession)
 
 

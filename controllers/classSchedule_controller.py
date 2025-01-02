@@ -179,7 +179,7 @@ def getTeachersList():
     conn.close()
     
     # Konwersja wyników do listy słowników dla lepszej obsługi w JSON
-    teachers_list = [{'id': t[0], 'name': t[1]} for t in teachers]
+    teachers_list = [{'id_teacher': t[0], 'name': t[1]} for t in teachers]
     return jsonify(teachers_list)
 
 
@@ -259,6 +259,25 @@ def get_lessons(class_id):
 
 
 
+#wszystkie przedmioty
+
+def getSubjectsList():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    
+    query = '''
+    SELECT id_subject, subject_name
+    FROM subjects
+    '''
+    cursor.execute(query)
+    subjects = cursor.fetchall()
+    conn.close()
+    
+    # Konwersja wyników do listy słowników dla lepszej obsługi w JSON
+    subjects_list = [{'id': t[0], 'name': t[1]} for t in subjects]
+    return jsonify(subjects_list)
+
+
 #wszystkie klasy
 
 def getAllClasses():
@@ -280,3 +299,16 @@ def getAllClasses():
 
     return jsonify(result)
 
+def addNewSubjectToPlan(id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    INSERT INTO lessons (id_class, id_teacher, id_subject, day_of_week, start_time, end_time, room_number) VALUES (?, ?, ?, ?, ?, ?, ?)
+    '''
+    
+    cursor.execute(query, (id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({"success": True}), 200
