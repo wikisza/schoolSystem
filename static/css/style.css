@@ -488,63 +488,9 @@ th {
 
 
 /*styl dla widoku wiadomosci*/
-.container-messages{
-    display:flex;
-    height: 100%;
-    width: 100%;
-    padding: 0;
-   
-}
-.sidebar-messages
-{
-    width: 20%;
-    background-color: #FFBF69;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    color: #fff;
-    height: 100%;
-    
-}
-.chat-area{
-    width: 80%; 
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-#message-input{
-    width: 80%;
-    overflow-x: scroll;
-    height: 3rem;
-}
-#send-message-btn{
-    width:15%;
-    height: 3rem;
-}
 
-.messages{
-    height:100%;
-}
-.input-message-box{
-    padding: 10px;
-    background-color: lightyellow;
-}
-.header-messages {
-    display: flex; /* Align button and h3 horizontally */
-    align-items: center; /* Vertically align items in the same line */
-    gap: 10px; /* Space between the button and the h3 */
-    padding: 5px;
-    border-bottom: 2px solid #1f7e75; 
-}
 
-.header-messages h4{
-    width: 80%;
-}
 
-#create-room-button i {
-    width: 100%;
-    height: 100%;
-}
 
 /*styl dla widoku wiadomosci*/
 
