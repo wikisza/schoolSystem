@@ -214,37 +214,49 @@ def get_lessons(class_id):
     lessons = cursor.fetchall()
     conn.close()
 
-    # Pobierz poniedziałek aktualnego tygodnia
+    # Pobierz pierwszy dzień miesiąca oraz ostatni dzień miesiąca
     today = datetime.today()
-    start_of_week = today - timedelta(days=today.weekday())  # Poniedziałek bieżącego tygodnia
+    first_day_of_month = today.replace(day=1)
+    last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - timedelta(days=1))
 
     # Przekształcenie wyników w listę obiektów JSON
     result = []
-    for lesson in lessons:
-        subject_name = lesson[0]
-        start_time = lesson[1]
-        end_time = lesson[2]
-        day_of_week = lesson[3]
-        room_number = lesson[4]
-        teacher_name = lesson[5]
+    for single_date in (first_day_of_month + timedelta(days=i) for i in range((last_day_of_month - first_day_of_month).days + 1)):
+        lesson_for_day = None
+        for lesson in lessons:
+            if lesson[3] == single_date.weekday() + 1:  # Dzień tygodnia (1 = Poniedziałek)
+                subject_name = lesson[0]
+                start_time = lesson[1]
+                end_time = lesson[2]
+                room_number = lesson[4]
+                teacher_name = lesson[5]
 
-        # Oblicz datę lekcji na podstawie dnia tygodnia
-        lesson_date = start_of_week + timedelta(days=day_of_week - 1)  # Dzień tygodnia (1 = Poniedziałek)
+                start_datetime = datetime.combine(single_date, datetime.strptime(start_time, "%H:%M:%S").time())
+                end_datetime = datetime.combine(single_date, datetime.strptime(end_time, "%H:%M:%S").time())
 
-        # Połącz datę z godziną rozpoczęcia i zakończenia
-        start_datetime = datetime.combine(lesson_date, datetime.strptime(start_time, "%H:%M:%S").time())
-        end_datetime = datetime.combine(lesson_date, datetime.strptime(end_time, "%H:%M:%S").time())
+                lesson_for_day = {
+                    'title': subject_name,
+                    'start': start_datetime.isoformat(),  # Format ISO 8601
+                    'end': end_datetime.isoformat(),
+                    'room': room_number,
+                    'teacher': teacher_name,
+                    'description': f'Lekcja w sali {room_number}'
+                }
+                break  # Przerywamy pętlę, ponieważ znaleziono lekcję dla tego dnia
 
-        result.append({
-            'title': subject_name,
-            'start': start_datetime.isoformat(),  # Format ISO 8601
-            'end': end_datetime.isoformat(),
-            'room': room_number,
-            'teacher': teacher_name,
-            'description': f'Lekcja w sali {room_number}'
-        })
+        if lesson_for_day:
+            result.append(lesson_for_day)
+        else:
+            # Dodanie pustego wydarzenia na ten dzień
+            result.append({
+                'title': 'Brak lekcji',
+                'start': single_date.isoformat(),
+                'end': single_date.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat(),
+                'description': 'Brak danych lekcji'
+            })
 
     return result
+
 
 
 #wszystkie klasy
