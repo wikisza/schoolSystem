@@ -186,6 +186,9 @@ def getTeachersList():
 
 #### POBIERANIE LEKCJI Z BAZY DANYCH
 
+from datetime import datetime, timedelta
+
+
 def get_lessons(class_id):
     if not class_id:
         return jsonify([])  # Brak danych, jeśli `classId` nie jest przesłane
@@ -195,32 +198,53 @@ def get_lessons(class_id):
 
     query = '''
     SELECT 
-        lessons.subject,
+        subjects.subject_name,
         lessons.start_time,
         lessons.end_time,
-        lessons.room,
-        teachers.first_name || ' ' || teachers.last_name AS teacher_name
+        lessons.day_of_week,
+        lessons.room_number,
+        users.firstName || ' ' || users.lastName AS teacher_name
     FROM lessons
-    JOIN teachers ON lessons.teacher_id = teachers.id
-    WHERE lessons.class_id = ?
+    JOIN teachers ON lessons.id_teacher = teachers.id_teacher
+    JOIN users ON teachers.id_user = users.id
+    JOIN subjects ON lessons.id_subject = subjects.id_subject
+    WHERE lessons.id_class = ?
     '''
     cursor.execute(query, (class_id,))
     lessons = cursor.fetchall()
     conn.close()
 
+    # Pobierz poniedziałek aktualnego tygodnia
+    today = datetime.today()
+    start_of_week = today - timedelta(days=today.weekday())  # Poniedziałek bieżącego tygodnia
+
     # Przekształcenie wyników w listę obiektów JSON
-    result = [
-        {
-            'title': lesson[0],
-            'start': lesson[1],
-            'end': lesson[2],
-            'room': lesson[3],
-            'teacher': lesson[4],
-            'description': f'Lekcja w sali {lesson[3]}'
-        }
-        for lesson in lessons
-    ]
-    return jsonify(result)
+    result = []
+    for lesson in lessons:
+        subject_name = lesson[0]
+        start_time = lesson[1]
+        end_time = lesson[2]
+        day_of_week = lesson[3]
+        room_number = lesson[4]
+        teacher_name = lesson[5]
+
+        # Oblicz datę lekcji na podstawie dnia tygodnia
+        lesson_date = start_of_week + timedelta(days=day_of_week - 1)  # Dzień tygodnia (1 = Poniedziałek)
+
+        # Połącz datę z godziną rozpoczęcia i zakończenia
+        start_datetime = datetime.combine(lesson_date, datetime.strptime(start_time, "%H:%M:%S").time())
+        end_datetime = datetime.combine(lesson_date, datetime.strptime(end_time, "%H:%M:%S").time())
+
+        result.append({
+            'title': subject_name,
+            'start': start_datetime.isoformat(),  # Format ISO 8601
+            'end': end_datetime.isoformat(),
+            'room': room_number,
+            'teacher': teacher_name,
+            'description': f'Lekcja w sali {room_number}'
+        })
+
+    return result
 
 
 #wszystkie klasy

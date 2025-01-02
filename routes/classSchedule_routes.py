@@ -159,11 +159,15 @@ def getTeachersList_route():
 
 @classSchedule_blueprint.route('/get_lessons', methods=['POST'])
 def get_lessons_route():
-    class_id = request.json.get('id_class')
+    data = request.get_json()  
+    class_id = data.get('id_class')
 
-    classes = get_lessons(class_id)
+    if not class_id:
+        return jsonify({'error': 'id_class is required'}), 400  
 
-    return jsonify(classes)
+    classes = get_lessons(class_id)  
+
+    return jsonify(classes)  
 
 @classSchedule_blueprint.route('/getAllClasses', methods=['GET'])
 def getAllClasses_route():
