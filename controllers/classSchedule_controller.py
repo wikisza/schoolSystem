@@ -18,7 +18,7 @@ def addGroup(className):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     try:
-        cursor.execute('INSERT INTO classes (id_teacher, class_name) VALUES (?, ?)', (0, className,))
+        cursor.execute('INSERT INTO classes (id_teacher,class_name) VALUES (?,?)', (0,className,))
         conn.commit()
         return True
     except sqlite3.IntegrityError:
@@ -229,7 +229,7 @@ def getAllClasses():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
-    query = '''SELECT id_class, class_name FROM classes'''
+    query = '''SELECT id_class, class_name FROM classes ORDER BY class_name'''
     cursor.execute(query)
     classes = cursor.fetchall()
     conn.close()

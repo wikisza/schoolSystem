@@ -156,12 +156,10 @@ def getTeachersList_route():
 
 ##### POBIERANIE LEKCJI Z BAZY DANYCH
 
-import sqlite3
-from flask import jsonify, request
 
 @classSchedule_blueprint.route('/get_lessons', methods=['POST'])
-def get_lessons():
-    class_id = request.json.get('classId')
+def get_lessons_route():
+    class_id = request.json.get('id_class')
 
     classes = get_lessons(class_id)
 
