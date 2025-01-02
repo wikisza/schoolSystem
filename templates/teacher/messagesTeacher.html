@@ -2,91 +2,86 @@
 
 {% block mainContent %}
 <style>
+    .message {
+        margin-bottom: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #f1f1f1;
+    }
+
+    .container-messages {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+        border-radius: 10px;
+    }
+
+    .sidebar-messages {
+        width: 25%;
+        background-color: #FFBF69;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        color: #fff;
+        height: 100%; /* Full height of the container */
+        overflow: hidden; /* Prevent overflow outside the container */
+        max-height:400px;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .chat-area {
+        width: 75%;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-height: 400px;
+    }
+
+    #message-input {
+        width: 80%;
+        overflow-x: scroll;
+        height: 3rem;
+        border-radius: 5px;
+    }
+
+    #send-message-btn {
+        width: 15%;
+        height: 3rem;
+    }
+
     .messages {
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 10px;
-    
-}
+        height: 100%;
+    }
 
-.message {
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: #f1f1f1;
-}
-.container-messages{
-    display:flex;
-    height: 100%;
-    width: 100%;
-    padding: 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
-    border-radius: 10px;
+    .input-message-box {
+        padding: 10px;
+        background-color: #1f7e75;
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+    }
 
-   
-}
-.sidebar-messages {
-    width: 20%;
-    background-color: #FFBF69;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    color: #fff;
-    height: 100%; /* Full height of the container */
-    overflow: hidden; /* Prevent overflow outside the container */
-    max-height: 400px;
-    border-top-left-radius:10px;
-    border-bottom-left-radius: 10px;
-}
-.chat-area{
-    width: 80%; 
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-#message-input{
-    width: 80%;
-    overflow-x: scroll;
-    height: 3rem;
-    border-radius: 5px;
+    .header-messages {
+        display: flex; /* Align button and h3 horizontally */
+        align-items: center; /* Vertically align items in the same line */
+        gap: 10px; /* Space between the button and the h3 */
+        padding: 5px;
+        border-bottom: 2px solid #FF9F1C;
+    }
 
-}
-#send-message-btn{
-    width:15%;
-    height: 3rem; 
-    
+    .header-messages h4 {
+        width: 80%;
+    }
 
-
-}
-
-.messages{
-    height:100%;
-}
-.input-message-box{
-    padding: 10px;
-    background-color:  #1f7e75;
-    border-bottom-right-radius: 10px;
-    border-top-right-radius: 10px;
-}
-.header-messages {
-    display: flex; /* Align button and h3 horizontally */
-    align-items: center; /* Vertically align items in the same line */
-    gap: 10px; /* Space between the button and the h3 */
-    padding: 5px;
-    border-bottom: 2px solid #FF9F1C; 
-}
-
-.header-messages h4{
-    width: 80%;
-}
-
-#create-room-button i {
-    font-size: 24px; /* Increase icon size */
-    width: auto; 
-    height: auto;
-    transition: transform 0.3s ease; /* Optional: Add smooth scaling effect */
-    border: none;
-}
+    #create-room-button i {
+        font-size: 24px; /* Increase icon size */
+        width: auto;
+        height: auto;
+        transition: transform 0.3s ease; /* Optional: Add smooth scaling effect */
+        border: none;
+    }
 
     #send-message-btn:hover {
         background-color: #1c6f67;
@@ -96,8 +91,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end; /* Align messages to the right */
-        padding: 10px;
-        max-height: 400px; /* Adjust the height of the message container */
+        padding: 10px; /* Adjust the height of the message container */
         overflow-y: auto; /* Enable scrolling if the messages exceed the container height */
     }
 
@@ -106,21 +100,22 @@
         padding: 10px;
         margin: 5px 0;
         border-radius: 10px;
-        max-width: 60%; /* Adjust the width of the message */
-        word-wrap: break-word; /* Ensure long words are wrapped */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
     }
-    #create-room-input{
+
+    #create-room-input {
         width: 75%;
         overflow-x: scroll;
         height: 2rem;
         border-radius: 5px;
     }
+
     #create-room-submit-btn,
     #close-room-button {
         width: 10%;
         height: 2rem;
     }
+
     .create-room-div {
         display: none;
         padding: 10px;
@@ -141,27 +136,61 @@
         text-align: left; /* Align text to the left */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         
+        /* Multi-line truncation */
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2; /* Limit to two lines */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Add "..." at the end of the second line */
+        
+        word-wrap: break-word; /* Ensure long words break and fit into the container */
+        
+        /* Set a max-height for 2 lines */
+        max-height: 3.1rem; /* Adjust this value based on the line-height of your text */
     }
     #room-list {
         overflow-y: auto; /* Enable vertical scrolling */
         flex-grow: 1; /* Allow it to expand within the sidebar */
         padding-right: 10px; /* Optional: Add space to avoid scrollbar overlap */
-        word-wrap: break-word; /* Ensure text doesn't overflow */
-}
+    }
+
     .room:hover {
         background-color: #2EC4B6;
         color: white;
     }
-    button{
+
+    button {
         background-color: #CBF3F0;
         border-radius: 10px;
         border: none;
         transition: background-color 0.3s ease; /* Smooth hover effect */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
-
     }
-    input{
+
+    input {
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    }
+
+    .message-wrapper {
+        margin-bottom: 10px;
+        padding: 5px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        word-wrap: break-word; /* Ensure long words are wrapped */
+        max-width: 60%;
+    }
+
+    .sender-name {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .time-sent {
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 5px;
     }
 </style>
 
@@ -171,70 +200,95 @@
             <h4>Wiadomosci</h4>
             <button id="create-room-button"><i class="fa-solid fa-square-plus"></i></button>
         </div>
-        <br/>
+        <br />
         <div id="room-list"></div>
     </div>
     <div class="chat-area">
         <div class="create-room-div">
-            <input type="text" id="create-room-input" placeholder="Wpisz nazwe użytkownika/ów aby stworzyć kownwersację...">
+            <input type="text" id="create-room-input" placeholder="Wpisz nazwe użytkownika/ów aby stworzyć kownwersację..." />
             <button id="create-room-submit-btn">Stworz</button>
             <button id="close-room-button">X</button>
         </div>
         <div class="messages" id="messages"></div>
         <div class="input-message-box">
-            <input type="text" id="message-input" placeholder="Wpisz wiadomosc...">
-            <button id="send-message-btn">Send</button>
+            <input type="text" id="message-input" placeholder="Wpisz wiadomosc..." />
+            <button id="send-message-btn">Wyślij</button>
         </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const sendMessageBtn = document.getElementById("send-message-btn");
-        const container = document.getElementById("messages");
-        const messageInput = document.getElementById("message-input");
-        const createRoomButton = document.getElementById("create-room-button");
-        const createRoomInput = document.getElementById("create-room-input");
-        const createRoomSubmitButton = document.getElementById("create-room-submit-btn");
-        const closeRoomButton = document.getElementById("close-room-button");
-        const createRoomDiv = document.querySelector('.create-room-div');
-        const roomList = document.getElementById('room-list');
+   document.addEventListener('DOMContentLoaded', function () {
+    const sendMessageBtn = document.getElementById("send-message-btn");
+    const container = document.getElementById("messages");
+    const messageInput = document.getElementById("message-input");
+    const createRoomButton = document.getElementById("create-room-button");
+    const createRoomInput = document.getElementById("create-room-input");
+    const createRoomSubmitButton = document.getElementById("create-room-submit-btn");
+    const closeRoomButton = document.getElementById("close-room-button");
+    const createRoomDiv = document.querySelector('.create-room-div');
+    const roomList = document.getElementById('room-list');
 
-        sendMessageBtn.addEventListener('click', function () {
-            const messageText = messageInput.value.trim();
-            if (!messageText) {
-                return;
-            }
-            const message = document.createElement('div');
-            message.classList.add('message');
-            message.textContent = messageInput.value;  
-            container.appendChild(message);
-            
-            messageInput.value = '';
-        });
+    sendMessageBtn.addEventListener('click', function () {
+        const messageText = messageInput.value.trim();
+        if (!messageText) {
+            return;
+        }
+        const messageWrapper = document.createElement('div');
+        messageWrapper.classList.add('message-wrapper');
 
-        createRoomButton.addEventListener('click', function () {
-            createRoomDiv.style.display = 'block'; // Show the input field for creating a room
-        });
+        const senderName = document.createElement('div');
+        senderName.classList.add('sender-name');
+        senderName.textContent = 'Ty';
 
-        closeRoomButton.addEventListener('click', function () {
-            createRoomDiv.style.display = 'none'; // Hide the input field for creating a room
-        });
+        const timeSent = document.createElement('div');
+        timeSent.classList.add('time-sent');
+        const currentTime = new Date();
+        timeSent.textContent = currentTime.toLocaleTimeString();
 
-        createRoomSubmitButton.addEventListener('click', function () {
-            const roomName = createRoomInput.value.trim();
-            if (!roomName) {
-                return;
-            }
-            const room = document.createElement('div');
-            room.classList.add('room');
-            room.textContent = createRoomInput.value;
-            roomList.appendChild(room);
-            createRoomInput.value = '';
-            createRoomDiv.style.display = 'none'; // Hide the input field for creating a room
-        });
+        const message = document.createElement('div');
+        message.classList.add('message');
+        message.textContent = messageText;
+
+        messageWrapper.appendChild(senderName);
+        messageWrapper.appendChild(timeSent);
+        messageWrapper.appendChild(message);
+
+        container.appendChild(messageWrapper);
+
+        messageInput.value = '';
+        container.scrollTop = container.scrollHeight;
     });
 
+    createRoomButton.addEventListener('click', function () {
+        createRoomDiv.style.display = 'block';
+    });
+
+    closeRoomButton.addEventListener('click', function () {
+        createRoomDiv.style.display = 'none';
+    });
+
+    createRoomSubmitButton.addEventListener('click', function () {
+        const roomName = createRoomInput.value.trim();
+        if (!roomName) {
+            return;
+        }
+
+        const room = document.createElement('div');
+        room.classList.add('room');
+        room.textContent = roomName;
+
+        // Add a click event listener to the room
+        room.addEventListener('click', function () {
+            container.innerHTML = ''; // Clear all messages
+        });
+
+        roomList.appendChild(room);
+        createRoomInput.value = '';
+        createRoomDiv.style.display = 'none';
+        roomList.scrollTop = 0;
+    });
+});
 </script>
 
 {% endblock %}
