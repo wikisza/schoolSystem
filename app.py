@@ -9,6 +9,7 @@ from routes.grades_routes import grades_blueprint
 from routes.attendance_routes import attendance_blueprint
 from routes.messages_routes import messages_blueprint
 from routes.settings_routes import settings_blueprint
+from routes.classHandler_routes import classHandler_blueprint
 from controllers.auth_controller import load_user
 from flask_socketio import SocketIO  
 
@@ -22,6 +23,7 @@ app.register_blueprint(grades_blueprint)
 app.register_blueprint(attendance_blueprint)
 app.register_blueprint(messages_blueprint)
 app.register_blueprint(settings_blueprint)
+app.register_blueprint(classHandler_blueprint)
 
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
