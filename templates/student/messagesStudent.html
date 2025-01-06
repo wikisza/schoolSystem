@@ -192,6 +192,34 @@
         color: #666;
         margin-bottom: 5px;
     }
+    .suggestions {
+        position: absolute;
+        width: 30%;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .no-matches {
+        padding: 10px;
+        color: #888;
+    }
+    .suggestion-item:hover,
+.suggestion-item.focused {
+    background-color: #f0f0f0;
+}
 </style>
 
 <div class="container-messages">
@@ -205,8 +233,9 @@
     </div>
     <div class="chat-area">
         <div class="create-room-div">
-            <input type="text" id="create-room-input" placeholder="Wpisz nazwe użytkownika/ów aby stworzyć kownwersację..." />
-            <button id="create-room-submit-btn">Stworz</button>
+            <input type="search" id="create-room-input" placeholder="Wpisz nazwę użytkownika/ów, aby stworzyć konwersację..." />
+            <div class="suggestions" id="suggestions"></div>
+            <button id="create-room-submit-btn">Stwórz</button>
             <button id="close-room-button">X</button>
         </div>
         <div class="messages" id="messages"></div>
@@ -218,7 +247,7 @@
 </div>
 
 <script>
-   document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
     const sendMessageBtn = document.getElementById("send-message-btn");
     const container = document.getElementById("messages");
     const messageInput = document.getElementById("message-input");
@@ -228,6 +257,8 @@
     const closeRoomButton = document.getElementById("close-room-button");
     const createRoomDiv = document.querySelector('.create-room-div');
     const roomList = document.getElementById('room-list');
+    const userSuggestionsList = document.getElementById('suggestions');
+
 
     sendMessageBtn.addEventListener('click', function () {
         const messageText = messageInput.value.trim();
@@ -267,6 +298,131 @@
     closeRoomButton.addEventListener('click', function () {
         createRoomDiv.style.display = 'none';
     });
+    const selectedPersons = [];  // Track selected people
+let focusedIndex = -1;
+
+createRoomInput.addEventListener('input', async function () {
+    const query = createRoomInput.value.trim();
+
+    if (query === "") {
+        userSuggestionsList.innerHTML = ""; // Clear suggestions if input is empty
+        selectedPersons.length = 0; // Clear selected persons when input is empty
+        return;
+    }
+
+    // Split the query into individual names and filter out already selected names
+    const newQuery = query.split(',').map(name => name.trim())
+        .filter(name => !selectedPersons.some(selectedName => selectedName.toLowerCase() === name.toLowerCase()))
+        .join(',');
+
+    if (newQuery === "") {
+        userSuggestionsList.innerHTML = '<div class="no-matches">All names are already selected</div>';
+        return;
+    }
+
+    try {
+        // Fetch suggestions from the server
+        const response = await fetch(`/search-users?q=${encodeURIComponent(newQuery)}`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch suggestions");
+        }
+
+        const matches = await response.json();
+        updateSuggestions(matches);
+    } catch (error) {
+        console.error("Error fetching suggestions:", error);
+    }
+});
+
+// Keydown event listener for navigation and selection
+createRoomInput.addEventListener('keydown', function (e) {
+    const suggestions = userSuggestionsList.querySelectorAll('.suggestion-item');
+
+    if (suggestions.length > 0) {
+        if (e.key === 'ArrowDown') {
+            // Move focus to the next item
+            e.preventDefault();
+            focusedIndex = (focusedIndex + 1) % suggestions.length;
+            updateFocus(suggestions);
+        } else if (e.key === 'ArrowUp') {
+            // Move focus to the previous item
+            e.preventDefault();
+            focusedIndex = (focusedIndex - 1 + suggestions.length) % suggestions.length;
+            updateFocus(suggestions);
+        } else if (e.key === 'Enter') {
+            // Trigger click on the focused item
+            e.preventDefault();
+            if (focusedIndex >= 0) {
+                suggestions[focusedIndex].click(); // Simulate a click event
+            }
+        }
+    }
+});
+
+// Helper function to update the focused suggestion
+function updateFocus(suggestions) {
+    suggestions.forEach((item, index) => {
+        if (index === focusedIndex) {
+            item.classList.add('focused');
+            item.scrollIntoView({ block: 'nearest' });
+        } else {
+            item.classList.remove('focused');
+        }
+    });
+}
+
+// Update suggestions in the dropdown
+function updateSuggestions(matches) {
+    userSuggestionsList.innerHTML = ""; // Clear old suggestions
+    focusedIndex = -1; // Reset focus
+
+    if (matches.length === 0) {
+        userSuggestionsList.innerHTML = '<div class="no-matches">No matches found</div>';
+        return;
+    }
+
+    matches.forEach(name => {
+        const suggestionItem = document.createElement("div");
+        suggestionItem.className = "suggestion-item";
+        suggestionItem.textContent = name;
+
+        suggestionItem.addEventListener("click", () => {
+            handleSuggestionClick(name);
+        });
+
+        userSuggestionsList.appendChild(suggestionItem);
+    });
+}
+
+// Handle suggestion click or "Enter" selection
+function handleSuggestionClick(name) {
+    if (!selectedPersons.includes(name)) {
+        selectedPersons.push(name); // Add the selected person to the list
+    }
+
+    // Update the input value with the selected persons, joined by commas
+    createRoomInput.value = selectedPersons.join(', ');
+
+    // Clear suggestions
+    userSuggestionsList.innerHTML = "";
+}
+
+// Clear suggestions when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.create-room-div')) {
+        userSuggestionsList.innerHTML = "";
+    }
+});
+
+
+
+/*// Optional: Reset selectedPersons when starting a new search
+createRoomInput.addEventListener('focus', () => {
+    if (createRoomInput.value.trim() === "") {
+        selectedPersons.length = 0; // Clear the selected persons array when the input is focused and empty
+        userSuggestionsList.innerHTML = ""; // Optionally clear any leftover suggestions
+    }
+});*/
 
     createRoomSubmitButton.addEventListener('click', function () {
         const roomName = createRoomInput.value.trim();
