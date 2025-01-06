@@ -188,6 +188,7 @@ def getTeachersList():
 
 from datetime import datetime, timedelta
 
+#lekcje danej klasy
 
 def get_lessons(class_id):
     if not class_id:
@@ -299,6 +300,8 @@ def getAllClasses():
 
     return jsonify(result)
 
+#dodawanie lekcji do planu lekcji jakiejś klasy
+
 def addNewSubjectToPlan(id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -312,3 +315,92 @@ def addNewSubjectToPlan(id_class, id_teacher, id_subject, day_of_week, stime, en
     conn.close()
     
     return jsonify({"success": True}), 200
+
+#pobieranie lekcji danego nauczyciela
+
+def get_teacher_lessons(id_teacher):
+    if not id_teacher:
+        return jsonify([]) 
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT 
+        subjects.subject_name,
+        lessons.start_time,
+        lessons.end_time,
+        lessons.day_of_week,
+        lessons.room_number,
+        classes.class_name
+    FROM lessons
+    JOIN teachers ON lessons.id_teacher = teachers.id_teacher
+    JOIN users ON teachers.id_user = users.id
+    JOIN subjects ON lessons.id_subject = subjects.id_subject
+    JOIN classes ON lessons.id_class = classes.id_class
+    WHERE lessons.id_teacher = ?
+    '''
+    cursor.execute(query, (id_teacher,))
+    lessons = cursor.fetchall()
+    conn.close()
+
+    # Pobierz pierwszy dzień miesiąca oraz ostatni dzień miesiąca
+    today = datetime.today()
+    first_day_of_month = today.replace(day=1)
+    last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month % 12 + 1, day=1) - timedelta(days=1))
+
+    # Przekształcenie wyników w listę obiektów JSON
+    result = []
+    for single_date in (first_day_of_month + timedelta(days=i) for i in range((last_day_of_month - first_day_of_month).days + 1)):
+        lesson_for_day = None
+        for lesson in lessons:
+            if lesson[3] == single_date.weekday() + 1:  # Dzień tygodnia (1 = Poniedziałek)
+                subject_name = lesson[0]
+                start_time = lesson[1]
+                end_time = lesson[2]
+                room_number = lesson[4]
+                class_name = lesson[5]
+
+                start_datetime = datetime.combine(single_date, datetime.strptime(start_time, "%H:%M:%S").time())
+                end_datetime = datetime.combine(single_date, datetime.strptime(end_time, "%H:%M:%S").time())
+
+                lesson_for_day = {
+                    'title': subject_name,
+                    'start': start_datetime.isoformat(),  # Format ISO 8601
+                    'end': end_datetime.isoformat(),
+                    'room': room_number,
+                    'class_name': class_name,
+                    'description': f'Lekcja w sali {room_number}'
+                }
+                break  # Przerywamy pętlę, ponieważ znaleziono lekcję dla tego dnia
+
+        if lesson_for_day:
+            result.append(lesson_for_day)
+        else:
+            # Dodanie pustego wydarzenia na ten dzień
+            result.append({
+                'title': 'Brak lekcji',
+                'start': single_date.isoformat(),
+                'end': single_date.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat(),
+                'description': 'Brak danych lekcji'
+            })
+
+    return result
+
+def get_id_teacher(id_user):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT id_teacher
+    FROM teachers
+    WHERE id_user = ?
+    '''
+    
+    cursor.execute(query, (id_user,))
+    result = cursor.fetchone()
+    conn.close()
+
+    teacher_id = result[0] if result else None
+    
+    return teacher_id

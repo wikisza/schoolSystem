@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan, get_teacher_lessons, get_id_teacher
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -14,7 +14,7 @@ def classSchedule():
 @classSchedule_blueprint.route('/scheduleTeacher')
 @login_required
 def scheduleTeacher_route():
-    return render_template('teacher/scheduleTeacher.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+    return render_template('teacher/scheduleTeacher.html', firstName=current_user.firstName, lastName=current_user.lastName, id_user=current_user.id, profession=current_user.profession)
 
 @classSchedule_blueprint.route('/scheduleStudent')
 @login_required
@@ -82,6 +82,7 @@ def editClass_route():
             return redirect(f'/editThisClass?id={id_class}')
 
     
+    
     id_class = request.args.get('id')  # Pobranie ID klasy z parametru URL
     class_data = getClassData(id_class)  # Pobranie danych klasy z bazy danych
     students = getStudentsInClass(id_class)  # Pobranie uczniów w klasie
@@ -127,6 +128,7 @@ def get_teachers_list_route():
     return jsonify(teachers)
 
 
+
 @classSchedule_blueprint.route('/editThisClass', methods=['POST'])
 def editThisClass_route():
     id_class = request.form.get('id_class');  # Pobranie ID klasy z parametru URL
@@ -134,9 +136,10 @@ def editThisClass_route():
     id_teacher = request.form.get('id_teacher')
 
     print(class_name, id_teacher)
-    
+
     result = editThisClass(id_class, id_teacher, class_name)
     return render_template('administration/classManagement.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
 
 
 @classSchedule_blueprint.route('/search_items', methods=['GET'])
@@ -213,4 +216,24 @@ def addNewSubjectToPlan_route():
                            lastName=current_user.lastName, 
                            profession=current_user.profession)
 
+
+@classSchedule_blueprint.route('/getTeacherLessons', methods=['GET'])
+def get_teacher_lessons_route():
+
+    user_id = current_user.id 
+
+    teacher_id = get_id_teacher(user_id)
+
+    lessons = get_teacher_lessons(teacher_id)  # Funkcja, która zwraca dane z bazy
+
+    # Przygotuj dane w formacie FullCalendar
+    events = [
+        {
+            "title": lesson["title"],
+            "start": lesson["start"],
+            "end": lesson["end"],
+            "allDay": False
+        } for lesson in lessons
+    ]
+    return jsonify(events)
 

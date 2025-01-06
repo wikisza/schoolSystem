@@ -9,4 +9,4 @@ settings_blueprint = Blueprint('settings', __name__)
 @settings_blueprint.route('/settings')
 @login_required
 def settings():
-    return render_template('settings.html', username=current_user.username, profession=current_user.profession)
+    return render_template('settings.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
