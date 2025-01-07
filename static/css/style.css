@@ -543,3 +543,17 @@ th {
     cursor: pointer;
 }
 
+.attendance-input {
+    border: none;
+    padding: 5px;
+    font-size: 16px;
+    position: center;
+    margin-bottom: 10px;
+    margin-top: 10px;
+
+}
+
+.status-btn.active {
+    background-color: #ccc;
+    color: #333;
+}

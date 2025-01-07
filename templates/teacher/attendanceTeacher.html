@@ -2,65 +2,141 @@
 
 {% block mainContent %}
 
-    <div class="header">
-        <h2>Obecność uczniów</h2>
-        <div class="menu">
-            <label for="class-select">Wybierz klasę:</label>
-            <select id="class-select">
-                <option value="1a">1a</option>
-                <option value="1b">1b</option>
-                <option value="2a">2a</option>
-                <option value="2b">2b</option>
-            </select>
+<div class="header">
+    <h2>Obecność uczniów</h2>
+    <div class="menu">
+        <label for="class-select">Wybierz klasę:</label>
+        <select id="class-select">
+            {% for class in classes %}
+                <option value="{{ class[0] }}">{{ class[1] }}</option>
+            {% endfor %}
+        </select>
 
-            <label for="subject-select">Wybierz przedmiot:</label>
-            <select id="subject-select">
-                <option value="matematyka">Matematyka</option>
-                <option value="polski">Język Polski</option>
-                <option value="angielski">Język Angielski</option>
-                <option value="biologia">Biologia</option>
-            </select>
-        </div>
+        <label for="subject-select">Wybierz przedmiot:</label>
+        <select id="subject-select">
+            {% for subject in subjects %}
+                <option value="{{ subject[0] }}">{{ subject[1] }}</option>
+            {% endfor %}
+        </select>
     </div>
+    <button id="confirm-btn">Zatwierdź</button>
+</div>
 
-    <button id="edit-mode-btn">Edycja</button>
+<div class="legend">
+    <span>Legenda:</span>
+    <button class="status-btn" data-status="O">O</button>
+    <button class="status-btn" data-status="-">-</button>
+    <button class="status-btn" data-status="U">U</button>
+    <button class="status-btn" data-status="S">S</button>
+</div>
 
-    <div class="legend">
-        <span>Legenda:</span>
-        <button class="status-btn" data-status="O">O</button>
-        <button class="status-btn" data-status="-">-</button>
-        <button class="status-btn" data-status="U">U</button>
-        <button class="status-btn" data-status="S">S</button>
-    </div>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Uczeń</th>
+                {% for lesson in lessons %}
+                    <th>{{ lesson[1] }} {{ lesson[2] }}</th> <!-- Data i godzina zajęć -->
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student[1] }}</td> <!-- Imię i nazwisko ucznia -->
+                {% for lesson in lessons %}
+                    <td><input type="text" class="attendance-input" data-lesson-id="{{ lesson[0] }}" data-student-id="{{ student[0] }}"></td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Uczeń</th>
-                    <th>28.11</th>
-                    <th>29.11</th>
-                    <th>30.11</th>
-                    <th>01.12</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Jan Kowalski</td>
-                    <td class="editable"></td>
-                    <td class="editable"></td>
-                    <td class="editable"></td>
-                    <td class="editable"></td>
-                </tr>
-                <tr>
-                    <td>Anna Nowak</td>
-                    <td class="editable"></td>
-                    <td class="editable"></td>
-                    <td class="editable"></td>
-                    <td class="editable"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<button id="save-btn">Zatwierdź zmiany</button>
+
+<script>
+document.getElementById('confirm-btn').addEventListener('click', getLessonsData);
+
+function getLessonsData() {
+    var classId = document.getElementById('class-select').value;
+    var subjectId = document.getElementById('subject-select').value;
+
+    fetch('/get-lessons', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ classId: classId, subjectId: subjectId }),
+    })
+    .then(response => response.json())
+    .then(data => displayLessonsData(data));
+}
+
+function displayLessonsData(data) {
+    var lessons = data.lessons;
+    var students = data.students;
+    var table = document.querySelector('table');
+    var thead = table.querySelector('thead');
+    var tbody = table.querySelector('tbody');
+
+    // Clear the table headers
+    thead.innerHTML = '<tr><th>Uczeń</th></tr>';
+    
+    lessons.forEach(lesson => {
+        var th = document.createElement('th');
+        th.textContent = lesson[1] + ' ' + lesson[2]; // Data i godzina zajęć
+        thead.querySelector('tr').appendChild(th);
+    });
+
+    tbody.innerHTML = '';
+
+    students.forEach(student => {
+        var tr = document.createElement('tr');
+        var td = document.createElement('td');
+        td.textContent = student[1]; // Imię i nazwisko ucznia
+        tr.appendChild(td);
+
+        lessons.forEach(lesson => {
+            var td = document.createElement('td');
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.classList.add('attendance-input');
+            input.dataset.lessonId = lesson[0];
+            input.dataset.studentId = student[0];
+            td.appendChild(input);
+            tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+document.getElementById('save-btn').addEventListener('click', saveAttendanceChanges);
+
+function saveAttendanceChanges() {
+    var inputs = document.querySelectorAll('.attendance-input');
+    var attendanceData = [];
+
+    inputs.forEach(input => {
+        attendanceData.push({
+            lessonId: input.dataset.lessonId,
+            studentId: input.dataset.studentId,
+            status: input.value.trim(),
+        });
+    });
+
+    fetch('/save-attendance', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ attendance: attendanceData }),
+    })
+    .then(response => response.json())
+    .then(data => alert('Zmiany zapisane!'))
+    .catch(error => console.error('Error:', error));
+}
+</script>
 
 {% endblock %}
