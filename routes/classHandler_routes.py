@@ -5,6 +5,8 @@ from models.user import User
 from datetime import datetime, timedelta
 from controllers.classHandler_controller import get_students_for_class_leader
 from controllers.classHandler_controller import is_class_leader
+from flask import request, redirect, url_for
+from controllers.classHandler_controller import get_student_by_id, update_student_data
 
 classHandler_blueprint = Blueprint('classHandler', __name__)
 
@@ -31,3 +33,41 @@ def classHandler():
         students_for_classes=students_for_classes
     )
 
+@classHandler_blueprint.route('/edit_student', methods=['GET'])
+@login_required
+def edit_student():
+    student_id = request.args.get('student_id')
+    if not student_id:
+        return "Student ID is required", 400
+
+    # Pobierz dane ucznia z kontrolera
+    student = get_student_by_id(student_id)
+    if not student:
+        return "Student not found", 404
+
+    return render_template('teacher/edit_student.html', student=student)
+
+
+@classHandler_blueprint.route('/update_student', methods=['POST'])
+@login_required
+def update_student():
+    student_id = request.form.get('student_id')
+    if not student_id:
+        return "Student ID is required", 400
+
+    # Pobierz dane z formularza
+    updated_data = {
+        "firstName": request.form.get('firstName'),
+        "lastName": request.form.get('lastName'),
+        "email": request.form.get('email'),
+        "phoneNumber": request.form.get('phoneNumber'),
+        "address": request.form.get('address'),
+        "parentName": request.form.get('parentName'),
+    }
+
+    # Zaktualizuj dane ucznia
+    success = update_student_data(student_id, updated_data)
+    if not success:
+        return "Failed to update student data", 500
+
+    return redirect(url_for('classHandler.classHandler'))

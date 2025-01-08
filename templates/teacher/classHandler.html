@@ -31,8 +31,12 @@
                             <td>{{ student.address }}</td>
                             <td>{{ student.parentName }}</td> <!-- Wyświetlanie imienia i nazwiska rodzica -->
                             <td>
-                                <button>Edytuj</button>
+                                <form method="GET" action="{{ url_for('classHandler.edit_student') }}">
+                                    <input type="hidden" name="student_id" value="{{ student.id_student }}">
+                                    <button type="submit">Edytuj</button>
+                                </form>
                             </td>
+                            
                         </tr>
                     {% endfor %}
                 </tbody>
