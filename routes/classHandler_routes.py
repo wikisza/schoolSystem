@@ -21,7 +21,7 @@ def classHandler():
     if current_user.get_profession() == 'wychowawca':
         # Pobierz listę uczniów przypisanych do klas wychowawcy
         students_for_classes = get_students_for_class_leader(current_user.id)
-        return render_template('teacher/classHandler.html', username=current_user.username, profession=current_user.profession, students_for_classes=students_for_classes)
+        return render_template('teacher/classHandler.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession, students_for_classes=students_for_classes)
     else:
-        return render_template('teacher/classHandler.html', username=current_user.username, profession=current_user.profession)
+        return render_template('teacher/classHandler.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
