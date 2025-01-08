@@ -4,7 +4,7 @@
 <div class="partialView">
     <h2>Edytuj ucznia</h2>
     <form method="POST" action="{{ url_for('classHandler.update_student') }}">
-        <input type="hidden" name="student_id" value="{{ student.id }}">
+        <input type="hidden" name="student_id" value="{{ student.id_student }}">
         <label>Imię:</label>
         <input type="text" name="firstName" value="{{ student.firstName }}" required><br>
         <label>Nazwisko:</label>
@@ -18,6 +18,6 @@
         <label>Rodzic:</label>
         <input type="text" name="parentName" value="{{ student.parentName }}"><br>
         <button type="submit">Zapisz zmiany</button>
-    </form>
+    </form>       
 </div>
 {% endblock %}
