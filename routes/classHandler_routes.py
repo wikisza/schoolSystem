@@ -24,6 +24,10 @@ def classHandler():
     students_for_classes = (
         get_students_for_class_leader(current_user.id) if is_leader else {}
     )
+
+    # Debugowanie: Sprawdzenie zawartości students_for_classes
+    print(f"students_for_classes: {students_for_classes}")
+
     return render_template(
         'teacher/classHandler.html',
         firstName=current_user.firstName,
@@ -36,7 +40,11 @@ def classHandler():
 @classHandler_blueprint.route('/edit_student', methods=['GET'])
 @login_required
 def edit_student():
-    student_id = request.args.get('student_id')
+    student_id = request.args.get('student_id')  # Zmieniamy na args, bo formularz wysyła dane w URL
+    
+    # Dodaj logowanie
+    print(f"Received student_id: {student_id}")
+
     if not student_id:
         return "Student ID is required", 400
 
