@@ -18,6 +18,7 @@
                         <th>Numer telefonu</th>
                         <th>Adres</th>
                         <th>Rodzic</th>
+                        <th>Akcje</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,7 +29,10 @@
                             <td>{{ student.email }}</td>
                             <td>{{ student.phoneNumber }}</td>
                             <td>{{ student.address }}</td>
-                            <td>Brak</td>
+                            <td>{{ student.parentName }}</td> <!-- Wyświetlanie imienia i nazwiska rodzica -->
+                            <td>
+                                <button>Edytuj</button>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -37,7 +41,7 @@
     {% else %}
         <p>Nie jesteś wychowawcą, więc nie masz dostępu do listy uczniów.</p>
     {% endif %}
-
 </div>
 
 {% endblock %}
+

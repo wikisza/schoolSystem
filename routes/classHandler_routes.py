@@ -30,3 +30,4 @@ def classHandler():
         is_leader=is_leader,  # Nowa zmienna
         students_for_classes=students_for_classes
     )
+

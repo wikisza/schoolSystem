@@ -18,11 +18,14 @@ def get_students_for_class_leader(teacher_id):
     students_in_classes = {}
 
     for class_id, class_name in classes:
-        # Pobierz uczniów przypisanych do tej klasy
+        # Pobierz uczniów przypisanych do tej klasy, a także ich rodziców
         query_students = '''
-        SELECT users.firstName, users.lastName, users.email, users.phoneNumber, users.address
+        SELECT users.firstName, users.lastName, users.email, users.phoneNumber, users.address, 
+               parents.id_parent, parent_users.firstName AS parent_firstName, parent_users.lastName AS parent_lastName
         FROM students
         JOIN users ON students.id_user = users.id
+        LEFT JOIN parents ON students.id_parent = parents.id_parent
+        LEFT JOIN users AS parent_users ON parents.id_user = parent_users.id
         WHERE students.id_class = ?
         '''
         cursor.execute(query_students, (class_id,))
@@ -36,12 +39,14 @@ def get_students_for_class_leader(teacher_id):
                 "email": student[2],
                 "phoneNumber": student[3],
                 "address": student[4],
+                "parentName": f"{student[6]} {student[7]}" if student[5] else "Brak"
             }
             for student in students
         ]
 
     conn.close()
     return students_in_classes
+
 
 
 def is_class_leader(user_id):
