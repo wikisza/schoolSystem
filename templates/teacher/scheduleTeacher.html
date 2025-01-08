@@ -13,81 +13,50 @@
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar2');
 
-        /*
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            firstDay: 1,
-            initialView: 'dayGridMonth',
-            events: function (fetchInfo, successCallback, failureCallback) {
-                Promise.all([
-                    fetch(`/getTeacherLessons`).then(response => response.json())
-                ])
-                .then(getLessons => {
-                    // Przekształć dane na odpowiednie obiekty zdarzeń
-                    const allEvents = getLessons.map(lesson => ({
-                        title: lesson.title,
-                        start: lesson.start, // format ISO 8601 (np. "2025-01-06T08:00:00")
-                        end: lesson.end, // opcjonalnie
-                        description: lesson.description
-                    }));
-                    successCallback(allEvents);
-                    })
-                    .catch(error => failureCallback(error));
-            },
-            locale:'pl',
-            headerToolbar:{
-                left:'prev,next today',
-                center: 'title',
-                right:'dayGridMonth, timeGridWeek, timeGridDay'
-            },
-        });
-        calendar.render();
+
+        // Funkcja renderowania kalendarza dla wybranej klasy
+        function renderCalendar() {
+            fetch('/getTeacherLessons', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(events => {
+                    // Tworzenie nowego kalendarza
+                    window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+                        firstDay: 1,
+                        height: 650,
+                        initialView: 'dayGridMonth',
+                        slotMinTime: '08:00:00',
+                        slotMaxTime: '20:00:00',
+                        events: events,
+                        locale: 'pl',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        buttonText: {
+                            today: 'Dziś',
+                            month: 'Miesiąc',
+                            week: 'Tydzień',
+                            day: 'Dzień'
+                        },
+                        eventClick: function (info) {
+                            alert(`Wybrano wydarzenie: ${info.event.title}`);
+                        }
+                    });
+
+                    window.currentCalendar.render(); // Renderowanie kalendarza
+                })
+                .catch(error => failureCallback(error));
+        }
+
+        renderCalendar();
     });
 
-    */
-
-    // Funkcja renderowania kalendarza dla wybranej klasy
-    function renderCalendar() {
-        fetch('/getTeacherLessons', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(events => {
-                // Tworzenie nowego kalendarza
-                window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
-                    firstDay: 1,
-                    height: 650,
-                    initialView: 'dayGridMonth',
-                    slotMinTime: '08:00:00',
-                    slotMaxTime: '20:00:00',
-                    events: events,
-                    locale: 'pl',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    buttonText: {
-                        today: 'Dziś',
-                        month: 'Miesiąc',
-                        week: 'Tydzień',
-                        day: 'Dzień'
-                    },
-                    eventClick: function (info) {
-                        alert(`Wybrano wydarzenie: ${info.event.title}`);
-                    }
-                });
-
-                window.currentCalendar.render(); // Renderowanie kalendarza
-            })
-            .catch(error => failureCallback(error));
-    }
-
-    renderCalendar();
-});
-            
 
 </script>
 
