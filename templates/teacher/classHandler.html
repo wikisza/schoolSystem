@@ -5,7 +5,7 @@
 <div class="partialView">
     <h2>Zarządzanie klasą</h2>
 
-    {% if profession == "wychowawca" %}
+    {% if is_leader %}
         <h3>Twoje klasy i uczniowie</h3>
         {% for class_name, students in students_for_classes.items() %}
             <h4>{{ class_name }}</h4>
@@ -28,7 +28,7 @@
                             <td>{{ student.email }}</td>
                             <td>{{ student.phoneNumber }}</td>
                             <td>{{ student.address }}</td>
-                            <td>Brak</td> <!-- Możesz tu dodać informację o rodzicu, jeśli jest dostępna -->
+                            <td>Brak</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -37,6 +37,7 @@
     {% else %}
         <p>Nie jesteś wychowawcą, więc nie masz dostępu do listy uczniów.</p>
     {% endif %}
+
 </div>
 
 {% endblock %}

@@ -4,6 +4,7 @@ from controllers.grades_controller import *
 from models.user import User
 from datetime import datetime, timedelta
 from controllers.classHandler_controller import get_students_for_class_leader
+from controllers.classHandler_controller import is_class_leader
 
 classHandler_blueprint = Blueprint('classHandler', __name__)
 
@@ -17,11 +18,15 @@ classHandler_blueprint = Blueprint('classHandler', __name__)
 @classHandler_blueprint.route('/classHandler')
 @login_required
 def classHandler():
-    # Sprawdź, czy użytkownik jest wychowawcą
-    if current_user.get_profession() == 'wychowawca':
-        # Pobierz listę uczniów przypisanych do klas wychowawcy
-        students_for_classes = get_students_for_class_leader(current_user.id)
-        return render_template('teacher/classHandler.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession, students_for_classes=students_for_classes)
-    else:
-        return render_template('teacher/classHandler.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
-
+    is_leader = is_class_leader(current_user.id)  # Czy użytkownik jest wychowawcą
+    students_for_classes = (
+        get_students_for_class_leader(current_user.id) if is_leader else {}
+    )
+    return render_template(
+        'teacher/classHandler.html',
+        firstName=current_user.firstName,
+        lastName=current_user.lastName,
+        profession=current_user.profession,
+        is_leader=is_leader,  # Nowa zmienna
+        students_for_classes=students_for_classes
+    )

@@ -3,35 +3,78 @@ import sqlite3
 def get_students_for_class_leader(teacher_id):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    
+
     # Pobierz wszystkie klasy, w których nauczyciel jest wychowawcą
     query = '''
     SELECT classes.id_class, classes.class_name
     FROM classes
-    JOIN teachers ON teachers.id_teacher = classes.id_teacher
-    WHERE teachers.id_teacher = ?
+    WHERE classes.id_teacher = (
+        SELECT id_teacher FROM teachers WHERE id_user = ?
+    )
     '''
     cursor.execute(query, (teacher_id,))
     classes = cursor.fetchall()
-    
+
     students_in_classes = {}
-    
-    # Dla każdej klasy nauczyciela pobieramy listę uczniów
-    for class_data in classes:
-        class_id = class_data[0]
-        
+
+    for class_id, class_name in classes:
         # Pobierz uczniów przypisanych do tej klasy
         query_students = '''
-        SELECT users.firstName || ' ' || users.lastName 
-        FROM students 
+        SELECT users.firstName, users.lastName, users.email, users.phoneNumber, users.address
+        FROM students
         JOIN users ON students.id_user = users.id
         WHERE students.id_class = ?
         '''
         cursor.execute(query_students, (class_id,))
         students = cursor.fetchall()
-        
-        students_in_classes[class_data[1]] = [student[0] for student in students]
-    
+
+        # Przekształć dane na słownik
+        students_in_classes[class_name] = [
+            {
+                "firstName": student[0],
+                "lastName": student[1],
+                "email": student[2],
+                "phoneNumber": student[3],
+                "address": student[4],
+            }
+            for student in students
+        ]
+
     conn.close()
-    
     return students_in_classes
+
+
+def is_class_leader(user_id):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # Pobierz id_teacher na podstawie id_user
+    query_teacher = '''
+    SELECT id_teacher
+    FROM teachers
+    WHERE id_user = ?
+    '''
+    cursor.execute(query_teacher, (user_id,))
+    result_teacher = cursor.fetchone()
+
+    if not result_teacher:
+        # Jeśli użytkownik nie jest przypisany do nauczyciela, nie jest wychowawcą
+        conn.close()
+        return False
+
+    id_teacher = result_teacher[0]
+
+    # Sprawdź, czy nauczyciel (id_teacher) jest przypisany do jakiejkolwiek klasy
+    query_class = '''
+    SELECT COUNT(*)
+    FROM classes
+    WHERE id_teacher = ?
+    '''
+    cursor.execute(query_class, (id_teacher,))
+    result_class = cursor.fetchone()
+
+    conn.close()
+
+    # Jeśli COUNT(*) > 0, użytkownik jest wychowawcą
+    return result_class[0] > 0
+
