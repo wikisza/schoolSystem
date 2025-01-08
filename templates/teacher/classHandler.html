@@ -1,0 +1,50 @@
+{% extends "teacher/teacherView.html" %}
+
+{% block mainContent %}
+
+<div class="partialView">
+    <h2>Zarządzanie klasą</h2>
+
+    {% if is_leader %}
+        <h3>Twoje klasy i uczniowie</h3>
+        {% for class_name, students in students_for_classes.items() %}
+            <h4>{{ class_name }}</h4>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Imię</th>
+                        <th>Nazwisko</th>
+                        <th>Email</th>
+                        <th>Numer telefonu</th>
+                        <th>Adres</th>
+                        <th>Rodzic</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.firstName }}</td>
+                            <td>{{ student.lastName }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.phoneNumber }}</td>
+                            <td>{{ student.address }}</td>
+                            <td>{{ student.parentName }}</td> <!-- Wyświetlanie imienia i nazwiska rodzica -->
+                            <td>
+                                <form method="GET" action="{{ url_for('classHandler.edit_student') }}">
+                                    <input type="hidden" name="student_id" value="{{ student.id_student }}">
+                                    <button type="submit">Edytuj</button>
+                                </form>                                                                                           
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% else %}
+        <p>Nie jesteś wychowawcą, więc nie masz dostępu do listy uczniów.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+

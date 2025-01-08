@@ -1,0 +1,23 @@
+{% extends "teacher/teacherView.html" %}
+
+{% block mainContent %}
+<div class="partialView">
+    <h2>Edytuj ucznia</h2>
+    <form method="POST" action="{{ url_for('classHandler.update_student') }}">
+        <input type="hidden" name="student_id" value="{{ student.id_student }}">
+        <label>Imię:</label>
+        <input type="text" name="firstName" value="{{ student.firstName }}" required><br>
+        <label>Nazwisko:</label>
+        <input type="text" name="lastName" value="{{ student.lastName }}" required><br>
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ student.email }}" required><br>
+        <label>Numer telefonu:</label>
+        <input type="text" name="phoneNumber" value="{{ student.phoneNumber }}"><br>
+        <label>Adres:</label>
+        <input type="text" name="address" value="{{ student.address }}"><br>
+        <label>Rodzic:</label>
+        <input type="text" name="parentName" value="{{ student.parentName }}"><br>
+        <button type="submit">Zapisz zmiany</button>
+    </form>       
+</div>
+{% endblock %}
