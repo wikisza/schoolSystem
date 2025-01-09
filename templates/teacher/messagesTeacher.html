@@ -1,21 +1,457 @@
 {% extends "teacher/teacherView.html" %}
 
 {% block mainContent %}
+<style>
+    .message {
+        margin-bottom: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #f1f1f1;
+    }
+
+    .container-messages {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+        border-radius: 10px;
+    }
+
+    .sidebar-messages {
+        width: 25%;
+        background-color: #FFBF69;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        color: #fff;
+        height: 100%; /* Full height of the container */
+        overflow: hidden; /* Prevent overflow outside the container */
+        max-height:400px;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .chat-area {
+        width: 75%;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-height: 400px;
+    }
+
+    #message-input {
+        width: 80%;
+        overflow-x: scroll;
+        height: 3rem;
+        border-radius: 5px;
+    }
+
+    #send-message-btn {
+        width: 15%;
+        height: 3rem;
+    }
+
+    .messages {
+        height: 100%;
+    }
+
+    .input-message-box {
+        padding: 10px;
+        background-color: #1f7e75;
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .header-messages {
+        display: flex; /* Align button and h3 horizontally */
+        align-items: center; /* Vertically align items in the same line */
+        gap: 10px; /* Space between the button and the h3 */
+        padding: 5px;
+        border-bottom: 2px solid #FF9F1C;
+    }
+
+    .header-messages h4 {
+        width: 80%;
+    }
+
+    #create-room-button i {
+        font-size: 24px; /* Increase icon size */
+        width: auto;
+        height: auto;
+        transition: transform 0.3s ease; /* Optional: Add smooth scaling effect */
+        border: none;
+    }
+
+    #send-message-btn:hover {
+        background-color: #1c6f67;
+    }
+
+    #messages {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; /* Align messages to the right */
+        padding: 10px; /* Adjust the height of the message container */
+        overflow-y: auto; /* Enable scrolling if the messages exceed the container height */
+    }
+
+    .message {
+        background-color: #f0f0f0; /* Light background for messages */
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    }
+
+    #create-room-input {
+        width: 75%;
+        overflow-x: scroll;
+        height: 2rem;
+        border-radius: 5px;
+    }
+
+    #create-room-submit-btn,
+    #close-room-button {
+        width: 10%;
+        height: 2rem;
+    }
+
+    .create-room-div {
+        display: none;
+        padding: 10px;
+        background-color: #1f7e75;
+        border: 1px solid #ccc;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .room {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 10px;
+        background-color: #FF9F1C;
+        color: white; /* Darker text color for better readability */
+        cursor: pointer;
+        text-align: left; /* Align text to the left */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        
+        /* Multi-line truncation */
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2; /* Limit to two lines */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Add "..." at the end of the second line */
+        
+        word-wrap: break-word; /* Ensure long words break and fit into the container */
+        
+        /* Set a max-height for 2 lines */
+        max-height: 3.1rem; /* Adjust this value based on the line-height of your text */
+    }
+    #room-list {
+        overflow-y: auto; /* Enable vertical scrolling */
+        flex-grow: 1; /* Allow it to expand within the sidebar */
+        padding-right: 10px; /* Optional: Add space to avoid scrollbar overlap */
+    }
+
+    .room:hover {
+        background-color: #2EC4B6;
+        color: white;
+    }
+
+    button {
+        background-color: #CBF3F0;
+        border-radius: 10px;
+        border: none;
+        transition: background-color 0.3s ease; /* Smooth hover effect */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    }
+
+    input {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    }
+
+    .message-wrapper {
+        margin-bottom: 10px;
+        padding: 5px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        word-wrap: break-word; /* Ensure long words are wrapped */
+        max-width: 60%;
+    }
+
+    .sender-name {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .time-sent {
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 5px;
+    }
+    .suggestions {
+        position: absolute;
+        width: 30%;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .no-matches {
+        padding: 10px;
+        color: #888;
+    }
+    .suggestion-item:hover,
+.suggestion-item.focused {
+    background-color: #f0f0f0;
+}
+</style>
+
 <div class="container-messages">
     <div class="sidebar-messages">
         <div class="header-messages">
             <h4>Wiadomosci</h4>
             <button id="create-room-button"><i class="fa-solid fa-square-plus"></i></button>
         </div>
-        <br/>
+        <br />
         <div id="room-list"></div>
     </div>
     <div class="chat-area">
+        <div class="create-room-div">
+            <input type="search" id="create-room-input" placeholder="Wpisz nazwę użytkownika/ów, aby stworzyć konwersację..." />
+            <div class="suggestions" id="suggestions"></div>
+            <button id="create-room-submit-btn">Stwórz</button>
+            <button id="close-room-button">X</button>
+        </div>
         <div class="messages" id="messages"></div>
         <div class="input-message-box">
-            <input type="text" id="message-input" placeholder="Wpisz wiadomosc...">
-            <button id="send-message-btn">Send</button>
+            <input type="text" id="message-input" placeholder="Wpisz wiadomosc..." />
+            <button id="send-message-btn">Wyślij</button>
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const sendMessageBtn = document.getElementById("send-message-btn");
+    const container = document.getElementById("messages");
+    const messageInput = document.getElementById("message-input");
+    const createRoomButton = document.getElementById("create-room-button");
+    const createRoomInput = document.getElementById("create-room-input");
+    const createRoomSubmitButton = document.getElementById("create-room-submit-btn");
+    const closeRoomButton = document.getElementById("close-room-button");
+    const createRoomDiv = document.querySelector('.create-room-div');
+    const roomList = document.getElementById('room-list');
+    const userSuggestionsList = document.getElementById('suggestions');
+    const socket = io();
+    sendMessageBtn.addEventListener('click', function () {
+        const messageText = messageInput.value.trim();
+        if (!messageText) {
+            return;
+        }
+        const messageWrapper = document.createElement('div');
+        messageWrapper.classList.add('message-wrapper');
+
+        const senderName = document.createElement('div');
+        senderName.classList.add('sender-name');
+        senderName.textContent = 'Ty';
+
+        const timeSent = document.createElement('div');
+        timeSent.classList.add('time-sent');
+        const currentTime = new Date();
+        timeSent.textContent = currentTime.toLocaleTimeString();
+
+        const message = document.createElement('div');
+        message.classList.add('message');
+        message.textContent = messageText;
+
+        messageWrapper.appendChild(senderName);
+        messageWrapper.appendChild(timeSent);
+        messageWrapper.appendChild(message);
+
+        container.appendChild(messageWrapper);
+
+        messageInput.value = '';
+        container.scrollTop = container.scrollHeight;
+    });
+
+    createRoomButton.addEventListener('click', function () {
+        createRoomDiv.style.display = 'block';
+    });
+
+    closeRoomButton.addEventListener('click', function () {
+        createRoomDiv.style.display = 'none';
+        createRoomInput.value = '';
+    });
+    const selectedPersons = []; // Track selected people (store as objects with id and name)
+let focusedIndex = -1;
+
+createRoomInput.addEventListener('input', async function () {
+    const query = createRoomInput.value.trim();
+
+    if (query === "") {
+        userSuggestionsList.innerHTML = ""; // Clear suggestions if input is empty
+        return;
+    }
+
+    // Split the query into individual names and filter out already selected names
+    const newQuery = query.split(',').map(name => name.trim())
+        .filter(name => !selectedPersons.some(person => person.name.toLowerCase() === name.toLowerCase()))
+        .join(',');
+
+    if (newQuery === "") {
+        userSuggestionsList.innerHTML = '<div class="no-matches">All names are already selected</div>';
+        return;
+    }
+
+    try {
+        // Fetch suggestions from the server
+        const response = await fetch(`/search-users?q=${encodeURIComponent(newQuery)}`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch suggestions");
+        }
+
+        const matches = await response.json();
+        updateSuggestions(matches);
+    } catch (error) {
+        console.error("Error fetching suggestions:", error);
+    }
+});
+
+// Keydown event listener for navigation and selection
+createRoomInput.addEventListener('keydown', function (e) {
+    const suggestions = userSuggestionsList.querySelectorAll('.suggestion-item');
+
+    if (suggestions.length > 0) {
+        if (e.key === 'ArrowDown') {
+            // Move focus to the next item
+            e.preventDefault();
+            focusedIndex = (focusedIndex + 1) % suggestions.length;
+            updateFocus(suggestions);
+        } else if (e.key === 'ArrowUp') {
+            // Move focus to the previous item
+            e.preventDefault();
+            focusedIndex = (focusedIndex - 1 + suggestions.length) % suggestions.length;
+            updateFocus(suggestions);
+        } else if (e.key === 'Enter') {
+            // Trigger click on the focused item
+            e.preventDefault();
+            if (focusedIndex >= 0) {
+                suggestions[focusedIndex].click(); // Simulate a click event
+            }
+        }
+    }
+});
+
+// Helper function to update the focused suggestion
+function updateFocus(suggestions) {
+    suggestions.forEach((item, index) => {
+        if (index === focusedIndex) {
+            item.classList.add('focused');
+            item.scrollIntoView({ block: 'nearest' });
+        } else {
+            item.classList.remove('focused');
+        }
+    });
+}
+
+// Update suggestions in the dropdown
+function updateSuggestions(matches) {
+    userSuggestionsList.innerHTML = ""; // Clear old suggestions
+    focusedIndex = -1; // Reset focus
+
+    if (matches.length === 0) {
+        userSuggestionsList.innerHTML = '<div class="no-matches">No matches found</div>';
+        return;
+    }
+
+    matches.forEach(match => {
+        const suggestionItem = document.createElement("div");
+        suggestionItem.className = "suggestion-item";
+        suggestionItem.textContent = match.name; // Display the name
+
+        suggestionItem.addEventListener("click", () => {
+            handleSuggestionClick(match);
+        });
+
+        userSuggestionsList.appendChild(suggestionItem);
+    });
+}
+
+// Handle suggestion click or "Enter" selection
+function handleSuggestionClick(match) {
+    if (!selectedPersons.some(person => person.id === match.id)) {
+        selectedPersons.push(match); // Add the selected person (with id and name) to the list
+    }
+
+    // Update the input value with the selected names, joined by commas
+    createRoomInput.value = selectedPersons.map(person => person.name).join(', ');
+
+    // Clear suggestions
+    userSuggestionsList.innerHTML = "";
+}
+
+// Clear suggestions when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.create-room-div')) {
+        userSuggestionsList.innerHTML = "";
+    }
+    console.log
+});
+
+
+
+
+
+// Event listener for the "Create Room" button
+createRoomSubmitButton.addEventListener('click', function () {
+    const roomName = createRoomInput.value.trim();
+    if (!roomName) {
+        alert('Room name cannot be empty');
+        return;
+    }
+
+    const userIds = selectedPersons.map(person => person.id);
+    if (userIds.length === 0) {
+        alert('Please select at least one user to create a room');
+        return;
+    }
+
+    const roomData = {
+        room_name: roomName,
+        user_ids: userIds,
+    };
+    console.log(roomData);
+
+    // Emit the room creation event to the backend
+    socket.emit('create_room', roomData, (response) => {
+    console.log('Server response:', response);
+});
+    
+    // Clear inputs and hide UI
+    createRoomInput.value = '';
+    createRoomDiv.style.display = 'none';
+    selectedPersons.length = 0; // Clear selected persons array
+});
+
+});
+
+</script>
+
 {% endblock %}
