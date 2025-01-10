@@ -302,19 +302,52 @@ def getAllClasses():
 
 #dodawanie lekcji do planu lekcji jakiejś klasy
 
-def addNewSubjectToPlan(id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number):
+
+def addNewSubjectToPlan(
+    id_class, id_teacher, id_subject, day_of_week=None, stime=None, end_time=None,
+    room_number=None, exact_date=None, semester_start=None, semester_end=None):
+    
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-
+    
     query = '''
-    INSERT INTO lessons (id_class, id_teacher, id_subject, day_of_week, start_time, end_time, room_number) VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO lessons (id_class, id_teacher, id_subject, date, start_time, end_time, room_number) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
     '''
     
-    cursor.execute(query, (id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number))
-    conn.commit()
-    conn.close()
-    
-    return jsonify({"success": True}), 200
+    try:
+        if exact_date:  # Jeśli podano dokładną datę
+            lesson_date = datetime.strptime(exact_date, "%Y-%m-%d").date()
+            cursor.execute(query, (id_class, id_teacher, id_subject, lesson_date, stime, end_time, room_number))
+        
+        elif day_of_week is not None:  # Jeśli podano dzień tygodnia
+            if not semester_start or not semester_end:
+                raise ValueError("Semester start and end dates must be provided when day_of_week is used.")
+            
+            semester_start = datetime.strptime(semester_start, "%Y-%m-%d").date()
+            semester_end = datetime.strptime(semester_end, "%Y-%m-%d").date()
+
+            current_date = semester_start
+            while current_date.weekday() != day_of_week:
+                current_date += timedelta(days=1)
+
+            while current_date <= semester_end:
+                cursor.execute(query, (id_class, id_teacher, id_subject, current_date, stime, end_time, room_number))
+                current_date += timedelta(days=7)
+        
+        conn.commit()
+        return jsonify({"success": True}), 200
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    except Exception as e:
+        return jsonify({"error": "An error occurred: " + str(e)}), 500
+
+    finally:
+        conn.close()
+
+
 
 #pobieranie lekcji danego nauczyciela
 

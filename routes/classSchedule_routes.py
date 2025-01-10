@@ -189,32 +189,54 @@ def getSubjectsList_route():
 
 @classSchedule_blueprint.route('/addNewSubjectToPlan', methods=['POST'])
 def addNewSubjectToPlan_route():
-    # Get form data
-    data = request.get_json()
+    data = request.form.to_dict()
+
     id_class = data.get('id_class')
     id_teacher = data.get('id_teacher')
     id_subject = data.get('id_subject')
     day_of_week = data.get('day_of_week')
     start_time = data.get('start_time')
     room_number = data.get('room_number')
+    exact_date = data.get('exact_date')
+    semester_start = data.get('semester_start')
+    semester_end = data.get('semester_end')
 
-    # Convert start_time to datetime
-    start_dt = datetime.strptime(start_time, '%H:%M')
-    end_dt = start_dt + timedelta(minutes=45)  # Add 45 minutes to start_time
-    end_time = end_dt.strftime('%H:%M:%S')  # Zmieniono format na uwzględniający sekundy
+    try:
+        # Weryfikacja danych wejściowych
+        if not id_class or not id_teacher or not id_subject:
+            raise ValueError("Missing required fields: id_class, id_teacher, or id_subject.")
 
-    stime = start_dt.strftime('%H:%M:%S')  # Zmieniono format na uwzględniający sekundy
+        if not start_time:
+            raise ValueError("Missing start_time.")
 
+        # Konwersja day_of_week na int (jeśli podano)
+        if day_of_week is not None:
+            try:
+                day_of_week = int(day_of_week)  # Konwersja na int
+                if not (0 <= day_of_week <= 6):  # Walidacja zakresu
+                    raise ValueError("day_of_week must be an integer between 0 (Monday) and 6 (Sunday).")
+            except ValueError:
+                raise ValueError("day_of_week must be an integer.")
 
-    # Call your function to add the subject to the schedule
-    result = addNewSubjectToPlan(id_class, id_teacher, id_subject, day_of_week, stime, end_time, room_number)
+        # Konwersja czasu rozpoczęcia i zakończenia zajęć
+        start_dt = datetime.strptime(start_time, '%H:%M')
+        end_dt = start_dt + timedelta(minutes=45)
+        stime = start_dt.strftime('%H:%M:%S')
+        end_time = end_dt.strftime('%H:%M:%S')
 
-    # Render the result
-    return render_template('administration/createSchedule.html', 
-                           result=result, 
-                           firstName=current_user.firstName, 
-                           lastName=current_user.lastName, 
-                           profession=current_user.profession)
+        # Wywołanie funkcji dodawania zajęć
+        result = addNewSubjectToPlan(
+            id_class, id_teacher, id_subject, day_of_week, stime, end_time, 
+            room_number, exact_date, semester_start, semester_end
+        )
+
+        return redirect('/administration/createSchedule.html', jsonify(result))
+
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred: " + str(e)}), 500
 
 
 @classSchedule_blueprint.route('/getTeacherLessons', methods=['GET'])
