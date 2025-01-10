@@ -3,10 +3,10 @@
 {% block mainContent %}
 
 <div class="menu">
-    <a href = "/createSchedule" class="btn">Wróć</a>
+    <a href="/createSchedule" class="btn">Wróć</a>
 </div>
 
-<form method='POST' action="/addNewSubjectToPlan">
+<form id="addLessonForm">
     <label for="class-select">Wybierz klasę:</label>
     <select id="class-select">
         <option value="" disabled selected>Wybierz klasę</option>
@@ -24,12 +24,12 @@
 
     <label for="day-select">Wybierz dzień tygodnia:</label>
     <select id="day-select" name="day_select">
-        <option value="" disabled selected>Wybierz przedmiot</option>
-        <option value="1">Poniedziałek</option>
-        <option value="2">Wtorek</option>
-        <option value="3">Środa</option>
-        <option value="4">Czwartek</option>
-        <option value="5">Piątek</option>
+        <option value="" disabled selected>Wybierz dzień tygodnia</option>
+        <option value="0">Poniedziałek</option>
+        <option value="1">Wtorek</option>
+        <option value="2">Środa</option>
+        <option value="3">Czwartek</option>
+        <option value="4">Piątek</option>
     </select>
 
     <label for="start_time">Godzina rozpoczęcia:</label>
@@ -37,6 +37,16 @@
 
     <label for="roomNumber">Numer sali:</label>
     <input type="text" name="room_number" id="room_number">
+
+
+    <label for="exact_date">Dokładna data jeśli lekcja ma pojawić się jednorazowo</label>
+    <input type="date" name="exact_date" id="exact_date">
+
+    <label for="semester_start">Początek semestru:</label>
+    <input type="date" name="semester_start" id="semester_start">
+
+    <label for="semester_end">Koniec semestru</label>
+    <input type="date" name="semester_end" id="semester_end">
 
     <button type="submit" class="btn">Dodaj lekcję</button>
 
@@ -47,51 +57,7 @@
 
 <script>
 
-document.querySelector('form').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    const id_class = document.getElementById('class-select').value;
-    const id_teacher = document.getElementById('teacher-select').value;
-    const id_subject = document.getElementById('subject-select').value;
-    const day_of_week = document.getElementById('day-select').value;
-    const start_time = document.getElementById('start_time').value;
-    const room_number = document.getElementById('room_number').value;
-
-    // Construct the data object
-    const data = {
-        id_class,
-        id_teacher,
-        id_subject,
-        day_of_week,
-        start_time,
-        room_number,
-    };
-
-    // Send the data to the server
-    fetch('/addNewSubjectToPlan', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Error submitting form');
-            }
-        })
-        .then(result => {
-            console.log('Success:', result);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-});
-
-
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
         var classSelect = document.getElementById('class-select');
         var teacherSelect = document.getElementById('teacher-select');
         var subjectSelect = document.getElementById('subject-select');
@@ -127,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            // Funkcja do wypełniania selecta nauczycielami
+        // Funkcja do wypełniania selecta nauczycielami
         function populateTeacherSelect(teachers) {
             teacherSelect.innerHTML = '<option value="" disabled selected>Wybierz nauczyciela</option>'; // Wyczyść istniejące opcje
             teachers.forEach(tch => {
@@ -158,9 +124,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            // Funkcja do wypełniania selecta przedmiotami
-    function populateSubjectSelect(subjects) {
-            subjectSelect.innerHTML = '<option value="" disabled selected>Wybierz przedmiot</option>'; 
+        // Funkcja do wypełniania selecta przedmiotami
+        function populateSubjectSelect(subjects) {
+            subjectSelect.innerHTML = '<option value="" disabled selected>Wybierz przedmiot</option>';
             subjects.forEach(sbj => {
                 const option = document.createElement('option');
                 option.value = sbj.id; // Ustaw id jako wartość
@@ -190,7 +156,78 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('addLessonForm');
+
+        
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Zatrzymaj domyślne przesyłanie formularza
+
+            const id_class = document.getElementById('class-select').value;
+            const id_teacher = document.getElementById('teacher-select').value;
+            const id_subject = document.getElementById('subject-select').value;
+            const day_of_week = document.getElementById('day-select').value;
+            const start_time = document.getElementById('start_time').value;
+            const room_number = document.getElementById('room_number').value;
+            const exact_date = document.getElementById('exact_date').value;
+            const semester_start = document.getElementById('semester_start').value;
+            const semester_end = document.getElementById('semester_end').value;
+
+            // Pobierz dane z formularza
+            const data = {
+                id_class,
+                id_teacher,
+                id_subject,
+                day_of_week,
+                start_time,
+                room_number,
+                exact_date,
+                semester_start,
+                semester_end
+            };
+
+
+            if (!data.id_class || !data.id_teacher || !data.id_subject) {
+                alert('Wszystkie pola (klasa, nauczyciel, przedmiot) są wymagane!');
+                return;
+            }
+            if (!data.exact_date) {
+                delete data.exact_date; // Usuń `exact_date` z obiektu, jeśli jest pusty
+            }
+
+
+            // Wyślij dane do serwera za pomocą fetch
+            fetch('/addNewSubjectToPlan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Błąd podczas przesyłania danych.');
+                    }
+                })
+                .then(result => {
+                    console.log('Sukces:', result);
+                    alert('Lekcja została pomyślnie dodana.');
+                })
+                .catch(error => {
+                    console.error('Błąd:', error);
+                    alert('Wystąpił problem podczas dodawania lekcji.');
+                });
+        });
+    });
+
+
+
 
 
 </script>
