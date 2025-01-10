@@ -135,8 +135,6 @@ def editThisClass_route():
     class_name = request.form.get('class_name')
     id_teacher = request.form.get('id_teacher')
 
-    print(class_name, id_teacher)
-
     result = editThisClass(id_class, id_teacher, class_name)
     return render_template('administration/classManagement.html', result=result, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
@@ -162,15 +160,12 @@ def getTeachersList_route():
 
 @classSchedule_blueprint.route('/get_lessons', methods=['POST'])
 def get_lessons_route():
-    data = request.get_json()  
+    data = request.json  
     class_id = data.get('id_class')
-
-    if not class_id:
-        return jsonify({'error': 'id_class is required'}), 400  
 
     classes = get_lessons(class_id)  
 
-    return jsonify(classes)  
+    return classes  
 
 @classSchedule_blueprint.route('/getAllClasses', methods=['GET'])
 def getAllClasses_route():
@@ -189,7 +184,11 @@ def getSubjectsList_route():
 
 @classSchedule_blueprint.route('/addNewSubjectToPlan', methods=['POST'])
 def addNewSubjectToPlan_route():
-    data = request.form.to_dict()
+
+    data = request.json
+
+    if not data:
+        return jsonify({"error": "Brak danych w żądaniu."}), 400
 
     id_class = data.get('id_class')
     id_teacher = data.get('id_teacher')
@@ -201,36 +200,31 @@ def addNewSubjectToPlan_route():
     semester_start = data.get('semester_start')
     semester_end = data.get('semester_end')
 
+
+    start_dt = datetime.strptime(start_time, '%H:%M')
+    end_dt = start_dt + timedelta(minutes=45)
+    stime = start_dt.strftime('%H:%M:%S')
+    end_time = end_dt.strftime('%H:%M:%S')
+
     try:
-        # Weryfikacja danych wejściowych
-        if not id_class or not id_teacher or not id_subject:
-            raise ValueError("Missing required fields: id_class, id_teacher, or id_subject.")
-
-        if not start_time:
-            raise ValueError("Missing start_time.")
-
+            
         # Konwersja day_of_week na int (jeśli podano)
         if day_of_week is not None:
             try:
                 day_of_week = int(day_of_week)  # Konwersja na int
-                if not (0 <= day_of_week <= 6):  # Walidacja zakresu
+                if not (0 <= day_of_week <= 5):  # Walidacja zakresu
                     raise ValueError("day_of_week must be an integer between 0 (Monday) and 6 (Sunday).")
             except ValueError:
                 raise ValueError("day_of_week must be an integer.")
 
-        # Konwersja czasu rozpoczęcia i zakończenia zajęć
-        start_dt = datetime.strptime(start_time, '%H:%M')
-        end_dt = start_dt + timedelta(minutes=45)
-        stime = start_dt.strftime('%H:%M:%S')
-        end_time = end_dt.strftime('%H:%M:%S')
 
         # Wywołanie funkcji dodawania zajęć
         result = addNewSubjectToPlan(
-            id_class, id_teacher, id_subject, day_of_week, stime, end_time, 
-            room_number, exact_date, semester_start, semester_end
+            id_class, id_teacher, id_subject,room_number, stime, end_time, day_of_week,
+            exact_date, semester_start, semester_end
         )
 
-        return redirect('/administration/createSchedule.html', jsonify(result))
+        return jsonify(result)
 
     except ValueError as ve:
         return jsonify({"error": str(ve)}), 400
@@ -246,16 +240,7 @@ def get_teacher_lessons_route():
 
     teacher_id = get_id_teacher(user_id)
 
-    lessons = get_teacher_lessons(teacher_id)  # Funkcja, która zwraca dane z bazy
+    lessons = get_teacher_lessons(teacher_id)  
 
-    # Przygotuj dane w formacie FullCalendar
-    events = [
-        {
-            "title": lesson["title"],
-            "start": lesson["start"],
-            "end": lesson["end"],
-            "allDay": False
-        } for lesson in lessons
-    ]
-    return jsonify(events)
+    return lessons
 

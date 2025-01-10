@@ -25,11 +25,11 @@
     <label for="day-select">Wybierz dzień tygodnia:</label>
     <select id="day-select" name="day_select">
         <option value="" disabled selected>Wybierz dzień tygodnia</option>
-        <option value="1">Poniedziałek</option>
-        <option value="2">Wtorek</option>
-        <option value="3">Środa</option>
-        <option value="4">Czwartek</option>
-        <option value="5">Piątek</option>
+        <option value="0">Poniedziałek</option>
+        <option value="1">Wtorek</option>
+        <option value="2">Środa</option>
+        <option value="3">Czwartek</option>
+        <option value="4">Piątek</option>
     </select>
 
     <label for="start_time">Godzina rozpoczęcia:</label>
@@ -162,27 +162,43 @@
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('addLessonForm');
 
+        
+
         form.addEventListener('submit', function (event) {
             event.preventDefault(); // Zatrzymaj domyślne przesyłanie formularza
 
+            const id_class = document.getElementById('class-select').value;
+            const id_teacher = document.getElementById('teacher-select').value;
+            const id_subject = document.getElementById('subject-select').value;
+            const day_of_week = document.getElementById('day-select').value;
+            const start_time = document.getElementById('start_time').value;
+            const room_number = document.getElementById('room_number').value;
+            const exact_date = document.getElementById('exact_date').value;
+            const semester_start = document.getElementById('semester_start').value;
+            const semester_end = document.getElementById('semester_end').value;
+
             // Pobierz dane z formularza
             const data = {
-                id_class: document.getElementById('class-select').value,
-                id_teacher: document.getElementById('teacher-select').value,
-                id_subject: document.getElementById('subject-select').value,
-                day_of_week: document.getElementById('day-select').value,
-                start_time: document.getElementById('start_time').value,
-                room_number: document.getElementById('room_number').value,
-                exact_date: document.getElementById('exact_date').value,
-                semester_start: document.getElementById('semester_start').value,
-                semester_end: document.getElementById('semester_end').value,
+                id_class,
+                id_teacher,
+                id_subject,
+                day_of_week,
+                start_time,
+                room_number,
+                exact_date,
+                semester_start,
+                semester_end
             };
 
 
             if (!data.id_class || !data.id_teacher || !data.id_subject) {
-            alert('Wszystkie pola (klasa, nauczyciel, przedmiot) są wymagane!');
-            return;
-        }
+                alert('Wszystkie pola (klasa, nauczyciel, przedmiot) są wymagane!');
+                return;
+            }
+            if (!data.exact_date) {
+                delete data.exact_date; // Usuń `exact_date` z obiektu, jeśli jest pusty
+            }
+
 
             // Wyślij dane do serwera za pomocą fetch
             fetch('/addNewSubjectToPlan', {
