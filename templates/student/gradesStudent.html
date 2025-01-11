@@ -48,13 +48,11 @@
         <p><strong>Opis:</strong> <span id="modal-comment"></span></p>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Nasłuchujemy kliknięcia na całej tabeli lub kontenerze, w którym znajdują się oceny
-        const table = document.querySelector('.subjects-container'); // Możesz tu wybrać dowolny nadrzędny element
+
+        const table = document.querySelector('.table-body'); // Możesz tu wybrać dowolny nadrzędny element
         table.addEventListener('click', function(event) {
             // Sprawdzamy, czy kliknięto na element o klasie .grade
             if (event.target && event.target.classList.contains('grade')) {
