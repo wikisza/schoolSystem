@@ -45,7 +45,7 @@
                             day: 'Dzień'
                         },
                         eventClick: function (info) {
-                            alert(`Wybrano wydarzenie: ${info.event.title}`);
+                            alert(`Przedmiot: ${info.event.title}\nW sali numer: ${info.event.extendedProps.room}\nZ klasą: ${info.event.extendedProps.class_name}`);
                         }
                     });
 
