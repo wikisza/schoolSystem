@@ -1,239 +1,459 @@
-{% extends "teacher/teacherView.html" %}
+{% extends "student/studentView.html" %}
 
 {% block mainContent %}
 <style>
-    .messages {
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 10px;
+    input:disabled {
+    background-color:#CBF3F0; /* Light gray background */
+    color: #888; /* Optional: Dim text color */
+    cursor: not-allowed;
+    color: black; /* Optional: Change cursor to indicate it's disabled */
+}
     
-}
-
-.message {
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: #f1f1f1;
-}
-.container-messages{
-    display:flex;
-    height: 100%;
-    width: 100%;
-    padding: 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
-    border-radius: 10px;
-
-   
-}
-.sidebar-messages {
-    width: 20%;
-    background-color: #FFBF69;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    color: #fff;
-    height: 100%; /* Full height of the container */
-    overflow: hidden; /* Prevent overflow outside the container */
-    max-height: 400px;
-    border-top-left-radius:10px;
-    border-bottom-left-radius: 10px;
-}
-.chat-area{
-    width: 80%; 
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-#message-input{
-    width: 80%;
-    overflow-x: scroll;
-    height: 3rem;
-    border-radius: 5px;
-
-}
-#send-message-btn{
-    width:15%;
-    height: 3rem; 
-    
-
-
-}
-
-.messages{
-    height:100%;
-}
-.input-message-box{
-    padding: 10px;
-    background-color:  #1f7e75;
-    border-bottom-right-radius: 10px;
-    border-top-right-radius: 10px;
-}
-.header-messages {
-    display: flex; /* Align button and h3 horizontally */
-    align-items: center; /* Vertically align items in the same line */
-    gap: 10px; /* Space between the button and the h3 */
-    padding: 5px;
-    border-bottom: 2px solid #FF9F1C; 
-}
-
-.header-messages h4{
-    width: 80%;
-}
-
-#create-room-button i {
-    font-size: 24px; /* Increase icon size */
-    width: auto; 
-    height: auto;
-    transition: transform 0.3s ease; /* Optional: Add smooth scaling effect */
-    border: none;
-}
-
-    #send-message-btn:hover {
-        background-color: #1c6f67;
-    }
-
-    #messages {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end; /* Align messages to the right */
-        padding: 10px;
-        max-height: 400px; /* Adjust the height of the message container */
-        overflow-y: auto; /* Enable scrolling if the messages exceed the container height */
-    }
-
-    .message {
-        background-color: #f0f0f0; /* Light background for messages */
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 10px;
-        max-width: 60%; /* Adjust the width of the message */
-        word-wrap: break-word; /* Ensure long words are wrapped */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
-    }
-    #create-room-input{
-        width: 75%;
-        overflow-x: scroll;
-        height: 2rem;
-        border-radius: 5px;
-    }
-    #create-room-submit-btn,
-    #close-room-button {
-        width: 10%;
-        height: 2rem;
-    }
-    .create-room-div {
-        display: none;
-        padding: 10px;
-        background-color: #1f7e75;
-        border: 1px solid #ccc;
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
-        margin-bottom: 10px;
-    }
-
-    .room {
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 10px;
-        background-color: #FF9F1C;
-        color: white; /* Darker text color for better readability */
-        cursor: pointer;
-        text-align: left; /* Align text to the left */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        
-    }
-    #room-list {
-        overflow-y: auto; /* Enable vertical scrolling */
-        flex-grow: 1; /* Allow it to expand within the sidebar */
-        padding-right: 10px; /* Optional: Add space to avoid scrollbar overlap */
-        word-wrap: break-word; /* Ensure text doesn't overflow */
-}
-    .room:hover {
-        background-color: #2EC4B6;
-        color: white;
-    }
-    button{
+    button {
         background-color: #CBF3F0;
         border-radius: 10px;
         border: none;
         transition: background-color 0.3s ease; /* Smooth hover effect */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
-
     }
-    input{
+
+    input {
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
     }
+
 </style>
 
 <div class="container-messages">
     <div class="sidebar-messages">
         <div class="header-messages">
-            <h4>Wiadomosci</h4>
+            <h4>Pokoje rozmów</h4>
             <button id="create-room-button"><i class="fa-solid fa-square-plus"></i></button>
         </div>
-        <br/>
-        <div id="room-list"></div>
+        <br />
+        <div id="room-list"> 
+            {% if rooms and rooms|length > 0 %}
+            {% for room in rooms %}
+                <div class="room" data-room-id="{{ room.id }}" title="{{ room.name }}">
+                    {{ room.name }}
+                    
+                </div>
+            {% endfor %}
+        {% else %}
+            <p id="exist">Brak rozmów</p>
+        {% endif %}
+    </div>
     </div>
     <div class="chat-area">
         <div class="create-room-div">
-            <input type="text" id="create-room-input" placeholder="Wpisz nazwe użytkownika/ów aby stworzyć kownwersację...">
-            <button id="create-room-submit-btn">Stworz</button>
+            <input type="search" id="create-room-input" autocomplete="off"  placeholder="Wpisz nazwę użytkownika/ów, aby stworzyć konwersację..." />
+            <div class="suggestions" id="suggestions"></div>
+            <button id="create-room-submit-btn">Stwórz</button>
             <button id="close-room-button">X</button>
         </div>
         <div class="messages" id="messages"></div>
         <div class="input-message-box">
-            <input type="text" id="message-input" placeholder="Wpisz wiadomosc...">
-            <button id="send-message-btn">Send</button>
+            <input type="text" id="message-input" placeholder="Wpisz wiadomosc..." />
+            <button id="send-message-btn">Wyślij</button>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const sendMessageBtn = document.getElementById("send-message-btn");
-        const container = document.getElementById("messages");
-        const messageInput = document.getElementById("message-input");
-        const createRoomButton = document.getElementById("create-room-button");
-        const createRoomInput = document.getElementById("create-room-input");
-        const createRoomSubmitButton = document.getElementById("create-room-submit-btn");
-        const closeRoomButton = document.getElementById("close-room-button");
-        const createRoomDiv = document.querySelector('.create-room-div');
-        const roomList = document.getElementById('room-list');
+    const sendMessageBtn = document.getElementById("send-message-btn");
+    const container = document.getElementById("messages");
+    const messageInput = document.getElementById("message-input");
+    const createRoomButton = document.getElementById("create-room-button");
+    const createRoomInput = document.getElementById("create-room-input");
+    const createRoomSubmitButton = document.getElementById("create-room-submit-btn");
+    const closeRoomButton = document.getElementById("close-room-button");
+    const createRoomDiv = document.querySelector('.create-room-div');
+    const roomList = document.getElementById('room-list');
+    const userSuggestionsList = document.getElementById('suggestions');
+    const userId = "{{ user|tojson }}";
+    const firstName = "{{ firstName }}";
+    const lastName = "{{ lastName }}";
+    const profession = "{{ profession }}";
+    const username = `${firstName} ${lastName}`;
+    const pExist = document.getElementById('exist');
+    
+    function toggleSendButton() {
+        const rooms = roomList.querySelectorAll('.room');
+        const hasRooms = rooms.length > 0;
 
-        sendMessageBtn.addEventListener('click', function () {
-            const messageText = messageInput.value.trim();
-            if (!messageText) {
-                return;
+        if (hasRooms) {
+            sendMessageBtn.disabled = false; // Enable the button
+            messageInput.disabled = false; // Enable input
+        } else {
+            sendMessageBtn.disabled = true; // Disable the button
+            messageInput.disabled = true; // Disable input
+        }
+    }
+    function clearMessages() {
+    const messageContainer = document.getElementById('messages');
+    if (messageContainer) {
+        messageContainer.innerHTML = ''; // Clear all child elements
+    } else {
+        console.warn("Message container with ID 'messages' not found.");
+    }
+}
+    // Call toggleSendButton initially
+    toggleSendButton();
+
+    // Monitor room list for changes
+    const observer = new MutationObserver(toggleSendButton);
+    observer.observe(roomList, { childList: true });
+    sendMessageBtn.addEventListener('click', sendMessage);
+
+messageInput.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent default behavior (e.g., form submission)
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+        const messageText = messageInput.value.trim();
+        if (!messageText || !currentRoom) return;
+
+        if (!currentRoom) {
+            alert('Dołacz do pokoju lub stwórz nowy pokoj aby wysylac wiadomosci!');
+            return;
+        }
+        socket.emit('send_message', {
+            room: currentRoom,
+            message: messageText,
+            sender_id: userId,
+        });
+
+        messageInput.value = '';
+    }
+
+    socket.on('message', (data) => {
+    if (data.room === currentRoom) {
+        const messageWrapper = document.createElement('div');
+        
+        // Determine the message type and add appropriate class
+        messageWrapper.classList.add('message-wrapper');
+        messageWrapper.classList.add(data.sender_name === username ? 'current-user' : 'other-user');
+        
+        const senderName = document.createElement('div');
+        senderName.classList.add('sender-name');
+        senderName.textContent = data.sender_name;
+
+        const timeSent = document.createElement('div');
+        timeSent.classList.add('time-sent');
+        timeSent.textContent = data.timestamp;
+
+        const message = document.createElement('div');
+        message.classList.add('message');
+        message.textContent = data.message;
+
+        // Append elements to the wrapper
+        messageWrapper.appendChild(senderName);
+        messageWrapper.appendChild(timeSent);
+        messageWrapper.appendChild(message);
+
+        // Add the message to the container
+        container.appendChild(messageWrapper);
+
+        // Auto-scroll to the latest message
+        container.scrollTop = container.scrollHeight;
+    }
+});
+
+    createRoomButton.addEventListener('click', function () {
+        createRoomDiv.style.display = 'block';
+    });
+
+    closeRoomButton.addEventListener('click', function () {
+        createRoomDiv.style.display = 'none';
+        createRoomInput.value = '';
+        clearSelection();
+    });
+    createRoomInput.addEventListener('input', async function () {
+    const query = createRoomInput.value.trim();
+
+    if (query === "") {
+        userSuggestionsList.classList.remove('active'); // Hide suggestions if input is empty
+        userSuggestionsList.innerHTML = ""; // Clear any old suggestions
+        userSuggestionsList.style.display = "none"; // Ensure it's hidden
+        return;
+    }
+
+    try {
+        // Fetch suggestions from the server
+        const response = await fetch(`/search-users?q=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch suggestions");
+        }
+
+        const matches = await response.json();
+
+        // Filter out the current user from the suggestions
+        const filteredMatches = matches.filter(match => match.id !== userId);
+
+        updateSuggestions(filteredMatches);
+        userSuggestionsList.classList.add('active'); // Show suggestions
+        userSuggestionsList.style.display = "block"; // Ensure it's visible
+    } catch (error) {
+        console.error("Error fetching suggestions:", error);
+    }
+});
+
+// Keydown event listener for navigation and selection
+createRoomInput.addEventListener('input', async function () {
+    const query = createRoomInput.value.trim();
+
+    if (query === "") {
+        userSuggestionsList.innerHTML = ""; // Clear suggestions if input is empty
+        return;
+    }
+
+    try {
+        // Fetch suggestions from the server
+        const response = await fetch(`/search-users?q=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch suggestions");
+        }
+
+        const matches = await response.json();
+
+        // Filter out the current user from the suggestions
+        const filteredMatches = matches.filter(match => match.id !== userId);
+
+        updateSuggestions(filteredMatches);
+    } catch (error) {
+        console.error("Error fetching suggestions:", error);
+    }
+});
+
+function updateSuggestions(matches) {
+    userSuggestionsList.innerHTML = ""; // Clear old suggestions
+
+    if (matches.length === 0) {
+        userSuggestionsList.innerHTML = '<div class="no-matches">No matches found</div>';
+        userSuggestionsList.style.display = "none"; // Hide if no matches
+        return;
+    }
+
+    matches.forEach(match => {
+        const suggestionItem = document.createElement("div");
+        suggestionItem.className = "suggestion-item";
+        suggestionItem.textContent = `${match.name} (${match.profession})`; // Show both name and profession
+
+        suggestionItem.addEventListener("click", () => {
+            handleSuggestionClick(match);
+        });
+
+        userSuggestionsList.appendChild(suggestionItem);
+    });
+
+    userSuggestionsList.style.display = "block"; // Show suggestions when available
+}
+
+function handleSuggestionClick(match) {
+    selectedPersons = [match]; // Replace any previous selection with the new one
+
+    createRoomInput.value = match.name; // Update the input with the selected name
+    createRoomInput.disabled = true; // Disable input after selection
+
+    userSuggestionsList.innerHTML = ""; // Clear suggestions
+    userSuggestionsList.style.display = "none"; // Hide the dropdown
+
+    // Show a "clear" button to allow removing the selected person
+    const clearButton = document.createElement("button");
+    clearButton.textContent = "Wyczyść";
+    clearButton.className = "clear-button";
+    clearButton.addEventListener("click", () => {
+        clearSelection();
+    });
+
+    createRoomInput.parentNode.appendChild(clearButton);
+}
+
+function clearSelection() {
+    selectedPersons = []; // Reset the selected person
+    createRoomInput.value = ""; // Clear the input value
+    createRoomInput.disabled = false; // Re-enable input
+    const clearButton = document.querySelector(".clear-button");
+    if (clearButton) {
+        clearButton.remove(); // Remove the "clear" button
+    }
+
+    userSuggestionsList.innerHTML = ""; // Clear suggestions
+    userSuggestionsList.style.display = "none"; // Ensure dropdown is hidden
+}
+
+
+// Event listener for the "Create Room" button
+createRoomSubmitButton.addEventListener('click', function () {
+    const roomName = selectedPersons[0].name + " ("+selectedPersons[0].profession + ")" + " i " + username + " (" + profession + ")"; // Use the selected person's name as the room name
+
+    if (!roomName) {
+        alert('Room name cannot be empty!');
+        return;
+    }
+
+    const userIds = selectedPersons.map(person => person.id);
+    if (userIds.length === 0) {
+        alert('Please select at least one user!');
+        return;
+    }
+
+    // Add the current user's ID
+    userIds.push(parseInt(userId));
+
+    // Check if the room name already exists in the list of rooms
+    const existingRooms = Array.from(roomList.getElementsByClassName('room'));
+    const roomNames = existingRooms.map(room => room.textContent.trim().toLowerCase());
+
+    if (roomNames.includes(roomName.toLowerCase())) {
+        alert('Ten pokój już istnieje!');
+        return;
+    }
+
+    const roomData = {
+        room_name: roomName,
+        user_ids: userIds,
+    };
+
+    // Emit the room creation event to the backend
+    socket.emit('create_room', roomData, (response) => {
+        if (response.status === 'success') {
+            createRoomInput.value = '';
+            clearSelection();
+            createRoomDiv.style.display = 'none';
+            selectedPersons.length = 0; // Clear selected persons
+        } else {
+            alert('Error creating room');
+            clearSelection();
+        }
+    });
+    
+    createRoomDiv.style.display = 'none';
+    clearSelection()
+});
+
+// Listener for room_created event
+socket.on('room_created', function (data) {
+    const { room_id, room_name, user_ids } = data;
+
+
+    // Check if the current user is in the invited user list
+    if (user_ids.includes(parseInt(userId))) {
+        clearMessages();
+        // If the user is already in a room, leave that room before joining the new one
+        if (currentRoom && currentRoom !== room_id) {
+            socket.emit('leave', { room: currentRoom });
+            console.log('Leaving room:', currentRoom);
+        }
+        if (pExist) {
+            pExist.style.display = "none";
+        } else {
+            console.log("Element with ID 'exist' not found.");
+        }
+        
+        socket.emit('join', { room: room_id });
+        console.log('2.current room:', room_id);
+
+        // Create a new room element
+        const roomDiv = document.createElement('div');
+        roomDiv.classList.add('room');
+        roomDiv.setAttribute('data-room-id', room_id);
+        roomDiv.setAttribute('title', room_name);
+        roomDiv.textContent = room_name;
+        
+        // Append the new room to the room list
+        const roomList = document.getElementById('room-list');
+        roomList.appendChild(roomDiv);
+
+        // Highlight the newly created room
+        highlightRoom(room_id);
+
+        // Update the current room after joining
+        currentRoom = room_id;
+        console.log("current room "+ currentRoom);
+    } else {
+        console.log('Current user is not invited to the room, ignoring.');
+    }
+});
+let currentRoom = null;
+
+
+roomList.addEventListener('click', function (event) {
+    const clickedRoom = event.target;
+
+    if (clickedRoom.classList.contains('room')) {
+        clearMessages();
+        const roomId = clickedRoom.getAttribute('data-room-id');
+
+        // Check if the user is already in a room
+        if (currentRoom && currentRoom !== roomId) {
+            // Leave the current room if it's different from the clicked room
+            socket.emit('leave', { room: currentRoom });
+            console.log('Leaving room:', currentRoom);
+        }
+        console.log("1.current room:"+ currentRoom);
+        // Join the clicked room
+        socket.emit('join', { room: roomId });
+        console.log('Joining room:', roomId);
+
+        // Update the current room
+        currentRoom = roomId;
+
+        // Highlight the clicked room and remove active class from others
+        highlightRoom(roomId);
+    }
+});
+function highlightRoom(roomId) {
+    const rooms = document.querySelectorAll('.room');
+    rooms.forEach(room => {
+        room.classList.remove('active'); // Remove active class from all rooms
+        if (room.getAttribute('data-room-id') == roomId) {
+            room.classList.add('active'); // Add active class to the room being joined
+        }
+    });
+}
+socket.on('messages', (data) => {
+    console.log('Received messages:', data);
+    if (data.room === currentRoom) {
+        container.innerHTML = ''; // Clear previous messages
+
+        data.messages.forEach(msg => {
+            const messageWrapper = document.createElement('div');
+            console.log(msg.sender_name)
+            // Add a class based on whether the message is from the current user
+            if (msg.sender_name === username) {
+                messageWrapper.classList.add('message-wrapper', 'current-user');
+            } else {
+                messageWrapper.classList.add('message-wrapper', 'other-user');
             }
+
+            const senderName = document.createElement('div');
+            senderName.classList.add('sender-name');
+            senderName.textContent = msg.sender_name;
+
+            const timeSent = document.createElement('div');
+            timeSent.classList.add('time-sent');
+            timeSent.textContent = msg.timestamp;
+
             const message = document.createElement('div');
             message.classList.add('message');
-            message.textContent = messageInput.value;  
-            container.appendChild(message);
-            
-            messageInput.value = '';
+            message.textContent = msg.message;
+
+            messageWrapper.appendChild(senderName);
+            messageWrapper.appendChild(timeSent);
+            messageWrapper.appendChild(message);
+            container.appendChild(messageWrapper);
         });
 
-        createRoomButton.addEventListener('click', function () {
-            createRoomDiv.style.display = 'block'; // Show the input field for creating a room
-        });
+        // Auto-scroll to the bottom of the container
+        container.scrollTop = container.scrollHeight;
+    }
+});
 
-        closeRoomButton.addEventListener('click', function () {
-            createRoomDiv.style.display = 'none'; // Hide the input field for creating a room
-        });
-
-        createRoomSubmitButton.addEventListener('click', function () {
-            const roomName = createRoomInput.value.trim();
-            if (!roomName) {
-                return;
-            }
-            const room = document.createElement('div');
-            room.classList.add('room');
-            room.textContent = createRoomInput.value;
-            roomList.appendChild(room);
-            createRoomInput.value = '';
-            createRoomDiv.style.display = 'none'; // Hide the input field for creating a room
-        });
-    });
+});
 
 </script>
 
