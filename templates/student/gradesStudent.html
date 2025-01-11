@@ -5,21 +5,80 @@
     <h1>Oceny ucznia: {{ student_name }}</h1>
     <table>
         <thead>
-            <th>Przedmiot</th>
-            <th>Ocena</th>
-            <th>Data</th>
-            <th>Komentarz</th>
+            <tr>
+                <th>Przedmiot</th>
+                <th>Sprawdzian</th>
+                <th>Prace klasowe</th>
+                <th>Zadania domowe</th>
+            </tr>
         </thead>
         <tbody>
-            {% for grade in grades %}
+            {% for subject, categories in grades.items() %}
             <tr>
-                <td>{{ grade.subject }}</td>
-                <td>{{ grade.grade }}</td>
-                <td>{{ grade.date }}</td>
-                <td>{{ grade.comment }}</td>
+                <td>{{ subject }}</td>
+                <td>
+                    {% for grade in categories['sprawdzian'] %}
+                        <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for grade in categories['prace klasowe'] %}
+                        <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for grade in categories['zadania domowe'] %}
+                        <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
+                    {% endfor %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<!-- Modal for displaying grade details -->
+<div id="gradeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Ocena: <span id="modal-grade"></span></h2>
+        <p><strong>Opis:</strong> <span id="modal-comment"></span></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Wait until the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all grade elements
+        const gradeElements = document.querySelectorAll('.grade');
+        
+        // Add event listener to each grade element
+        gradeElements.forEach((element) => {
+            element.addEventListener('click', function() {
+                // Log to check if the click event is triggered
+                console.log('Grade clicked!');
+                
+                // Get the grade value and comment from data attributes
+                const grade = this.getAttribute('data-grade');
+                const comment = this.getAttribute('data-comment');
+                
+                // Log to check if the data attributes are correctly retrieved
+                console.log('Grade:', grade);
+                console.log('Comment:', comment);
+                
+                // Display the modal with the grade and comment
+                document.getElementById('modal-grade').innerText = "amongus";  // Change to 'amongus' as required
+                document.getElementById('modal-comment').innerText = "amongus";  // Change to 'amongus' as required
+                document.getElementById('gradeModal').style.display = 'block';
+            });
+        });
+        
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('gradeModal').style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}

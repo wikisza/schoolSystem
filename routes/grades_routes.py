@@ -17,7 +17,6 @@ def grades():
 def gradesTeacher():
     return render_template('teacher/gradesTeacher.html', username=current_user.username, profession=current_user.profession)
 
-# Widok ocen ucznia
 @grades_blueprint.route('/gradesStudent')
 @login_required
 def gradesStudent():
