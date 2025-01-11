@@ -1,11 +1,25 @@
 {% extends "student/studentView.html" %}
 
 {% block mainContent %}
-
 <div class="partialView">
-    oceny
-
+    <h1>Oceny ucznia: {{ student_name }}</h1>
+    <table>
+        <thead>
+            <th>Przedmiot</th>
+            <th>Ocena</th>
+            <th>Data</th>
+            <th>Komentarz</th>
+        </thead>
+        <tbody>
+            {% for grade in grades %}
+            <tr>
+                <td>{{ grade.subject }}</td>
+                <td>{{ grade.grade }}</td>
+                <td>{{ grade.date }}</td>
+                <td>{{ grade.comment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-
-
 {% endblock %}
