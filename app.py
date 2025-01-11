@@ -7,7 +7,7 @@ from routes.index_routes import index_blueprint
 from routes.classSchedule_routes import classSchedule_blueprint
 from routes.grades_routes import grades_blueprint
 from routes.attendance_routes import attendance_blueprint
-from routes.messages_routes import messages_blueprint
+from routes.messages_routes import messages_blueprint,register_message_socketio
 from routes.settings_routes import settings_blueprint
 from routes.classHandler_routes import classHandler_blueprint
 from controllers.auth_controller import load_user
@@ -32,6 +32,6 @@ login_manager.user_loader(load_user)
 login_manager.login_view = 'auth.login'
 
 socketio = SocketIO(app)
-
+register_message_socketio(socketio)  
 if __name__ == '__main__':
     socketio.run(app, debug=True)

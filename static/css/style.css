@@ -557,3 +557,254 @@ th {
     background-color: #ccc;
     color: #333;
 }
+/*style dla widoku wiadomosci*/
+.message {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+}
+
+.container-messages {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+    border-radius: 10px;
+}
+
+.sidebar-messages {
+    width: 25%;
+    background-color: #FFBF69;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    color: #fff;
+    height: 100%; /* Full height of the container */
+    overflow: hidden; /* Prevent overflow outside the container */
+    max-height:400px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.chat-area {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 400px;
+}
+.clear-button {
+    background-color:  #CBF3F0;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+#message-input {
+    width: 80%;
+    overflow-x: scroll;
+    height: 3rem;
+    border-radius: 5px;
+}
+
+#send-message-btn {
+    width: 15%;
+    height: 3rem;
+}
+
+.messages {
+    height: 100%;
+}
+
+.input-message-box {
+    padding: 10px;
+    background-color: #1f7e75;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.header-messages {
+    display: flex; /* Align button and h3 horizontally */
+    align-items: center; /* Vertically align items in the same line */
+    gap: 10px; /* Space between the button and the h3 */
+    padding: 5px;
+    border-bottom: 2px solid #FF9F1C;
+}
+
+.header-messages h4 {
+    width: 80%;
+}
+
+#create-room-button i {
+    font-size: 24px; /* Increase icon size */
+    width: auto;
+    height: auto;
+    transition: transform 0.3s ease; /* Optional: Add smooth scaling effect */
+    border: none;
+}
+
+#send-message-btn:hover {
+    background-color: #1c6f67;
+}
+
+#messages {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align messages to the right */
+    padding: 10px; /* Adjust the height of the message container */
+    overflow-y: auto; /* Enable scrolling if the messages exceed the container height */
+}
+
+.message {
+    background-color: #f0f0f0; /* Light background for messages */
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for a 3D effect */
+}
+
+#create-room-input {
+    width: 75%;
+    overflow-x: scroll;
+    height: 2rem;
+    border-radius: 5px;
+}
+
+#create-room-submit-btn,
+#close-room-button {
+    width: 10%;
+    height: 2rem;
+}
+
+.create-room-div {
+    display: none;
+    padding: 10px;
+    background-color: #1f7e75;
+    border: 1px solid #ccc;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.room {
+padding: 10px;
+margin: 5px 0;
+border-radius: 10px;
+background-color: #FF9F1C;
+color: white;
+cursor: pointer;
+text-align: left;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+width: 100%;
+position: relative;
+overflow-x: hidden;
+}
+#room-list {
+    overflow-y: auto; /* Enable vertical scrolling */
+    flex-grow: 1; /* Allow it to expand within the sidebar */
+    padding-right: 10px; /* Optional: Add space to avoid scrollbar overlap */
+}
+
+.room:hover {
+    background-color: #CBF3F0;
+    color: black;
+}
+.message-wrapper {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word; /* Ensure long words are wrapped */
+    max-width: 60%;
+}
+
+.sender-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.time-sent {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+.suggestions {
+    position: absolute;
+    width: 30%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+}
+#userSuggestionsList {
+display: none;
+}
+
+#userSuggestionsList.active {
+display: block; /* Show suggestions when active */
+}
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+.no-matches {
+    padding: 10px;
+    color: #888;
+}
+.suggestion-item:hover,
+.suggestion-item.focused {
+background-color: #f0f0f0;
+}
+.room:hover::after {
+visibility: visible;
+opacity: 1; /* Fade in the tooltip */
+}
+.room::after {
+content: attr(title);
+position: absolute;
+left: 100%; /* Position the tooltip to the right of the room */
+top: 50%;
+transform: translateY(-50%); /* Center the tooltip vertically */
+background-color: #333;
+color: #fff;
+padding: 5px;
+border-radius: 5px;
+white-space: nowrap;
+visibility: hidden; /* Initially hidden */
+opacity: 0;
+transition: opacity 0.3s ease;
+z-index: 1; /* Ensure the tooltip is on top */
+}
+.room.active {
+background-color: #2EC4B6; /* Change this to your desired highlight color */
+}
+
+
+.current-user {
+align-self: flex-end;
+background-color: #d1f7c4; /* Light green for current user */
+text-align: right;
+}
+
+.other-user {
+align-self: flex-start;
+background-color: #f1f0f0; /* Light grey for other users */
+text-align: left;
+}
+
+/*style dla widoku wiadomosci*/
