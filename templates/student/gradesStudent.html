@@ -3,38 +3,41 @@
 {% block mainContent %}
 <div class="partialView">
     <h1>Oceny ucznia: {{ student_name }}</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Przedmiot</th>
-                <th>Sprawdzian</th>
-                <th>Prace klasowe</th>
-                <th>Zadania domowe</th>
-            </tr>
-        </thead>
-        <tbody>
+
+    <div class="table">
+        <div class="table-header">
+            <div class="table-cell">Przedmiot</div>
+            <div class="table-cell">Sprawdzian</div>
+            <div class="table-cell">Prace klasowe</div>
+            <div class="table-cell">Zadania domowe</div>
+        </div>
+
+        <div class="table-body">
             {% for subject, categories in grades.items() %}
-            <tr>
-                <td>{{ subject }}</td>
-                <td>
+            <div class="table-row">
+                <div class="table-cell">{{ subject }}</div>
+                
+                <div class="table-cell">
                     {% for grade in categories['sprawdzian'] %}
                         <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
                     {% endfor %}
-                </td>
-                <td>
+                </div>
+                
+                <div class="table-cell">
                     {% for grade in categories['prace klasowe'] %}
                         <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
                     {% endfor %}
-                </td>
-                <td>
+                </div>
+                
+                <div class="table-cell">
                     {% for grade in categories['zadania domowe'] %}
                         <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
                     {% endfor %}
-                </td>
-            </tr>
+                </div>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    </div>
 </div>
 
 <!-- Modal for displaying grade details -->
@@ -49,36 +52,33 @@
 
 {% block scripts %}
 <script>
-    // Wait until the DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get all grade elements
-        const gradeElements = document.querySelectorAll('.grade');
-        
-        // Add event listener to each grade element
-        gradeElements.forEach((element) => {
-            element.addEventListener('click', function() {
-                // Log to check if the click event is triggered
-                console.log('Grade clicked!');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Nasłuchujemy kliknięcia na całej tabeli lub kontenerze, w którym znajdują się oceny
+        const table = document.querySelector('.subjects-container'); // Możesz tu wybrać dowolny nadrzędny element
+        table.addEventListener('click', function(event) {
+            // Sprawdzamy, czy kliknięto na element o klasie .grade
+            if (event.target && event.target.classList.contains('grade')) {
+                const grade = event.target.getAttribute('data-grade');
+                const comment = event.target.getAttribute('data-comment');
                 
-                // Get the grade value and comment from data attributes
-                const grade = this.getAttribute('data-grade');
-                const comment = this.getAttribute('data-comment');
+                // Debugowanie: sprawdzamy, czy kliknięcie jest rozpoznawane
+                console.log('Kliknięto ocenę!', event.target); // Pokazuje element, na który kliknęliśmy
                 
-                // Log to check if the data attributes are correctly retrieved
-                console.log('Grade:', grade);
-                console.log('Comment:', comment);
+                // Zmieniamy tekst w modalu na ocenę i komentarz
+                document.getElementById('modal-grade').innerText = grade; // Można dodać "amongus"
+                document.getElementById('modal-comment').innerText = comment; // Lub np. "amongus"
                 
-                // Display the modal with the grade and comment
-                document.getElementById('modal-grade').innerText = "amongus";  // Change to 'amongus' as required
-                document.getElementById('modal-comment').innerText = "amongus";  // Change to 'amongus' as required
+                // Wyświetlamy modal
                 document.getElementById('gradeModal').style.display = 'block';
-            });
+            }
         });
-        
-        // Function to close the modal
-        function closeModal() {
-            document.getElementById('gradeModal').style.display = 'none';
-        }
     });
+
+    // Funkcja do zamknięcia modalu
+    function closeModal() {
+        document.getElementById('gradeModal').style.display = 'none';
+    }
 </script>
 {% endblock %}
+
+
