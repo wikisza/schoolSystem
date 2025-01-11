@@ -7,6 +7,7 @@ from controllers.classHandler_controller import get_students_for_class_leader
 from controllers.classHandler_controller import is_class_leader
 from flask import request, redirect, url_for
 from controllers.classHandler_controller import get_student_by_id, update_student_data
+from controllers.classHandler_controller import get_all_parents
 
 classHandler_blueprint = Blueprint('classHandler', __name__)
 
@@ -37,23 +38,22 @@ def classHandler():
         students_for_classes=students_for_classes
     )
 
+
 @classHandler_blueprint.route('/edit_student', methods=['GET'])
 @login_required
 def edit_student():
-    student_id = request.args.get('student_id')  # Zmieniamy na args, bo formularz wysyła dane w URL
-    
-    # Dodaj logowanie
-    print(f"Received student_id: {student_id}")
+    student_id = request.args.get('student_id')
 
     if not student_id:
         return "Student ID is required", 400
 
-    # Pobierz dane ucznia z kontrolera
     student = get_student_by_id(student_id)
     if not student:
         return "Student not found", 404
 
-    return render_template('teacher/edit_student.html', student=student)
+    parents = get_all_parents()  # Pobranie listy rodziców
+    return render_template('teacher/edit_student.html', student=student, parents=parents)
+
 
 
 @classHandler_blueprint.route('/update_student', methods=['POST'])
@@ -63,17 +63,19 @@ def update_student():
     if not student_id:
         return "Student ID is required", 400
 
-    # Pobierz dane z formularza
+    parent_id = request.form.get('parent_id')  # Pobierz ID rodzica z formularza
+    if not parent_id:
+        parent_id = None  # Jeśli brak wyboru, ustaw jako None
+
     updated_data = {
         "firstName": request.form.get('firstName'),
         "lastName": request.form.get('lastName'),
         "email": request.form.get('email'),
         "phoneNumber": request.form.get('phoneNumber'),
         "address": request.form.get('address'),
-        "parentName": request.form.get('parentName'),
+        "parent_id": parent_id,  # Dodanie ID rodzica
     }
 
-    # Zaktualizuj dane ucznia
     success = update_student_data(student_id, updated_data)
     if not success:
         return "Failed to update student data", 500
