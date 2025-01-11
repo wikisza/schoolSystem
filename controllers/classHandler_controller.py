@@ -1,5 +1,23 @@
 import sqlite3
 
+def get_all_parents():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT parents.id_parent, users.firstName, users.lastName
+    FROM parents
+    JOIN users ON parents.id_user = users.id
+    '''
+    cursor.execute(query)
+    parents = cursor.fetchall()
+
+    conn.close()
+
+    # Zwróć listę rodziców jako słownik
+    return [{"id_parent": parent[0], "name": f"{parent[1]} {parent[2]}"} for parent in parents]
+
+
 def get_students_for_class_leader(teacher_id):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -124,7 +142,7 @@ def update_student_data(student_id, updated_data):
     with sqlite3.connect('database.db') as conn:
         cursor = conn.cursor()
 
-        # Pobierz `id_user` ucznia na podstawie `id_student`
+        # Pobierz id_user ucznia
         query_user = '''
         SELECT id_user 
         FROM students 
@@ -132,13 +150,11 @@ def update_student_data(student_id, updated_data):
         '''
         cursor.execute(query_user, (student_id,))
         result = cursor.fetchone()
-
         if not result:
             return False
-
         user_id = result[0]
 
-        # Zaktualizuj dane ucznia w tabeli `users`
+        # Aktualizacja danych użytkownika
         query_update_user = '''
         UPDATE users
         SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, address = ?
@@ -153,56 +169,13 @@ def update_student_data(student_id, updated_data):
             user_id
         ))
 
-        # Logowanie, żeby sprawdzić, czy dane rodzica są przekazywane poprawnie
-        if "parentName" in updated_data and updated_data["parentName"] != "Brak":
-            parent_first_name, parent_last_name = updated_data["parentName"].split(" ", 1)
-            print(f"Updating parent: {parent_first_name} {parent_last_name}")  # Debugowanie
-
-            # Sprawdź, czy rodzic już istnieje w tabeli 'users'
-            query_check_parent = '''
-            SELECT id FROM users WHERE firstName = ? AND lastName = ?
-            '''
-            cursor.execute(query_check_parent, (parent_first_name, parent_last_name))
-            parent_user = cursor.fetchone()
-
-            if parent_user:
-                parent_user_id = parent_user[0]
-                print(f"Parent already exists with ID: {parent_user_id}")  # Debugowanie
-            else:
-                # Jeśli rodzic nie istnieje, dodajemy go
-                query_insert_parent = '''
-                INSERT INTO users (firstName, lastName)
-                VALUES (?, ?)
-                '''
-                cursor.execute(query_insert_parent, (parent_first_name, parent_last_name))
-                parent_user_id = cursor.lastrowid  # Pobierz ID nowo dodanego rodzica
-
-                # Dodajemy nowego rodzica do tabeli `parents`
-                query_add_parent = '''
-                INSERT INTO parents (id_user) 
-                VALUES (?) 
-                '''
-                cursor.execute(query_add_parent, (parent_user_id,))
-                print(f"New parent added with ID: {parent_user_id}")  # Debugowanie
-
-            # Teraz przypisujemy id_parent z tabeli parents do tabeli students
-            query_get_parent_id = '''
-            SELECT id_parent 
-            FROM parents 
-            WHERE id_user = ?
-            '''
-            cursor.execute(query_get_parent_id, (parent_user_id,))
-            parent_id = cursor.fetchone()[0]
-            print(f"Parent ID from parents table: {parent_id}")  # Debugowanie
-
-            # Zaktualizuj tabelę `students` z ID rodzica (id_parent)
-            query_update_student_parent = '''
-            UPDATE students 
-            SET id_parent = ? 
-            WHERE id_student = ?
-            '''
-            cursor.execute(query_update_student_parent, (parent_id, student_id))
-            print(f"Parent ID {parent_id} assigned to student {student_id}")  # Debugowanie
+        # Aktualizacja ID rodzica w tabeli students
+        query_update_student = '''
+        UPDATE students
+        SET id_parent = ?
+        WHERE id_student = ?
+        '''
+        cursor.execute(query_update_student, (updated_data["parent_id"], student_id))
 
         conn.commit()
 
@@ -210,5 +183,16 @@ def update_student_data(student_id, updated_data):
 
 
 
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # Pobieranie wszystkich rodziców z tabeli users
+    query = "SELECT id_user, firstName, lastName FROM users"
+    cursor.execute(query)
+    parents = cursor.fetchall()
+
+    conn.close()
+    return parents
 
 
