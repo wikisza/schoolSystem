@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan, get_teacher_lessons, get_id_teacher
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan, get_teacher_lessons, get_id_teacher, get_student_class
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -166,6 +166,16 @@ def get_lessons_route():
     classes = get_lessons(class_id)  
 
     return classes  
+
+@classSchedule_blueprint.route('/getThisStudentLessons', methods=['GET'])
+def getThisStudenLessons_route():
+    id_user = current_user.id 
+
+    id_class = get_student_class(id_user)
+
+    classes = get_lessons(id_class)  
+
+    return classes
 
 @classSchedule_blueprint.route('/getAllClasses', methods=['GET'])
 def getAllClasses_route():

@@ -252,6 +252,24 @@ def get_lessons(class_id):
 
     return jsonify(result)
 
+def get_student_class(id_user):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT id_class
+    FROM students
+    WHERE id_user = ?
+    '''
+    
+    cursor.execute(query, (id_user,))
+    result = cursor.fetchone()
+    conn.close()
+
+    id_class = result[0] if result else None
+    
+    return id_class
+
 
 #wszystkie przedmioty
 
@@ -390,13 +408,13 @@ def get_teacher_lessons(id_teacher):
         start_time = lesson[1]
         end_time = lesson[2]
         subject_name = lesson[0]
-        room_number = lesson[4]
-        class_name = lesson[5]
+        room_number = lesson[3]
+        class_name = lesson[4]
 
         start_datetime = datetime.combine(datetime.strptime(lesson_date, "%Y-%m-%d").date(), datetime.strptime(start_time, "%H:%M:%S").time())
         end_datetime = datetime.combine(datetime.strptime(lesson_date, "%Y-%m-%d").date(), datetime.strptime(end_time, "%H:%M:%S").time())
 
-        print("godzina rozpoczecia", start_datetime)
+        print("godzina rozpoczecia", room_number)
         # Dodajemy lekcję do wyników
         lesson_for_day = {
             'title': subject_name,

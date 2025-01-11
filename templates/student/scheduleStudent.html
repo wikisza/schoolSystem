@@ -3,20 +3,59 @@
 {% block mainContent %}
 
 <div class="partialView">
-    <div id="calendar"></div>
+    <div id="calendar2"></div>
 
 </div>
 
-<!--Struktura okienka wyskakujacego po kliknieciu na zajęcia w planie zajęć-->
-<dialog id="eventDialog">
-    <div class="dialog-header">
-        <h2 class="dialog-title"></h2>
-        <button class="close-button" onclick="document.getElementById('eventDialog').close();">X</button>
-    </div>
-    <div class="dialog-content">
-        <p class="dialog-description"></p>
-        <div class="dialog-details"></div> <!-- Nowe miejsce na szczegóły -->
-    </div>
-</dialog>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar2');
+
+
+        // Funkcja renderowania kalendarza dla wybranej klasy
+        function renderCalendar() {
+            fetch('/getThisStudentLessons', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(events => {
+                    // Tworzenie nowego kalendarza
+                    window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+                        firstDay: 1,
+                        height: 650,
+                        initialView: 'dayGridMonth',
+                        slotMinTime: '08:00:00',
+                        slotMaxTime: '20:00:00',
+                        events: events,
+                        locale: 'pl',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        buttonText: {
+                            today: 'Dziś',
+                            month: 'Miesiąc',
+                            week: 'Tydzień',
+                            day: 'Dzień'
+                        },
+                        eventClick: function (info) {
+                            alert(`Przedmiot: ${info.event.title}\nW sali numer: ${info.event.extendedProps.room}\nZ klasą: ${info.event.extendedProps.class_name}`);
+                        }
+                    });
+
+                    window.currentCalendar.render(); // Renderowanie kalendarza
+                })
+                .catch(error => failureCallback(error));
+        }
+
+        renderCalendar();
+    });
+
+
+</script>
 
 {% endblock %}
