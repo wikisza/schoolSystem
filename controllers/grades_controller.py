@@ -8,32 +8,47 @@ from datetime import datetime
 
 def get_student_grades(student_id):
     """
-    Pobiera oceny ucznia z bazy danych na podstawie jego ID.
+    Pobiera oceny ucznia z bazy danych, pogrupowane według przedmiotu i kategorii.
     """
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
     query = '''
-    SELECT subjects.subject_name, grades.value, grades.date, grades.comment
+    SELECT
+        subjects.subject_name,
+        grades_category.nazwa AS category_name,
+        grades.value,
+        grades.date,
+        grades.comment
     FROM grades
     JOIN subjects ON grades.id_subject = subjects.id_subject
+    JOIN grades_category ON grades.id_category = grades_category.id_category
     WHERE grades.id_student = ?
+    ORDER BY subjects.subject_name, grades_category.id_category;
     '''
     cursor.execute(query, (student_id,))
     grades = cursor.fetchall()
 
     conn.close()
 
-    # Zwróć oceny ucznia w formie listy słowników
-    return [
-        {
-            "subject": grade[0],
-            "grade": grade[1],
-            "date": grade[2],
-            "comment": grade[3]
-        }
-        for grade in grades
-    ]
+    # Zgrupowanie ocen według przedmiotów i kategorii
+    grouped_grades = {}
+    for grade in grades:
+        subject = grade[0]
+        category = grade[1]
+        value = grade[2]
+        
+        if subject not in grouped_grades:
+            grouped_grades[subject] = {"sprawdzian": [], "prace klasowe": [], "zadania domowe": []}
+
+        if category == "sprawdzian":
+            grouped_grades[subject]["sprawdzian"].append(value)
+        elif category == "praca klasowa":
+            grouped_grades[subject]["prace klasowe"].append(value)
+        elif category == "zadanie domowe":
+            grouped_grades[subject]["zadania domowe"].append(value)
+
+    return grouped_grades
 
 
 
