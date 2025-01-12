@@ -105,3 +105,29 @@ def save_attendance_changes(attendance_data):
     conn.commit()
     conn.close()
     return {'message': 'Attendance saved successfully'}
+
+def get_existing_attendance(class_id, subject_id):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+        SELECT 
+            presences.id_lesson, 
+            presences.id_student, 
+            presences.status
+        FROM presences
+        JOIN lessons ON presences.id_lesson = lessons.id_lesson
+        WHERE lessons.id_class = ? AND lessons.id_subject = ?
+    '''
+    cursor.execute(query, (class_id, subject_id))
+    existing_attendance = cursor.fetchall()
+    conn.close()
+
+    # Konwersja wyników na słownik dla łatwiejszego użycia w widoku
+    attendance_dict = {}
+    for lesson_id, student_id, status in existing_attendance:
+        if lesson_id not in attendance_dict:
+            attendance_dict[lesson_id] = {}
+        attendance_dict[lesson_id][student_id] = status
+
+    return attendance_dict
