@@ -24,7 +24,7 @@ body {
     padding: 10px 20px;
     color: white;
     top: 40px;
-    width: 90%;
+    width: 100%;
     max-width: 100rem;
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -65,10 +65,10 @@ text-decoration: none;
 }
 
 .logout {
-    color: black;
+    color: white;
     text-decoration: none;
     padding: 5px 10px;
-    background-color: #CBF3F0;
+    background-color: #2EC4B6;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
@@ -175,7 +175,7 @@ text-decoration: none;
 .decision-bar {
     display: flex;
     justify-content: space-between;
-    margin:0;
+    margin: 0;
     align-items: center;
 }
 
@@ -302,7 +302,7 @@ dialog::backdrop {
     color: white;
 }
 
-#confirmGrades{
+#confirmGrades {
     display: none;
 }
 
@@ -348,11 +348,13 @@ table {
     margin-top: 20px;
 }
 
-th, td {
+th,
+td {
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
-    user-select: none; /* Zapobiega zaznaczaniu tekstu */
+    user-select: none;
+    /* Zapobiega zaznaczaniu tekstu */
 }
 
 th {
@@ -409,22 +411,26 @@ th {
     display: block;
 }
 
-.submitGradeButton{
+.submitGradeButton {
     display: flex;
     justify-content: right;
-    margin-top:1rem;
+    margin-top: 1rem;
 }
+
 /* Formularz zastępstw */
 .replacementForm {
-    margin-top:10px;
+    margin-top: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 20px;
     background-color: #f9f9f9;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Form dostosowuje się do szerokości kontenera */
-    max-width: 400px; /* Ustawiamy maksymalną szerokość formularza */
-    margin: 20px 0; /* Odstęp od innych elementów */
+    width: 100%;
+    /* Form dostosowuje się do szerokości kontenera */
+    max-width: 400px;
+    /* Ustawiamy maksymalną szerokość formularza */
+    margin: 20px 0;
+    /* Odstęp od innych elementów */
 }
 
 /* Nagłówek formularza */
@@ -506,17 +512,18 @@ th {
     transition: background-color 0.3s;
 }
 
-.btn:hover{
+.btn:hover {
     background-color: #1c6f67;
 }
 
-.classManagement_bar{
+.classManagement_bar {
     display: flex;
     justify-content: right;
 }
 
 .modal {
-    display: none; /* Ukryty na start */
+    display: none;
+    /* Ukryty na start */
     position: fixed;
     z-index: 1;
     left: 0;
@@ -556,4 +563,105 @@ th {
 .status-btn.active {
     background-color: #ccc;
     color: #333;
+}
+
+.attendance.attendance-table-container {
+    width: 970px;
+    /* Szerokość kontenera */
+    height: 400px;
+    /* Wysokość kontenera */
+    overflow: auto;
+    /* Paski przewijania */
+    border: 1px solid #ccc;
+    /* Obramowanie dla estetyki */
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Subtelny cień */
+}
+
+.attendance table {
+    width: 100%;
+    /* Szerokość tabeli zajmuje całą przestrzeń */
+    border-collapse: collapse;
+}
+
+.attendance th,
+.attendance td {
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.attendance thead th {
+    position: sticky;
+    top: 0;
+    /* Nagłówki tabeli pozostają widoczne przy przewijaniu */
+    background-color: #f8f8f8;
+    /* Jasne tło dla nagłówków */
+    z-index: 2;
+}
+
+.attendance tbody td:first-child,
+.attendance thead th:first-child {
+    position: sticky;
+    left: 0;
+    /* Przypięcie pierwszej kolumny */
+    background-color: #f8f8f8;
+    /* Tło dla pierwszej kolumny */
+    z-index: 1;
+    /* Wyższy indeks z, aby kolumna była nad innymi */
+}
+
+.attendance tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+    /* Alternatywne kolory wierszy */
+}
+
+.attendance tbody tr:hover {
+    background-color: #eaeaea;
+    /* Efekt hover dla wierszy */
+}
+
+button.save-btn {
+    background-color: #2EC4B6;
+    /* Zielony kolor tła */
+    color: white;
+    /* Biały kolor tekstu */
+    border: 2px solid #2EC4B6;
+    /* Delikatna ramka w tym samym kolorze */
+    padding: 10px 20px;
+    /* Odpowiednia przestrzeń wokół tekstu */
+    font-size: 16px;
+    /* Zwiększona czcionka */
+    font-weight: 600;
+    /* Lekka pogrubiona czcionka */
+    border-radius: 5px;
+    /* Zaokrąglone rogi */
+    cursor: pointer;
+    /* Kursor wskazujący, że jest to przycisk */
+    transition: all 0.3s ease;
+    /* Płynna animacja przy zmianie stanu */
+    margin-top: 10px; /* Przestrzeń nad przyciskiem */
+    margin-bottom: 10px; /* Przestrzeń pod przyciskiem */
+    margin-right: 15px; /* Przestrzeń po prawej stronie */
+}
+
+button.save-btn:hover {
+    background-color: #2EC4B6;
+    /* Ciemniejszy odcień zielonego przy najechaniu */
+    border-color: #2EC4B6;
+    /* Dopasowanie koloru ramki do tła */
+}
+
+button.save-btn:active {
+    background-color: #2EC4B6;
+    /* Jeszcze ciemniejszy odcień przy kliknięciu */
+    border-color: #2EC4B6;
+}
+
+button.save-btn:focus {
+    outline: none;
+    /* Usunięcie standardowej ramki po kliknięciu */
+    box-shadow: 0 0 5px #005f55;
+    /* Dodanie delikatnego efektu po kliknięciu */
 }

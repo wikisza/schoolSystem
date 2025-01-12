@@ -375,41 +375,41 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-//JULIA-FREKFENCJA
+// //JULIA-FREKFENCJA
 
-let editMode = false;
-let selectedStatus = "O";
+// let editMode = false;
+// let selectedStatus = "O";
 
-// Tryb edycji
-document.getElementById("edit-mode-btn").addEventListener("click", () => {
-    editMode = !editMode;
-    const cells = document.querySelectorAll("tbody td");
-    cells.forEach(cell => {
-        cell.classList.toggle("disabled", !editMode);
-    });
+// // Tryb edycji
+// document.getElementById("edit-mode-btn").addEventListener("click", () => {
+//     editMode = !editMode;
+//     const cells = document.querySelectorAll("tbody td");
+//     cells.forEach(cell => {
+//         cell.classList.toggle("disabled", !editMode);
+//     });
 
-    // Zmieniamy kolor przycisku "Edycja"
-    const editButton = document.getElementById("edit-mode-btn");
-    editButton.classList.toggle("active", editMode);
-});
+//     // Zmieniamy kolor przycisku "Edycja"
+//     const editButton = document.getElementById("edit-mode-btn");
+//     editButton.classList.toggle("active", editMode);
+// });
 
-// Zaznaczanie statusu z legendy
-const statusButtons = document.querySelectorAll(".status-btn");
-statusButtons.forEach(button => {
-    button.addEventListener("click", () => {
-        statusButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        selectedStatus = button.getAttribute("data-status");
-    });
-});
+// // Zaznaczanie statusu z legendy
+// const statusButtons = document.querySelectorAll(".status-btn");
+// statusButtons.forEach(button => {
+//     button.addEventListener("click", () => {
+//         statusButtons.forEach(btn => btn.classList.remove("active"));
+//         button.classList.add("active");
+//         selectedStatus = button.getAttribute("data-status");
+//     });
+// });
 
-// Wypełnianie komórek tabeli
-document.querySelectorAll("tbody td").forEach(cell => {
-    cell.addEventListener("click", () => {
-        if (editMode && cell.classList.contains("editable")) {
-            cell.textContent = selectedStatus;
-        }
-    });
-});
+// // Wypełnianie komórek tabeli
+// document.querySelectorAll("tbody td").forEach(cell => {
+//     cell.addEventListener("click", () => {
+//         if (editMode && cell.classList.contains("editable")) {
+//             cell.textContent = selectedStatus;
+//         }
+//     });
+// });
 
-//KONIEC FREKFENCJI
+// //KONIEC FREKFENCJI
