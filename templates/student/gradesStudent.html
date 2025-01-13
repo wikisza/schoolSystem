@@ -1,82 +1,308 @@
 {% extends "student/studentView.html" %}
 
 {% block mainContent %}
-<div class="partialView">
-    <h1>Oceny ucznia: {{ student_name }}</h1>
+<div class="grades-container">
+    <!-- Nagłówek -->
+    <div class="grades-row">
+        <div class="grades-cell">Przedmiot</div>
+        <div class="grades-cell">Sprawdzian</div>
+        <div class="grades-cell">Prace klasowe</div>
+        <div class="grades-cell">Zadania domowe</div>
+        <div class="grades-cell">Aktywność</div>
+        <div class="grades-cell">Średnia ważona</div>  <!-- Nowa kolumna dla średniej -->
+    </div>
+    
+    <!-- Wiersze z danymi -->
+    {% for subject, categories in grades.items() %}
+    <div class="grades-row" id="subject-{{ loop.index }}" data-subject-index="{{ loop.index }}">
+        <div class="grades-cell">{{ subject }}</div>
 
-    <div class="table">
-        <div class="table-header">
-            <div class="table-cell">Przedmiot</div>
-            <div class="table-cell">Sprawdzian</div>
-            <div class="table-cell">Prace klasowe</div>
-            <div class="table-cell">Zadania domowe</div>
+        <div class="grades-cell">
+            {% if categories['sprawdzian'] %}
+                {% for grade in categories['sprawdzian'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Sprawdzian" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %}
+                &nbsp;
+            {% endif %}
         </div>
 
-        <div class="table-body">
-            {% for subject, categories in grades.items() %}
-            <div class="table-row">
-                <div class="table-cell">{{ subject }}</div>
-                
-                <div class="table-cell">
-                    {% for grade in categories['sprawdzian'] %}
-                        <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
-                    {% endfor %}
-                </div>
-                
-                <div class="table-cell">
-                    {% for grade in categories['prace klasowe'] %}
-                        <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
-                    {% endfor %}
-                </div>
-                
-                <div class="table-cell">
-                    {% for grade in categories['zadania domowe'] %}
-                        <div class="grade" data-comment="{{ grade.comment }}" data-grade="{{ grade }}">{{ grade }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endfor %}
+        <div class="grades-cell">
+            {% if categories['prace klasowe'] %}
+                {% for grade in categories['prace klasowe'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Prace klasowe" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %} 
+                &nbsp;
+            {% endif %}
+        </div>
+
+        <div class="grades-cell">
+            {% if categories['zadania domowe'] %}
+                {% for grade in categories['zadania domowe'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Zadania domowe" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %} 
+                &nbsp;
+            {% endif %}
+        </div>
+
+        <div class="grades-cell">
+            {% if categories['aktywność'] %}
+                {% for grade in categories['aktywność'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Aktywność" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %} 
+                &nbsp;
+            {% endif %}
+        </div>
+
+        <!-- Nowa komórka na średnią ważoną -->
+        <div class="grades-cell" id="average-{{ loop.index }}">
+            &nbsp;  <!-- Wartość średniej będzie aktualizowana przez JS -->
         </div>
     </div>
+    {% endfor %}
 </div>
 
-<!-- Modal for displaying grade details -->
+<!-- Modal -->
 <div id="gradeModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Ocena: <span id="modal-grade"></span></h2>
+        <p><strong>Waga:</strong> <span id="modal-weight"></span></p>
+        <p><strong>Data:</strong> <span id="modal-date"></span></p>
+        <p><strong>Status:</strong> <span id="modal-category"></span></p>
         <p><strong>Opis:</strong> <span id="modal-comment"></span></p>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    // Funkcja do obliczania średniej ważonej dla danego przedmiotu
+    function calculateWeightedAverage(subjectId) {
+        const rows = document.querySelectorAll(`#subject-${subjectId} .grades-cell`);
+        let weightedSum = 0;
+        let totalWeight = 0;
 
-        const table = document.querySelector('.table-body'); // Możesz tu wybrać dowolny nadrzędny element
-        table.addEventListener('click', function(event) {
-            // Sprawdzamy, czy kliknięto na element o klasie .grade
+        rows.forEach(row => {
+            if (row.querySelectorAll('.grade').length > 0) {
+                row.querySelectorAll('.grade').forEach(gradeElement => {
+                    const grade = parseFloat(gradeElement.getAttribute('data-grade'));
+                    const weight = parseFloat(gradeElement.getAttribute('data-weight'));
+                    weightedSum += grade * weight;
+                    totalWeight += weight;
+                });
+            }
+        });
+
+        // Obliczanie średniej ważonej
+        const weightedAvg = totalWeight > 0 ? (weightedSum / totalWeight).toFixed(2) : 'brak ocen';
+        
+        // Wyświetlanie średniej w odpowiedniej komórce
+        document.getElementById(`average-${subjectId}`).innerText = weightedAvg;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.grades-container');
+        container.addEventListener('click', function(event) {
             if (event.target && event.target.classList.contains('grade')) {
                 const grade = event.target.getAttribute('data-grade');
+                const weight = event.target.getAttribute('data-weight');
+                const date = event.target.getAttribute('data-date');
                 const comment = event.target.getAttribute('data-comment');
-                
-                // Debugowanie: sprawdzamy, czy kliknięcie jest rozpoznawane
-                console.log('Kliknięto ocenę!', event.target); // Pokazuje element, na który kliknęliśmy
-                
-                // Zmieniamy tekst w modalu na ocenę i komentarz
-                document.getElementById('modal-grade').innerText = grade; // Można dodać "amongus"
-                document.getElementById('modal-comment').innerText = comment; // Lub np. "amongus"
-                
+                const category = event.target.getAttribute('data-category');  // Nowa zmienna dla kategorii
+
+                // Zmieniamy tekst w modalu na odpowiednie dane
+                document.getElementById('modal-grade').innerText = grade;
+                document.getElementById('modal-weight').innerText = weight;
+                document.getElementById('modal-date').innerText = date;
+                document.getElementById('modal-comment').innerText = comment;
+                document.getElementById('modal-category').innerText = category;  // Pokazanie kategorii
+
                 // Wyświetlamy modal
                 document.getElementById('gradeModal').style.display = 'block';
             }
         });
+
+        // Obliczanie średniej ważonej dla każdego przedmiotu po załadowaniu strony
+        {% for subject, categories in grades.items() %}
+            // Możesz przekazać `loop.index` do JavaScript jako liczby całkowitej
+            calculateWeightedAverage({{ loop.index }});
+        {% endfor %}
     });
 
-    // Funkcja do zamknięcia modalu
     function closeModal() {
         document.getElementById('gradeModal').style.display = 'none';
     }
 </script>
+
+<style>
+/* Ogólne stylowanie kontenera */
+.grades-container {
+    width: 100%;
+    margin: 20px 0;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #ffbf69; /* Tło całej tabeli na kolor #ffbf69 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Nagłówki tabeli - wycentrowanie tekstu */
+.grades-row:first-child .grades-cell {
+    background-color: #ff9800;  /* Pomarańczowe tło dla pierwszego wiersza (nagłówków) */
+    color: white;  /* Biały kolor tekstu */
+    display: flex; /* Używamy flexbox do centrowania */
+    justify-content: center; /* Poziome wycentrowanie */
+    align-items: center; /* Pionowe wycentrowanie */
+}
+
+/* Reszta wierszy (komórki) */
+.grades-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-weight: bold;
+    color: #333;
+}
+
+.grades-cell {
+    flex: 1; /* Zajmuje równą ilość przestrzeni */
+    text-align: center;
+    padding: 8px;
+    font-size: 16px;
+    background-color: #ffd699; /* Jaśniejszy pomarańczowy kolor tła dla komórek */
+    border-radius: 4px;
+    margin: 0 5px;
+    min-width: 100px; /* Gwarantuje minimalną szerokość komórek */
+    display: flex; /* Używamy flexbox do centrowania */
+    justify-content: center; /* Poziome wycentrowanie */
+    align-items: center; /* Pionowe wycentrowanie */
+}
+
+/* Komórki z ocenami - brak wycentrowania */
+.grades-cell .grade {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px 0;
+    font-size: 14px;
+    background-color: #ff9800; /* Pomarańczowe tło dla ocen */
+    border-radius: 4px;
+    cursor: pointer;
+    color: white; /* Biały kolor tekstu na tle pomarańczowym */
+    text-align: left; /* Wyrównanie do lewej */
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.grade:hover {
+    background-color: #e67e00; /* Ciemniejszy pomarańczowy przy najechaniu */
+    transform: scale(1.05);
+}
+
+/* Styl dla modala */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.modal h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.modal p {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #555;
+}
+
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.modal .close:hover {
+    color: #00bcd4;
+}
+
+/* Stylowanie na responsywność */
+@media (max-width: 768px) {
+    .grades-row {
+        flex-direction: column;
+    }
+
+    .grades-cell {
+        text-align: left;
+        margin: 5px 0;
+        min-width: auto; /* W przypadku małych ekranów nie wymuszamy minimalnej szerokości */
+    }
+
+    .modal-content {
+        max-width: 100%;
+    }
+}
+
+
+
+</style>
+
+
+
+
 {% endblock %}
-
-
