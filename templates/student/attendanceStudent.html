@@ -3,11 +3,85 @@
 {% block mainContent %}
 
 <div class="partialView">
-    frekwencja
-
-    <div id="calendar"></div>
+    <div id="calendar2"></div>
 
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar2');
+
+    // Słownik tłumaczeń statusów
+    var statusTranslation = {
+        'o': 'Obecny',
+        '-': 'Nieobecny',
+        'u': 'Usprawiedliwiony',
+        's': 'Spóźniony'
+    };
+
+    // Słownik kolorów tła dla różnych statusów
+    var backgroundColors = {
+        'o': '#28a745',  // zielony
+        '-': '#dc3545',  // czerwony
+        'u': '#ffc107',  // żółty
+        's': '#6f42c1',  // fioletowy
+        default: '#FFFFFF'    // bez koloru
+    };
+
+    // Funkcja renderowania kalendarza dla wybranej klasy
+    function renderCalendar() {
+        fetch('/getThisStudentLessonsAndPresences', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(events => {
+                // Tworzenie nowego kalendarza
+                window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+                    firstDay: 1,
+                    height: 650,
+                    initialView: 'dayGridMonth',
+                    slotMinTime: '08:00:00',
+                    slotMaxTime: '20:00:00',
+                    events: events.map(event => {
+                        // Ustawianie kolorów tła i obramowania
+                        event.backgroundColor = backgroundColors[event.status] || backgroundColors['default'];
+                        event.borderColor = backgroundColors[event.status] || backgroundColors['default'];
+                        return event;
+                    }),
+                    locale: 'pl',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    buttonText: {
+                        today: 'Dziś',
+                        month: 'Miesiąc',
+                        week: 'Tydzień',
+                        day: 'Dzień'
+                    },
+                    eventClick: function (info) {
+                        var translatedStatus = statusTranslation[info.event.extendedProps.status] || 'Nie wprowadzono frekwencji';
+                        alert(`Przedmiot: ${info.event.title}\nW sali numer: ${info.event.extendedProps.room}\nStatus: ${translatedStatus}`);
+                    }
+                });
+
+                window.currentCalendar.render(); // Renderowanie kalendarza
+            })
+            .catch(error => failureCallback(error));
+    }
+
+    function failureCallback(error) {
+        console.error('Error fetching events:', error);
+        alert('Wystąpił błąd podczas pobierania danych z serwera.');
+    }
+
+    renderCalendar();
+});
+
+</script>
 
 {% endblock %}

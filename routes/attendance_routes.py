@@ -1,6 +1,17 @@
 from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
-from controllers.attendance_controller import get_classes, get_existing_attendance, get_subjects, get_attendance_data, get_lessons, save_attendance_changes
+from controllers.attendance_controller import (
+    get_classes,
+    get_existing_attendance,
+    get_lessons_with_presence,
+    get_student_id,
+    get_subjects,
+    get_attendance_data,
+    get_lessons,
+    save_attendance_changes
+)
+
+from controllers.classSchedule_controller import get_student_class
 
 attendance_blueprint = Blueprint('attendance', __name__)
 
@@ -61,3 +72,14 @@ def save_attendance():
     # Zapisz dane do bazy
     result = save_attendance_changes(data)
     return jsonify(result)
+
+
+@attendance_blueprint.route('/getThisStudentLessonsAndPresences', methods=['GET'])
+def getThisStudentLessonsAndPresences_routes():
+    id_user = current_user.id
+    id_class = get_student_class(id_user)
+    id_student = get_student_id(id_user)  # Zakładamy, że jest funkcja get_student_id
+
+    classes = get_lessons_with_presence(id_class, id_student)
+
+    return classes
