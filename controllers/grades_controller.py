@@ -17,6 +17,7 @@ def get_student_grades(student_id):
     SELECT
         subjects.subject_name,
         grades_category.nazwa AS category_name,
+        grades_category.waga AS category_weight,
         grades.value,
         grades.date,
         grades.comment
@@ -36,19 +37,31 @@ def get_student_grades(student_id):
     for grade in grades:
         subject = grade[0]
         category = grade[1]
-        value = grade[2]
+        weight = grade[2]
+        value = grade[3]
+        date = grade[4]
+        comment = grade[5]
         
         if subject not in grouped_grades:
-            grouped_grades[subject] = {"sprawdzian": [], "prace klasowe": [], "zadania domowe": []}
+            grouped_grades[subject] = {
+                "sprawdzian": [],
+                "prace klasowe": [],
+                "zadania domowe": [],
+                "aktywność": []  # Nowa kategoria
+            }
 
+        grade_data = {"value": value, "category": category, "weight": weight, "date": date, "comment": comment}
         if category == "sprawdzian":
-            grouped_grades[subject]["sprawdzian"].append(value)
+            grouped_grades[subject]["sprawdzian"].append(grade_data)
         elif category == "praca klasowa":
-            grouped_grades[subject]["prace klasowe"].append(value)
+            grouped_grades[subject]["prace klasowe"].append(grade_data)
         elif category == "zadanie domowe":
-            grouped_grades[subject]["zadania domowe"].append(value)
+            grouped_grades[subject]["zadania domowe"].append(grade_data)
+        elif category == "aktywność":  # Obsługa aktywności
+            grouped_grades[subject]["aktywność"].append(grade_data)
 
     return grouped_grades
+
 
 
 
