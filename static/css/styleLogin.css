@@ -113,5 +113,11 @@ a:hover {
 }
 
 .btn:hover{
-    background-color: #1c6f67;
+    background-color: #29b4a6;
+}
+
+#btnRegister{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

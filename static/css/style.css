@@ -1026,3 +1026,18 @@ button.save-btn:focus {
 .groupSection label{
     padding: 5px;
 }
+
+.newSubjectClass{
+    display: flex;
+    justify-content: center;
+}
+
+.addingTeacherToSubject {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin:2rem;
+}
+
+
+

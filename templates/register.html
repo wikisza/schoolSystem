@@ -13,8 +13,6 @@
 
         <section>
 
-            <a href="/administrationView" class="btn">Wróć</a>
-
             <h1>Rejestracja</h1>
             <form method="POST" action="/register">
                 <label for="firstName">Imię:</label>
@@ -42,7 +40,7 @@
                 <input type="text" id="address" name="address" required>
 
                 <label for="profession">Konto dla:</label>
-                <select id="profession" name="profession">
+                <select class="btn" id="profession" name="profession">
                     <option value="administracja">Administracja</option>
                     <option value="nauczyciel">Nauczyciel</option>
                     <option value="uczen">Uczeń</option>
@@ -52,6 +50,8 @@
                 <button type="submit">Zarejestruj</button>
             </form>
 
+            
+            
             {% with messages = get_flashed_messages() %}
             {% if messages %}
             <ul>
@@ -61,8 +61,12 @@
             </ul>
             {% endif %}
             {% endwith %}
-        </section>
+            <div>
 
+                <a id="btnRegister" href="/administrationView" class="btn">Wróć</a>
+            </div>
+        </section>
+        
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect
 from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
-from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan, get_teacher_lessons, get_id_teacher, get_student_class
+from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan, get_teacher_lessons, get_id_teacher, get_student_class, SubjectTeacherConnection
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -253,4 +253,27 @@ def get_teacher_lessons_route():
     lessons = get_teacher_lessons(teacher_id)  
 
     return lessons
+
+
+@classSchedule_blueprint.route('/updateSubjectTeacherConnection', methods=['POST'])
+def updateSubjectTeacherConnection_route():
+    data = request.json
+
+    if not data:
+        return jsonify({"error": "Brak danych w żądaniu."}), 400
+
+    id_teacher = data.get('id_teacher')
+    id_subject = data.get('id_subject')
+
+    
+    try:
+        result = SubjectTeacherConnection(id_subject, id_teacher)
+
+        return result
+
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred: " + str(e)}), 500
 
