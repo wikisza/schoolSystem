@@ -39,7 +39,9 @@ def get_students_for_class_leader(teacher_id):
         # Pobierz uczniów przypisanych do tej klasy, a także ich rodziców
         query_students = '''
         SELECT users.firstName, users.lastName, users.email, users.phoneNumber, users.address, 
-               students.id_student, parents.id_parent, parent_users.firstName AS parent_firstName, parent_users.lastName AS parent_lastName
+               students.id_student, parents.id_parent, parent_users.firstName AS parent_firstName, 
+               parent_users.lastName AS parent_lastName, parent_users.email AS parent_email,
+               parent_users.phoneNumber AS parent_phone
         FROM students
         JOIN users ON students.id_user = users.id
         LEFT JOIN parents ON students.id_parent = parents.id_parent
@@ -49,9 +51,6 @@ def get_students_for_class_leader(teacher_id):
         cursor.execute(query_students, (class_id,))
         students = cursor.fetchall()
 
-        # Debugowanie - sprawdź, czy students zawiera id_student
-        print(f"Students for class {class_name}: {students}")
-
         # Przekształć dane na słownik
         students_in_classes[class_name] = [
             {
@@ -60,14 +59,17 @@ def get_students_for_class_leader(teacher_id):
                 "email": student[2],
                 "phoneNumber": student[3],
                 "address": student[4],
-                "id_student": student[5],  # Sprawdzamy, czy id_student jest poprawnie przypisane
-                "parentName": f"{student[7]} {student[8]}" if student[6] else "Brak"
+                "id_student": student[5],
+                "parentName": f"{student[7]} {student[8]}" if student[6] else "Brak",
+                "parentEmail": student[9] if student[9] else "Brak",  # Pobieramy email rodzica
+                "parentPhone": student[10] if student[10] else "Brak"  # Pobieramy numer telefonu rodzica
             }
             for student in students
         ]
 
     conn.close()
     return students_in_classes
+
 
 
 
