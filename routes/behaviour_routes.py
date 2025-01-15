@@ -14,7 +14,18 @@ def behaviour():
 @login_required
 def behaviourTeacher():
     print("Rendering behaviourTeacher.html") 
-    return render_template('teacher/behaviourTeacher.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+
+    # Fetch all classes from the database
+    classes = get_classes_from_db()
+    print(classes)
+    # Pass classes to the template
+    return render_template(
+        'teacher/behaviourTeacher.html', 
+        firstName=current_user.firstName, 
+        lastName=current_user.lastName, 
+        profession=current_user.profession, 
+        classes=classes
+    )
 
 @behaviour_blueprint.route('/behaviourStudent')
 @login_required
@@ -26,7 +37,23 @@ def behaviourStudent():
 def behaviourParent():
     return render_template('parent/behaviourParent.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
-@behaviour_blueprint.route('/addBehaviour')
-def addGrades_route():
-    return render_template('teacher/addGrades.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+@behaviour_blueprint.route('/addBehaviour/<id_student>')
+@login_required
+def addBehaviour(id_student):
+    # Fetch details about the student using student_id if needed
+    print(id_student)
+    return render_template(
+        'teacher/addBehaviour.html', 
+        firstName=current_user.firstName, 
+        lastName=current_user.lastName, 
+        profession=current_user.profession, 
+    )
+
+
+@behaviour_blueprint.route('/getStudents/<class_id>', methods=['GET'])
+@login_required
+def getStudents(class_id):
+    students = get_students_from_db(class_id)
+    print(students)
+    return jsonify(students)
 
