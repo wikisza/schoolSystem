@@ -1,18 +1,35 @@
 {% extends "index.html" %}
 
 {% block content %}
-
 <div class="partialView">
-    
     <h1>Ustawienia</h1>
 
-    <form>
+    <form method="POST" action="{{ url_for('settings.settings') }}">
         <h2>Dane osobowe</h2>
+
+        <label for="firstName">Imię:</label>
+        <input type="text" id="firstName" name="firstName" value="{{ firstName }}" required>
+
+        <label for="lastName">Nazwisko:</label>
+        <input type="text" id="lastName" name="lastName" value="{{ lastName }}" required>
+
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="{{user.email}}"/>
+        <input type="email" id="email" name="email" value="{{ email }}" required>
+
+        <label for="phoneNumber">Numer telefonu:</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" value="{{ phoneNumber }}" required>
+
+        <label for="address">Adres:</label>
+        <input type="text" id="address" name="address" value="{{ address }}" required>
+
+        <label for="password">Nowe hasło:</label>
+        <input type="password" id="password" name="password" placeholder="Wpisz nowe hasło">
+
+        <label for="confirmPassword">Potwierdź hasło:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Potwierdź nowe hasło">
+
+        <button type="submit">Zapisz zmiany</button>
     </form>
-
 </div>
-
 
 {% endblock %}

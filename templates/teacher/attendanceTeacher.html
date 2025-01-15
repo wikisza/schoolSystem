@@ -19,18 +19,18 @@
             {% endfor %}
         </select>
     </div>
-    <button id="confirm-btn">Zatwierdź</button>
+    <button class= "save-btn" id="confirm-btn">Zatwierdź</button>
 </div>
 
 <div class="legend">
     <span>Legenda:</span>
-    <button class="status-btn" data-status="O">O</button>
-    <button class="status-btn" data-status="-">-</button>
-    <button class="status-btn" data-status="U">U</button>
-    <button class="status-btn" data-status="S">S</button>
+    <button class="status-btn" data-status="o">o - obecny</button>
+    <button class="status-btn" data-status="-">- - nieobecny</button>
+    <button class="status-btn" data-status="u">u - usprawiedliwiony</button>
+    <button class="status-btn" data-status="s">s - spóźniony</button>
 </div>
 
-<div class="table-container">
+<div class="attendance attendance-table-container">
     <table>
         <thead>
             <tr>
@@ -53,7 +53,7 @@
     </table>
 </div>
 
-<button id="save-btn">Zatwierdź zmiany</button>
+<button class="save-btn" id="save-btn">Zatwierdź zmiany</button>
 
 <script>
 document.getElementById('confirm-btn').addEventListener('click', getLessonsData);
@@ -76,6 +76,7 @@ function getLessonsData() {
 function displayLessonsData(data) {
     var lessons = data.lessons;
     var students = data.students;
+    var attendance = data.attendance || {};
     var table = document.querySelector('table');
     var thead = table.querySelector('thead');
     var tbody = table.querySelector('tbody');
@@ -104,6 +105,12 @@ function displayLessonsData(data) {
             input.classList.add('attendance-input');
             input.dataset.lessonId = lesson[0];
             input.dataset.studentId = student[0];
+
+            // Jeśli istnieją dane o frekwencji, wstawiamy je
+            if (attendance[lesson[0]] && attendance[lesson[0]][student[0]]) {
+                input.value = attendance[lesson[0]][student[0]];
+            }
+
             td.appendChild(input);
             tr.appendChild(td);
         });
@@ -111,6 +118,8 @@ function displayLessonsData(data) {
         tbody.appendChild(tr);
     });
 }
+
+
 
 document.getElementById('save-btn').addEventListener('click', saveAttendanceChanges);
 
