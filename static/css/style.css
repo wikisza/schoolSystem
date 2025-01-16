@@ -506,7 +506,7 @@ th {
 }
 
 .btn:hover {
-    background-color: #1c6f67;
+    background-color: #25c6b6;
 }
 
 .classManagement_bar {
@@ -997,3 +997,47 @@ button.save-btn:focus {
     box-shadow: 0 0 5px #005f55;
     /* Dodanie delikatnego efektu po kliknięciu */
 }
+
+
+.menuCreateSchedule{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 3rem;
+}
+
+.menuAddingNewSub{
+    display: flex;
+    justify-content:flex-end; 
+}
+
+.formForAddingLessons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.groupSection{
+    display: flex;
+    justify-content: center;
+    padding: 0.3rem;
+    align-items: center;
+}
+
+.groupSection label{
+    padding: 5px;
+}
+
+.newSubjectClass{
+    display: flex;
+    justify-content: center;
+}
+
+.addingTeacherToSubject {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin:2rem;
+}
+
+
+

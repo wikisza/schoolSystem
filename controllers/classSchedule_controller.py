@@ -455,3 +455,17 @@ def get_id_teacher(id_user):
     teacher_id = result[0] if result else None
     
     return teacher_id
+
+
+def SubjectTeacherConnection(id_subject, id_teacher):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    try:
+        cursor.execute('INSERT INTO subjectsTeachers (id_subject, id_teacher) VALUES (?,?)', (id_subject,id_teacher,))
+        conn.commit()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        print(f"Błąd podczas przypisywania uczniów: {e}")
+        return jsonify({"success": False}), 500
+    finally:
+        conn.close()

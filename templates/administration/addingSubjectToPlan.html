@@ -2,56 +2,83 @@
 
 {% block mainContent %}
 
-<div class="menu">
+<div class="menuAddingNewSub">
     <a href="/createSchedule" class="btn">Wróć</a>
 </div>
 
-<form id="addLessonForm">
-    <label for="class-select">Wybierz klasę:</label>
-    <select id="class-select">
-        <option value="" disabled selected>Wybierz klasę</option>
-    </select>
+<div class="formForAddingLessons">
 
-    <label for="teacher-select">Wybierz nauczyciela:</label>
-    <select id="teacher-select">
-        <option value="" disabled selected>Wybierz nauczyciela</option>
-    </select>
+    <form id="addLessonForm">
 
-    <label for="subject-select">Wybierz przedmiot:</label>
-    <select id="subject-select">
-        <option value="" disabled selected>Wybierz przedmiot</option>
-    </select>
+        <section class="groupSection">
+            <label for="class-select">Wybierz klasę:</label>
+            <select class="btn" id="class-select">
+                <option value="" disabled selected>Wybierz klasę</option>
+            </select>
+        </section>   
+        
+        <section class="groupSection">
+            <label for="teacher-select">Wybierz nauczyciela:</label>
+            <select class="btn" id="teacher-select">
+                <option value="" disabled selected>Wybierz nauczyciela</option>
+            </select>
+        </section>
+        
+        <section class="groupSection">
 
-    <label for="day-select">Wybierz dzień tygodnia:</label>
-    <select id="day-select" name="day_select">
-        <option value="" disabled selected>Wybierz dzień tygodnia</option>
-        <option value="0">Poniedziałek</option>
-        <option value="1">Wtorek</option>
-        <option value="2">Środa</option>
-        <option value="3">Czwartek</option>
-        <option value="4">Piątek</option>
-    </select>
+            <label for="subject-select">Wybierz przedmiot:</label>
+            <select class="btn" id="subject-select">
+                <option value="" disabled selected>Wybierz przedmiot</option>
+            </select>
+        </section>
+        
+        <section class="groupSection">
 
-    <label for="start_time">Godzina rozpoczęcia:</label>
-    <input name="start_time" id="start_time" type="time">
+            <label for="day-select">Wybierz dzień tygodnia:</label>
+            <select class="btn" id="day-select" name="day_select">
+                <option value="" disabled selected>Wybierz dzień tygodnia</option>
+                <option value="0">Poniedziałek</option>
+                <option value="1">Wtorek</option>
+                <option value="2">Środa</option>
+                <option value="3">Czwartek</option>
+                <option value="4">Piątek</option>
+            </select>
+        </section>
+        
+        <section class="groupSection">
 
-    <label for="roomNumber">Numer sali:</label>
-    <input type="text" name="room_number" id="room_number">
+            <label for="start_time">Godzina rozpoczęcia:</label>
+            <input name="start_time" id="start_time" type="time">
+        </section>
+        
 
+        <section class="groupSection">
+            <label for="roomNumber">Numer sali:</label>
+            <input type="text" name="room_number" id="room_number">
+        </section>
+            
+        <section class="groupSection">
+            <label for="exact_date">Dokładna data jeśli lekcja ma pojawić się jednorazowo</label>
+            <input class="btn" type="date" name="exact_date" id="exact_date">
+        </section>
 
-    <label for="exact_date">Dokładna data jeśli lekcja ma pojawić się jednorazowo</label>
-    <input type="date" name="exact_date" id="exact_date">
-
-    <label for="semester_start">Początek semestru:</label>
-    <input type="date" name="semester_start" id="semester_start">
-
-    <label for="semester_end">Koniec semestru</label>
-    <input type="date" name="semester_end" id="semester_end">
-
-    <button type="submit" class="btn">Dodaj lekcję</button>
-
-</form>
-
+        <section class="groupSection">
+            <label for="semester_start">Początek semestru:</label>
+            <input class="btn" type="date" name="semester_start" id="semester_start">
+        </section>
+        
+        <section class="groupSection">
+            <label for="semester_end">Koniec semestru</label>
+            <input class="btn" type="date" name="semester_end" id="semester_end">
+        </section>
+        
+        <section class="groupSection">
+            <button type="submit" class="btn">Dodaj lekcję</button>
+        </section>
+        
+    </form>
+    
+</div>
 
 
 
