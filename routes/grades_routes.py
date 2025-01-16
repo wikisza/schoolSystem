@@ -29,7 +29,9 @@ def gradesStudent():
 @grades_blueprint.route('/gradesParent')
 @login_required
 def gradesParent():
-    return render_template('parent/gradesParent.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+    parent_id = get_parent_id(current_user.id)  # Pobierz id_parent
+    children_grades = get_children_grades(parent_id)  # Pobierz oceny dzieci
+    return render_template('parent/gradesParent.html', children_grades=children_grades, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 # Strona do dodawania ocen
 @grades_blueprint.route('/addGrades')
