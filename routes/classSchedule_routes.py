@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
 from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan, get_teacher_lessons, get_id_teacher, get_student_class, SubjectTeacherConnection
+from controllers.classSchedule_controller import get_teachers_without_class
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -125,6 +126,12 @@ def assign_students_to_class_route():
 @classSchedule_blueprint.route('/getTeachersList', methods=['GET'])
 def get_teachers_list_route():
     teachers = get_teachers()
+    return jsonify(teachers)
+
+
+@classSchedule_blueprint.route('/getTeachersWithoutClass', methods=['GET'])
+def get_teachers_without_class_route():
+    teachers = get_teachers_without_class()
     return jsonify(teachers)
 
 

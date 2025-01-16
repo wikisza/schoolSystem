@@ -149,6 +149,24 @@ def get_teachers():
 
     return [{'id': teacher[0], 'name': teacher[1]} for teacher in teachers]
 
+#nauczyciele bez wychowawstwa
+def get_teachers_without_class():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    query = '''
+    SELECT teachers.id_teacher, users.firstName || ' ' || users.lastName AS name
+    FROM teachers
+    JOIN users ON teachers.id_user = users.id
+    WHERE teachers.id_teacher NOT IN (
+        SELECT id_teacher FROM classes
+    )
+    '''
+    cursor.execute(query)
+    teachers = cursor.fetchall()
+    conn.close()
+
+    return [{'id': teacher[0], 'name': teacher[1]} for teacher in teachers]
+
 
 def editThisClass(id_class, id_teacher, class_name):
     conn = sqlite3.connect('database.db')
