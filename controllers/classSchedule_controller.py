@@ -308,6 +308,24 @@ def getSubjectsList():
     return jsonify(subjects_list)
 
 
+def getThisTeacherSubjects(id_teacher):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    
+    query = '''
+    SELECT subjects.id_subject, subjects.subject_name
+    FROM subjectsTeachers
+    JOIN teachers ON subjectsTeachers.id_teacher = teachers.id_teacher
+    JOIN subjects ON subjectsTeachers.id_subject = subjects.id_subject
+    WHERE subjectsTeachers.id_teacher = ?
+    '''
+    cursor.execute(query, (id_teacher,))
+    subjects = cursor.fetchall()
+    conn.close()
+    
+    # Konwersja wyników do listy słowników dla lepszej obsługi w JSON
+    subjects_list = [{'id': t[0], 'name': t[1]} for t in subjects]
+    return jsonify(subjects_list)
 #wszystkie klasy
 
 def getAllClasses():

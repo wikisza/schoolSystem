@@ -15,15 +15,15 @@
             <select class="btn" id="class-select">
                 <option value="" disabled selected>Wybierz klasę</option>
             </select>
-        </section>   
-        
+        </section>
+
         <section class="groupSection">
             <label for="teacher-select">Wybierz nauczyciela:</label>
             <select class="btn" id="teacher-select">
                 <option value="" disabled selected>Wybierz nauczyciela</option>
             </select>
         </section>
-        
+
         <section class="groupSection">
 
             <label for="subject-select">Wybierz przedmiot:</label>
@@ -31,7 +31,7 @@
                 <option value="" disabled selected>Wybierz przedmiot</option>
             </select>
         </section>
-        
+
         <section class="groupSection">
 
             <label for="day-select">Wybierz dzień tygodnia:</label>
@@ -44,19 +44,19 @@
                 <option value="4">Piątek</option>
             </select>
         </section>
-        
+
         <section class="groupSection">
 
             <label for="start_time">Godzina rozpoczęcia:</label>
             <input name="start_time" id="start_time" type="time">
         </section>
-        
+
 
         <section class="groupSection">
             <label for="roomNumber">Numer sali:</label>
             <input type="text" name="room_number" id="room_number">
         </section>
-            
+
         <section class="groupSection">
             <label for="exact_date">Dokładna data jeśli lekcja ma pojawić się jednorazowo</label>
             <input class="btn" type="date" name="exact_date" id="exact_date">
@@ -66,18 +66,18 @@
             <label for="semester_start">Początek semestru:</label>
             <input class="btn" type="date" name="semester_start" id="semester_start">
         </section>
-        
+
         <section class="groupSection">
             <label for="semester_end">Koniec semestru</label>
             <input class="btn" type="date" name="semester_end" id="semester_end">
         </section>
-        
+
         <section class="groupSection">
             <button type="submit" class="btn">Dodaj lekcję</button>
         </section>
-        
+
     </form>
-    
+
 </div>
 
 
@@ -88,7 +88,6 @@
         var classSelect = document.getElementById('class-select');
         var teacherSelect = document.getElementById('teacher-select');
         var subjectSelect = document.getElementById('subject-select');
-
 
         // Funkcja do wypełniania selecta klasami
         function populateClassSelect(classes) {
@@ -149,36 +148,48 @@
             .catch(error => console.error('Błąd podczas pobierania nauczycieli:', error));
 
 
-
-
         // Funkcja do wypełniania selecta przedmiotami
         function populateSubjectSelect(subjects) {
             subjectSelect.innerHTML = '<option value="" disabled selected>Wybierz przedmiot</option>';
             subjects.forEach(sbj => {
                 const option = document.createElement('option');
-                option.value = sbj.id; // Ustaw id jako wartość
-                option.textContent = sbj.name; // Wyświetl name
+                option.value = sbj.id;
+                option.textContent = sbj.name;
                 subjectSelect.appendChild(option);
             });
         }
 
-        // Pobierz klasy z backendu
-        fetch('/getSubjectsList', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(subjects => {
-                if (subjects.length > 0) {
-                    populateSubjectSelect(subjects); // Wypełnij select klasami
-                } else {
-                    console.error('Brak dostępnych przedmiotów w bazie danych.');
-                }
+        // Funkcja pobierająca przedmioty dla wybranego nauczyciela
+        function fetchSubjectsForTeacher(teacherId) {
+            fetch('/getThisTeacherSubjects', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id_teacher: teacherId }),
             })
-            .catch(error => console.error('Błąd podczas pobierania przedmiotów:', error));
+                .then(response => response.json())
+                .then(subjects => {
+                    if (subjects.length > 0) {
+                        populateSubjectSelect(subjects);
+                    } else {
+                        console.error('Brak dostępnych przedmiotów dla wybranego nauczyciela.');
+                        subjectSelect.innerHTML = '<option value="" disabled selected>Brak przedmiotów</option>';
+                    }
+                })
+                .catch(error => console.error('Błąd podczas pobierania przedmiotów:', error));
+        }
 
+        // Listener na zmianę wybranego nauczyciela
+        teacherSelect.addEventListener('change', function () {
+            const teacherId = this.value;
+
+            if (teacherId) {
+                fetchSubjectsForTeacher(teacherId);
+            } else {
+                subjectSelect.innerHTML = '<option value="" disabled selected>Wybierz nauczyciela najpierw</option>';
+            }
+        });
 
     });
 
@@ -189,7 +200,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('addLessonForm');
 
-        
+
 
         form.addEventListener('submit', function (event) {
             event.preventDefault(); // Zatrzymaj domyślne przesyłanie formularza
