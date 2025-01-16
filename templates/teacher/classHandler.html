@@ -19,6 +19,8 @@
                         <th>Adres</th>
                         <th>Rodzic</th>
                         <th>Akcje</th>
+                        <th>Email</th>
+                        <th>Numer</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +38,8 @@
                                     <button type="submit">Edytuj</button>
                                 </form>                                                                                           
                             </td>
+                            <td>{{ student.parentEmail }}</td>
+                            <td>{{ student.parentPhone }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

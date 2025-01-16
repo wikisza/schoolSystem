@@ -1,0 +1,184 @@
+{% extends "teacher/teacherView.html" %}
+
+{% block mainContent %}
+
+<style>
+    .header {
+    background-color: #1f7e75;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    color: white;
+    top: 40px;
+    width: 100%;
+    max-width: 100rem;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+.header h2 {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+#students-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    #students-container h2 {
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #1f7e75;
+        padding-bottom: 5px;
+    }
+    #loading {
+        display: none;
+        font-style: italic;
+        color: #888;
+        text-align: center;
+        margin-top: 10px;
+    }
+   
+    .menu {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .menu label {
+        font-weight: bold;
+        font-size: 1rem;
+    }
+
+    .menu select {
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: white;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    #students-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    #students-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        transition: background-color 0.3s;
+    }
+
+    #students-list li:hover {
+        background-color: #f4f4f4;
+    }
+
+    #students-list li:last-child {
+        border-bottom: none;
+    }
+
+    .edit-button {
+        padding: 5px 10px;
+        background-color: #1f7e75;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        height: 40px;
+        width: 70px;
+    }
+
+    .edit-button:hover {
+        background-color: #145f54;
+    }
+    #class-selection-label {
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+</style>
+
+<div class="header">
+    <h2>Zachowanie</h2>
+    <div class="menu">
+        <label id="class-selection-label"for="class-select">Wybierz klasę</label>
+        <select id="class-select">
+            <option value="">-- Select --</option>
+            {% for cls in classes %}
+            <option value="{{ cls.class_id }}">{{ cls.class_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<!-- Loading Indicator -->
+<div id="loading">Loading...</div>
+
+<!-- Students List -->
+<div id="students-container">
+    <h2>Uczniowie</h2>
+    <ul id="students-list">
+        <!-- Students will be dynamically inserted here -->
+    </ul>
+</div>
+
+<script>
+    document.getElementById("class-select").addEventListener("change", function () {
+        const classId = this.value;
+        const loadingIndicator = document.getElementById("loading");
+        const studentsList = document.getElementById("students-list");
+
+        // Show loading indicator
+        loadingIndicator.style.display = "block";
+        studentsList.innerHTML = ""; // Clear previous students
+
+        // Fetch students for the selected class
+        fetch(`/getStudents/${classId}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                loadingIndicator.style.display = "none"; // Hide loading indicator
+                if (data.length > 0) {
+                    data.forEach((student) => {
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <span>${student.fullName}</span>
+                            <button class="edit-button" onclick="editStudent(${student.id_student})">Dodaj</button>
+                        `;
+                        studentsList.appendChild(listItem);
+                    });
+                } else {
+                    studentsList.innerHTML = "<li>No students found for this class.</li>";
+                }
+            })
+            .catch((error) => {
+                loadingIndicator.style.display = "none"; // Hide loading indicator
+                studentsList.innerHTML = "<li>Error fetching students. Please try again.</li>";
+                console.error("Error fetching students:", error);
+            });
+    });
+
+    function editStudent(studentId) {
+    if (!studentId) {
+        console.error("Invalid student ID:", studentId);
+        return;
+    }
+    window.location.href = `/addBehaviour/${studentId}`;
+}
+</script>
+
+{% endblock %}

@@ -26,3 +26,12 @@ class User(UserMixin):
     
     def get_profession(self):
         return str(self.profession)
+
+    def update_user_info(self, firstName, lastName, email, phoneNumber, address, password=None):
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.phoneNumber = phoneNumber
+        self.address = address
+        if password:
+            self.password = password

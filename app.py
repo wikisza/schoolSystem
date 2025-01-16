@@ -10,6 +10,7 @@ from routes.attendance_routes import attendance_blueprint
 from routes.messages_routes import messages_blueprint,register_message_socketio
 from routes.settings_routes import settings_blueprint
 from routes.classHandler_routes import classHandler_blueprint
+from routes.behaviour_routes import behaviour_blueprint
 from controllers.auth_controller import load_user
 from flask_socketio import SocketIO  
 
@@ -22,6 +23,7 @@ app.register_blueprint(classSchedule_blueprint)
 app.register_blueprint(grades_blueprint)
 app.register_blueprint(attendance_blueprint)
 app.register_blueprint(messages_blueprint)
+app.register_blueprint(behaviour_blueprint)
 app.register_blueprint(settings_blueprint)
 app.register_blueprint(classHandler_blueprint)
 
