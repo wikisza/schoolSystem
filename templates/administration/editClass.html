@@ -4,29 +4,39 @@
 
 <h1>Edytowanie klasy</h1>
 
-<a href="/classManagement" class="btn">Wróć</a><br>
-<button type="button" id="addStudentsButton" class="btn">Dodaj uczniów</button><br>
-
+<div class="headerEditClass">
+    <a href="/classManagement" class="btn">Wróć do poprzedniej strony</a><br>
+</div>
 
 <form method="POST" action="/editThisClass">
-    <label for="class_name">Nazwa klasy:</label>
 
-    <input type="hidden" id="id_class" name="id_class" value=" {{ class_data[3] }}">
-    <input type="text" id="class_name" name="class_name" value=" {{ class_data[0] }}"  required>
+    <div class="formEditClass">
 
-    <label for="teacher_name">Wychowawca:</label>
-    <input type="hidden" id="id_teacher" name="id_teacher" value=" {{ class_data[1]}}">
-    <input type="text" id="teacher_name" name="teacher_name" value=" {{ class_data[2] }}">
-    <button type="button" id="changeTeacherButton" class="btn">Zmień</button>
+        <div class="groupKiwi">
+            <label for="class_name">Nazwa klasy:</label>
+            
+            <input type="hidden" id="id_class" name="id_class" value="{{ class_data[3] }}">
+            <input type="text" id="class_name" name="class_name" value="{{ class_data[0] }}" required>
+        </div>
+        
+        <div class="groupKiwi">
+
+            <label for="teacher_name">Wychowawca:</label>
+            <input type="hidden" id="id_teacher" name="id_teacher" value="{{ class_data[1] }}">
+            <input type="text" id="teacher_name" name="teacher_name" value="{{ class_data[2] }}">
+            <button type="button" id="changeTeacherButton" class="btn">Zmień wychowawcę</button>
+        </div>
+        
+        <button type="submit" class="btn">Zapisz zmiany</button>
+    </div>
     
-    <button type="submit" class="btn">Zapisz zmiany</button>
-<!-- Modal -->
-    <div id="teacherModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
+    <!-- Modal dla zmiany nauczyciela -->
+    <div id="teacherModal" class="modalEdit">
+        <div class="modalEdit-content">
+            <span class="closeEdit">&times;</span>
             <h2>Wybierz wychowawcę</h2>
             <form id="changeTeacherForm">
-                <table id="teachersTable" class="table">
+                <table id="teachersTable" class="tableKiwi">
                     <thead>
                         <tr>
                             <th>Wybierz</th>
@@ -42,8 +52,13 @@
         </div>
     </div>
 
-    <h2>Uczniowie w klasie:</h2>
-    <table id="studentTable" class="table">
+    <hr/>
+    <div class="barEditClass">
+        <h2>Uczniowie w klasie:</h2>
+        <button type="button" id="addStudentsButton" class="btn">Dodaj uczniów</button>
+    </div>
+
+    <table id="studentTable" class="tableKiwi">
         <thead>
             <tr>
                 <th>Imię i nazwisko uczniów</th>
@@ -58,15 +73,13 @@
         </tbody>
     </table>
 
-
-
-    <!-- Modal -->
-    <div id="studentModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
+    <!-- Modal dla dodawania uczniów -->
+    <div id="studentModal" class="modalEdit">
+        <div class="modalEdit-content">
+            <span class="closeEdit">&times;</span>
             <h2>Wybierz uczniów do dodania</h2>
             <form id="addStudentsForm">
-                <table id="unassignedStudentsTable" class="table">
+                <table id="unassignedStudentsTable" class="tableKiwi">
                     <thead>
                         <tr>
                             <th>Wybierz</th>
@@ -82,39 +95,32 @@
         </div>
     </div>
 
-
 </form>
 
-
 <script>
-
-document.getElementById('changeTeacherButton').onclick = function () {
+    // Skrypty dla zmiany wychowawcy
+    document.getElementById('changeTeacherButton').onclick = function () {
         const modal = document.getElementById('teacherModal');
-        const myInput = document.getElementById('id_teacher');
-        const teacherName = document.getElementById('teacher_name');
 
         modal.style.display = 'block';
 
-        // Pobierz listę nauczycieli
-        fetch('/getTeachersList')
+        fetch('/getTeachersWithoutClass')
             .then(response => response.json())
             .then(data => {
                 const tbody = document.getElementById('teachersTableBody');
-                tbody.innerHTML = ''; // Wyczyść poprzednie dane
+                tbody.innerHTML = '';
                 data.forEach(teacher => {
                     const row = document.createElement('tr');
 
-                    // Checkbox
                     const checkboxCell = document.createElement('td');
                     const checkbox = document.createElement('input');
                     checkbox.type = 'radio';
-                    checkbox.name = 'teacher'; // Tylko jeden wybór
-                    checkbox.value = teacher.id; // Przechowuje ID nauczyciela
+                    checkbox.name = 'teacher';
+                    checkbox.value = teacher.id;
                     checkbox.dataset.name = teacher.name;
                     checkboxCell.appendChild(checkbox);
                     row.appendChild(checkboxCell);
 
-                    // Imię i nazwisko
                     const nameCell = document.createElement('td');
                     nameCell.textContent = teacher.name;
                     row.appendChild(nameCell);
@@ -125,53 +131,43 @@ document.getElementById('changeTeacherButton').onclick = function () {
             .catch(error => console.error('Błąd podczas pobierania nauczycieli:', error));
     };
 
-    // Zamknięcie modala
-    document.querySelector('.close').onclick = function () {
-        document.getElementById('teacherModal').style.display = 'none';
-    };
+    document.querySelectorAll('.closeEdit').forEach(button => {
+        button.onclick = function () {
+            document.querySelectorAll('.modalEdit').forEach(modal => modal.style.display = 'none');
+        };
+    });
 
-    // Zatwierdzenie zmiany wychowawcy
     document.getElementById('confirmChangeTeacher').onclick = function () {
         const selectedTeacher = document.querySelector('#teachersTableBody input[name="teacher"]:checked');
         if (selectedTeacher) {
-            const teacherName = selectedTeacher.dataset.name;
-
-            const id_teacher = selectedTeacher.value;
-            
-            document.getElementById('id_teacher').value = id_teacher;
-            document.getElementById('teacher_name').value = teacherName;
-
-
-            // Zamknięcie modala
+            document.getElementById('id_teacher').value = selectedTeacher.value;
+            document.getElementById('teacher_name').value = selectedTeacher.dataset.name;
             document.getElementById('teacherModal').style.display = 'none';
         } else {
             alert('Proszę wybrać wychowawcę.');
         }
     };
 
-    //modal do uczniow
-    document.getElementById('addStudentsButton').onclick = function() {
+    // Skrypty dla dodawania uczniów
+    document.getElementById('addStudentsButton').onclick = function () {
         const modal = document.getElementById('studentModal');
         modal.style.display = 'block';
 
-        // Pobierz listę uczniów bez klasy
         fetch('/getUnassignedStudents')
             .then(response => response.json())
             .then(data => {
                 const tbody = document.getElementById('unassignedStudentsBody');
-                tbody.innerHTML = ''; // Wyczyść poprzednie dane
+                tbody.innerHTML = '';
                 data.forEach(student => {
                     const row = document.createElement('tr');
 
-                    // Checkbox
                     const checkboxCell = document.createElement('td');
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.value = student.id; // Przechowuje ID ucznia
+                    checkbox.value = student.id;
                     checkboxCell.appendChild(checkbox);
                     row.appendChild(checkboxCell);
 
-                    // Imię i nazwisko
                     const nameCell = document.createElement('td');
                     nameCell.textContent = student.name;
                     row.appendChild(nameCell);
@@ -182,14 +178,6 @@ document.getElementById('changeTeacherButton').onclick = function () {
             .catch(error => console.error('Błąd podczas pobierania uczniów:', error));
     };
 
-    function closeModal() {
-        document.getElementById('studentModal').style.display = 'none';
-    }
-
-    document.querySelector('.close').onclick = closeModal;
-
-
-    // Obsługa zatwierdzenia dodania uczniów
     document.getElementById('confirmAddStudents').onclick = function () {
         const checkboxes = document.querySelectorAll('#unassignedStudentsBody input[type="checkbox"]:checked');
         const selectedIds = Array.from(checkboxes).map(checkbox => checkbox.value);
@@ -200,37 +188,12 @@ document.getElementById('changeTeacherButton').onclick = function () {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ student_ids: selectedIds, class_id: '{{ class_data[3] }}' })
             })
-                .then(response => {
-                    if (response.ok) {
-                        closeModal();
-                        location.reload(); // Przeładuj stronę, aby zobaczyć zmiany
-                        console.log('dodano uczniow');
-                    } else {
-                        console.error('Błąd podczas dodawania uczniów');
-                    }
-                });
+                .then(response => response.ok ? location.reload() : console.error('Błąd podczas dodawania uczniów'))
+                .catch(error => console.error('Błąd podczas dodawania uczniów:', error));
+        } else {
+            alert('Proszę wybrać uczniów.');
         }
     };
-
-    function updateStudentTable() {
-        fetch('/getStudentsInClass/{{ class_data[0] }}')
-            .then(response => response.json())
-            .then(data => {
-                const studentTableBody = document.getElementById('studentTableBody');
-                studentTableBody.innerHTML = ''; // Wyczyść bieżące dane
-                data.forEach(student => {
-                    const row = document.createElement('tr');
-                    const cell = document.createElement('td');
-                    cell.textContent = student;
-                    row.appendChild(cell);
-                    studentTableBody.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Błąd podczas odświeżania uczniów:', error));
-    }
-
 </script>
-
-
 
 {% endblock %}

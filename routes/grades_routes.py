@@ -15,7 +15,9 @@ def grades():
 @grades_blueprint.route('/gradesTeacher')
 @login_required
 def gradesTeacher():
-    return render_template('teacher/gradesTeacher.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+    student_id = get_student_id(current_user.id)  # Pobierz id_student
+    grades = get_student_grades(student_id)  # Pobierz oceny
+    return render_template('teacher/gradesTeacher.html',grades=grades, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 @grades_blueprint.route('/gradesStudent')
 @login_required
@@ -36,6 +38,8 @@ def gradesParent():
 # Strona do dodawania ocen
 @grades_blueprint.route('/addGrades')
 def addGrades_route():
-    return render_template('teacher/addGrades.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
+    student_id = get_student_id(current_user.id)  # Pobierz id_student
+    grades = get_student_grades(student_id)  # Pobierz oceny
+    return render_template('teacher/addGrades.html',grades=grades, firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession)
 
 

@@ -2,39 +2,212 @@
 
 {% block mainContent %}
 
-    <h3>Spis ocen</h3>
-    <div class="decision-bar">
-        <select id="classSelect">
-            <option selected hidden>Wybierz klasę</option>
-            <option value="class1">Klasa 1</option>
-            <option value="class2">Klasa 2</option>
-            <option value="class3">Klasa 3</option>
-            <option value="class4">Klasa 4</option>
-            <option value="class5">Klasa 5</option>
-            <option value="class6">Klasa 6</option>
-            <option value="class7">Klasa 7</option>
-            <option value="class8">Klasa 8</option>
+<h3>Spis ocen</h3>
+<div class="decision-bar">
+    <section>
+        <label for="class-select">Wybierz klasę:</label>
+        <select id="class-select" class="btn">
+            <option value="" disabled selected>Wybierz klasę</option>
         </select>
+    </section>
 
-        <a href="/addGrades">Dodaj nową ocenę</a>
-    </div>
+    <a href="/addGrades">Dodaj nową ocenę</a>
+</div>
 
-    <div id="gradesContainer">
-        <table>
-            <thead>
-                <tr>
-                    <th>Imię i nazwisko</th>
-                    <th>Sprawdzian</th>
-                    <th>Kartkówka</th>
-                    <th>Praca klasowa</th>
-                    <th>Zadanie domowe</th>
-                    <th>Inne</th>
-                </tr>
-            </thead>
-            <tbody id="studentsTableBody">
-                <!-- Wiersze będą generowane dynamicznie -->
-            </tbody>
-        </table>
+<div class="grades-container">
+    <!-- Nagłówek -->
+    <div class="grades-row">
+        <div class="grades-cell">Przedmiot</div>
+        <div class="grades-cell">Sprawdzian</div>
+        <div class="grades-cell">Prace klasowe</div>
+        <div class="grades-cell">Zadania domowe</div>
+        <div class="grades-cell">Aktywność</div>
+        <div class="grades-cell">Średnia ważona</div>  <!-- Nowa kolumna dla średniej -->
     </div>
+    
+    <!-- Wiersze z danymi -->
+    {% for subject, categories in grades.items() %}
+    <div class="grades-row" id="subject-{{ loop.index }}" data-subject-index="{{ loop.index }}">
+        <div class="grades-cell">{{ subject }}</div>
+
+        <div class="grades-cell">
+            {% if categories['sprawdzian'] %}
+                {% for grade in categories['sprawdzian'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Sprawdzian" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %}
+                &nbsp;
+            {% endif %}
+        </div>
+
+        <div class="grades-cell">
+            {% if categories['prace klasowe'] %}
+                {% for grade in categories['prace klasowe'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Prace klasowe" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %} 
+                &nbsp;
+            {% endif %}
+        </div>
+
+        <div class="grades-cell">
+            {% if categories['zadania domowe'] %}
+                {% for grade in categories['zadania domowe'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Zadania domowe" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %} 
+                &nbsp;
+            {% endif %}
+        </div>
+
+        <div class="grades-cell">
+            {% if categories['aktywność'] %}
+                {% for grade in categories['aktywność'] %}
+                    <span class="grade" 
+                          data-comment="{{ grade.comment }}" 
+                          data-grade="{{ grade.value }}" 
+                          data-category="Aktywność" 
+                          data-weight="{{ grade.weight }}" 
+                          data-date="{{ grade.date }}">
+                        {{ grade.value }}
+                    </span>
+                {% endfor %}
+            {% else %} 
+                &nbsp;
+            {% endif %}
+        </div>
+
+        <!-- Nowa komórka na średnią ważoną -->
+        <div class="grades-cell" id="average-{{ loop.index }}">
+            &nbsp;  <!-- Wartość średniej będzie aktualizowana przez JS -->
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="lessonModal" class="modalEdit">
+    <div class="modalEdit-content">
+        <span class="closeEdit">&times;</span>
+        <h2>Informacje o lekcji</h2>
+        <h2>Ocena: <span id="modal-grade"></span></h2>
+        <p><strong>Waga:</strong> <span id="modal-weight"></span></p>
+        <p><strong>Data:</strong> <span id="modal-date"></span></p>
+        <p><strong>Status:</strong> <span id="modal-category"></span></p>
+        <p><strong>Opis:</strong> <span id="modal-comment"></span></p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendarPlan');
+        var classSelect = document.getElementById('class-select');
+        // Funkcja do wypełniania selecta klasami
+        function populateClassSelect(classes) {
+            classSelect.innerHTML = '<option value="" disabled selected>Wybierz klasę</option>'; // Wyczyść istniejące opcje
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id_class; // Ustaw id_class jako wartość
+                option.textContent = cls.class_name; // Wyświetl class_name
+                classSelect.appendChild(option);
+            });
+        }
+
+        // Pobierz klasy z backendu
+        fetch('/getAllClasses', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(classes => {
+                if (classes.length > 0) {
+                    populateClassSelect(classes); // Wypełnij select klasami
+                } else {
+                    console.error('Brak dostępnych klas w bazie danych.');
+                }
+            })
+            .catch(error => console.error('Błąd podczas pobierania klas:', error));
+    });
+
+// Funkcja do obliczania średniej ważonej dla danego przedmiotu
+function calculateWeightedAverage(subjectId) {
+        const rows = document.querySelectorAll(`#subject-${subjectId} .grades-cell`);
+        let weightedSum = 0;
+        let totalWeight = 0;
+
+        rows.forEach(row => {
+            if (row.querySelectorAll('.grade').length > 0) {
+                row.querySelectorAll('.grade').forEach(gradeElement => {
+                    const grade = parseFloat(gradeElement.getAttribute('data-grade'));
+                    const weight = parseFloat(gradeElement.getAttribute('data-weight'));
+                    weightedSum += grade * weight;
+                    totalWeight += weight;
+                });
+            }
+        });
+
+        // Obliczanie średniej ważonej
+        const weightedAvg = totalWeight > 0 ? (weightedSum / totalWeight).toFixed(2) : 'brak ocen';
+        
+        // Wyświetlanie średniej w odpowiedniej komórce
+        document.getElementById(`average-${subjectId}`).innerText = weightedAvg;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.grades-container');
+        container.addEventListener('click', function(event) {
+            if (event.target && event.target.classList.contains('grade')) {
+                const grade = event.target.getAttribute('data-grade');
+                const weight = event.target.getAttribute('data-weight');
+                const date = event.target.getAttribute('data-date');
+                const comment = event.target.getAttribute('data-comment');
+                const category = event.target.getAttribute('data-category');  // Nowa zmienna dla kategorii
+
+                // Zmieniamy tekst w modalu na odpowiednie dane
+                document.getElementById('modal-grade').innerText = grade;
+                document.getElementById('modal-weight').innerText = weight;
+                document.getElementById('modal-date').innerText = date;
+                document.getElementById('modal-comment').innerText = comment;
+                document.getElementById('modal-category').innerText = category;  // Pokazanie kategorii
+
+                // Wyświetlamy modal
+                document.getElementById('gradeModal').style.display = 'block';
+            }
+        });
+
+        // Obliczanie średniej ważonej dla każdego przedmiotu po załadowaniu strony
+        {% for subject, categories in grades.items() %}
+            // Możesz przekazać `loop.index` do JavaScript jako liczby całkowitej
+            calculateWeightedAverage({{ loop.index }});
+        {% endfor %}
+    });
+
+    function closeModal() {
+        document.getElementById('gradeModal').style.display = 'none';
+    }
+
+</script>
 
 {% endblock %}

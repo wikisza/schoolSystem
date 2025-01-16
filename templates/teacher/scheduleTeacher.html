@@ -6,13 +6,22 @@
     <h1>Plan lekcji</h1>
 
     <div id='calendar2'></div>
+    <div id="lessonModal" class="modalEdit">
+        <div class="modalEdit-content">
+            <span class="closeEdit">&times;</span>
+            <h2>Informacje o lekcji</h2>
+            <p><strong>Przedmiot:</strong> <span id="lessonSubject"></span></p>
+            <p><strong>Klasa:</strong> <span id="lessonClass"></span></p>
+            <p><strong>Godzina rozpoczęcia:</strong> <span id="lessonStartTime"></span></p>
+            <p><strong>Numer sali:</strong> <span id="lessonRoom"></span></p>
+        </div>
+    </div>
 
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar2');
-
 
         // Funkcja renderowania kalendarza dla wybranej klasy
         function renderCalendar() {
@@ -44,8 +53,16 @@
                             week: 'Tydzień',
                             day: 'Dzień'
                         },
+                        
                         eventClick: function (info) {
-                            alert(`Przedmiot: ${info.event.title}\nW sali numer: ${info.event.extendedProps.room}\nZ klasą: ${info.event.extendedProps.class_name}`);
+                            // Uzupełnienie modal z danymi o lekcji
+                            document.getElementById('lessonSubject').innerText = info.event.title;
+                            document.getElementById('lessonClass').innerText = info.event.extendedProps.class_name;
+                            document.getElementById('lessonStartTime').innerText = info.event.start.toLocaleString(); // Data i godzina
+                            document.getElementById('lessonRoom').innerText = info.event.extendedProps.room;
+
+                            // Wyświetlenie modala
+                            document.getElementById('lessonModal').style.display = 'block';
                         }
                     });
 
@@ -54,7 +71,21 @@
                 .catch(error => failureCallback(error));
         }
 
+        
+
         renderCalendar();
+
+        // Zamknięcie modala po kliknięciu na "X"
+        document.querySelector('.closeEdit').onclick = function () {
+            document.getElementById('lessonModal').style.display = 'none';
+        };
+
+        // Zamknięcie modala, jeśli klikniesz poza jego obszarem
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('lessonModal')) {
+                document.getElementById('lessonModal').style.display = 'none';
+            }
+        };
     });
 
 

@@ -139,6 +139,11 @@
                 .then(result => {
                     console.log('Sukces:', result);
                     alert('Połączenie zostało pomyślnie dodane.');
+
+                    id_teacher.value = '';
+                    id_subject.value = '';
+
+                    form.reset()
                 })
                 .catch(error => {
                     console.error('Błąd:', error);

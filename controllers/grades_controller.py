@@ -64,6 +64,63 @@ def get_student_grades(student_id):
 
 
 
+def get_teacher_grades(id_teacher):
+    """
+    Pobiera oceny ucznia z bazy danych, pogrupowane według przedmiotu i kategorii.
+    """
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT
+        subjects.subject_name,
+        grades_category.nazwa AS category_name,
+        grades_category.waga AS category_weight,
+        grades.value,
+        grades.date,
+        grades.comment
+    FROM grades
+    JOIN subjects ON grades.id_subject = subjects.id_subject
+    JOIN grades_category ON grades.id_category = grades_category.id_category
+    WHERE grades.id_teacher = ?
+    ORDER BY subjects.subject_name, grades_category.id_category;
+    '''
+    cursor.execute(query, (student_id,))
+    grades = cursor.fetchall()
+
+    conn.close()
+
+    # Zgrupowanie ocen według przedmiotów i kategorii
+    grouped_grades = {}
+    for grade in grades:
+        subject = grade[0]
+        category = grade[1]
+        weight = grade[2]
+        value = grade[3]
+        date = grade[4]
+        comment = grade[5]
+        
+        if subject not in grouped_grades:
+            grouped_grades[subject] = {
+                "sprawdzian": [],
+                "prace klasowe": [],
+                "zadania domowe": [],
+                "aktywność": []  # Nowa kategoria
+            }
+
+        grade_data = {"value": value, "category": category, "weight": weight, "date": date, "comment": comment}
+        if category == "sprawdzian":
+            grouped_grades[subject]["sprawdzian"].append(grade_data)
+        elif category == "praca klasowa":
+            grouped_grades[subject]["prace klasowe"].append(grade_data)
+        elif category == "zadanie domowe":
+            grouped_grades[subject]["zadania domowe"].append(grade_data)
+        elif category == "aktywność":  # Obsługa aktywności
+            grouped_grades[subject]["aktywność"].append(grade_data)
+
+    return grouped_grades
+
+
 
 def get_all_parents():
     """

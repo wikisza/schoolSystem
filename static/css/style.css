@@ -226,20 +226,20 @@ text-decoration: none;
     border: 1px solid #333;
 }
 
-table {
+.tableKiwi {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
 
-th,
+.tableKiwi th,
 td {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
 }
 
-th {
+.tableKiwi th {
     background-color: #f4f4f4;
     font-weight: bold;
 }
@@ -514,11 +514,11 @@ th {
     justify-content: right;
 }
 
-.modal {
+.modalEdit {
     display: none;
     /* Ukryty na start */
     position: fixed;
-    z-index: 1;
+    z-index: 9999;
     left: 0;
     top: 0;
     width: 100%;
@@ -527,7 +527,7 @@ th {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-.modal-content {
+.modalEdit-content {
     background-color: #fff;
     margin: 10% auto;
     padding: 20px;
@@ -535,7 +535,7 @@ th {
     width: 50%;
 }
 
-.close {
+.closeEdit {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -899,21 +899,15 @@ text-align: left;
 
 .attendance.attendance-table-container {
     width: 970px;
-    /* Szerokość kontenera */
     height: 400px;
-    /* Wysokość kontenera */
     overflow: auto;
-    /* Paski przewijania */
     border: 1px solid #ccc;
-    /* Obramowanie dla estetyki */
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    /* Subtelny cień */
 }
 
 .attendance table {
     width: 100%;
-    /* Szerokość tabeli zajmuje całą przestrzeń */
     border-collapse: collapse;
 }
 
@@ -927,9 +921,7 @@ text-align: left;
 .attendance thead th {
     position: sticky;
     top: 0;
-    /* Nagłówki tabeli pozostają widoczne przy przewijaniu */
     background-color: #f8f8f8;
-    /* Jasne tło dla nagłówków */
     z-index: 2;
 }
 
@@ -937,65 +929,46 @@ text-align: left;
 .attendance thead th:first-child {
     position: sticky;
     left: 0;
-    /* Przypięcie pierwszej kolumny */
     background-color: #f8f8f8;
-    /* Tło dla pierwszej kolumny */
     z-index: 1;
-    /* Wyższy indeks z, aby kolumna była nad innymi */
 }
 
 .attendance tbody tr:nth-child(even) {
     background-color: #f9f9f9;
-    /* Alternatywne kolory wierszy */
 }
 
 .attendance tbody tr:hover {
     background-color: #eaeaea;
-    /* Efekt hover dla wierszy */
 }
 
 button.save-btn {
     background-color: #2EC4B6;
-    /* Zielony kolor tła */
     color: white;
-    /* Biały kolor tekstu */
     border: 2px solid #2EC4B6;
-    /* Delikatna ramka w tym samym kolorze */
     padding: 10px 20px;
-    /* Odpowiednia przestrzeń wokół tekstu */
     font-size: 16px;
-    /* Zwiększona czcionka */
     font-weight: 600;
-    /* Lekka pogrubiona czcionka */
     border-radius: 5px;
-    /* Zaokrąglone rogi */
     cursor: pointer;
-    /* Kursor wskazujący, że jest to przycisk */
     transition: all 0.3s ease;
-    /* Płynna animacja przy zmianie stanu */
-    margin-top: 10px; /* Przestrzeń nad przyciskiem */
-    margin-bottom: 10px; /* Przestrzeń pod przyciskiem */
-    margin-right: 15px; /* Przestrzeń po prawej stronie */
+    margin-top: 10px; 
+    margin-bottom: 10px; 
+    margin-right: 15px; 
 }
 
 button.save-btn:hover {
     background-color: #2EC4B6;
-    /* Ciemniejszy odcień zielonego przy najechaniu */
     border-color: #2EC4B6;
-    /* Dopasowanie koloru ramki do tła */
 }
 
 button.save-btn:active {
     background-color: #2EC4B6;
-    /* Jeszcze ciemniejszy odcień przy kliknięciu */
     border-color: #2EC4B6;
 }
 
 button.save-btn:focus {
     outline: none;
-    /* Usunięcie standardowej ramki po kliknięciu */
     box-shadow: 0 0 5px #005f55;
-    /* Dodanie delikatnego efektu po kliknięciu */
 }
 
 
@@ -1007,7 +980,8 @@ button.save-btn:focus {
 
 .menuAddingNewSub{
     display: flex;
-    justify-content:flex-end; 
+    justify-content:space-between; 
+    align-items: center;
 }
 
 .formForAddingLessons{
@@ -1040,4 +1014,25 @@ button.save-btn:focus {
 }
 
 
+.headerEditClass{
+    display: flex;
+    justify-content: flex-end;
+}
 
+.barEditClass{
+    display: flex;
+    justify-content: space-between;
+    margin:1rem;
+}
+
+.formEditClass{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.groupKiwi{
+    padding: 0.5rem;
+}
