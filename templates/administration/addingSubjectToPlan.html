@@ -3,6 +3,18 @@
 {% block mainContent %}
 
 <div class="menuAddingNewSub">
+    <section class="groupSection">
+        <label>Wybierz typ lekcji:</label>
+        <div>
+            <input type="radio" id="standardLesson" name="lessonType" value="standard" checked>
+            <label for="standardLesson">Standardowe dodawanie</label>
+        </div>
+        <div>
+            <input type="radio" id="singleLesson" name="lessonType" value="single">
+            <label for="singleLesson">Dodanie pojedynczej lekcji</label>
+        </div>
+    </section>
+
     <a href="/createSchedule" class="btn">Wróć</a>
 </div>
 
@@ -34,19 +46,6 @@
 
         <section class="groupSection">
 
-            <label for="day-select">Wybierz dzień tygodnia:</label>
-            <select class="btn" id="day-select" name="day_select">
-                <option value="" disabled selected>Wybierz dzień tygodnia</option>
-                <option value="0">Poniedziałek</option>
-                <option value="1">Wtorek</option>
-                <option value="2">Środa</option>
-                <option value="3">Czwartek</option>
-                <option value="4">Piątek</option>
-            </select>
-        </section>
-
-        <section class="groupSection">
-
             <label for="start_time">Godzina rozpoczęcia:</label>
             <input name="start_time" id="start_time" type="time">
         </section>
@@ -57,20 +56,37 @@
             <input type="text" name="room_number" id="room_number">
         </section>
 
-        <section class="groupSection">
-            <label for="exact_date">Dokładna data jeśli lekcja ma pojawić się jednorazowo</label>
-            <input class="btn" type="date" name="exact_date" id="exact_date">
-        </section>
+        <div class="standardView">
 
-        <section class="groupSection">
-            <label for="semester_start">Początek semestru:</label>
-            <input class="btn" type="date" name="semester_start" id="semester_start">
-        </section>
+            <section class="groupSection">
+                <label for="day-select">Wybierz dzień tygodnia:</label>
+                <select class="btn" id="day-select" name="day_select">
+                    <option value="" disabled selected>Wybierz dzień tygodnia</option>
+                    <option value="0">Poniedziałek</option>
+                    <option value="1">Wtorek</option>
+                    <option value="2">Środa</option>
+                    <option value="3">Czwartek</option>
+                    <option value="4">Piątek</option>
+                </select>
+            </section>
 
-        <section class="groupSection">
-            <label for="semester_end">Koniec semestru</label>
-            <input class="btn" type="date" name="semester_end" id="semester_end">
-        </section>
+            <section class="groupSection">
+                <label for="semester_start">Początek semestru:</label>
+                <input class="btn" type="date" name="semester_start" id="semester_start">
+            </section>
+
+            <section class="groupSection">
+                <label for="semester_end">Koniec semestru</label>
+                <input class="btn" type="date" name="semester_end" id="semester_end">
+            </section>
+        </div>
+
+        <div class="exactView">
+            <section class="groupSection">
+                <label for="exact_date">Dokładna data jeśli lekcja ma pojawić się jednorazowo</label>
+                <input class="btn" type="date" name="exact_date" id="exact_date">
+            </section>
+        </div>
 
         <section class="groupSection">
             <button type="submit" class="btn">Dodaj lekcję</button>
@@ -83,6 +99,38 @@
 
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Pobierz elementy sekcji dla standardowego widoku i widoku dokładnej daty
+        const standardView = document.querySelector('.standardView');
+        const exactView = document.querySelector('.exactView');
+
+        // Pobierz wszystkie przyciski radiowe
+        const radioButtons = document.querySelectorAll('input[name="lessonType"]');
+
+        // Funkcja przełączająca widoczność sekcji w zależności od wybranego typu lekcji
+        function toggleLessonType() {
+            const selectedType = document.querySelector('input[name="lessonType"]:checked').value;
+
+            if (selectedType === 'standard') {
+                // Pokaż standardowy widok, ukryj widok dokładnej daty
+                standardView.style.display = 'block';
+                exactView.style.display = 'none';
+            } else if (selectedType === 'single') {
+                // Pokaż widok dokładnej daty, ukryj standardowy widok
+                standardView.style.display = 'none';
+                exactView.style.display = 'block';
+            }
+        }
+
+        // Dodaj nasłuchiwanie na zmianę wyboru w przyciskach radiowych
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', toggleLessonType);
+        });
+
+        // Ustaw widoczność sekcji na podstawie domyślnego wyboru
+        toggleLessonType();
+    });
+
 
     document.addEventListener('DOMContentLoaded', function () {
         var classSelect = document.getElementById('class-select');

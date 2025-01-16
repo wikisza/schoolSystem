@@ -980,7 +980,8 @@ button.save-btn:focus {
 
 .menuAddingNewSub{
     display: flex;
-    justify-content:flex-end; 
+    justify-content:space-between; 
+    align-items: center;
 }
 
 .formForAddingLessons{
