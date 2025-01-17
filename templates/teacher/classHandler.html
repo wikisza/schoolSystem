@@ -35,7 +35,7 @@
                             <td>
                                 <form method="GET" action="{{ url_for('classHandler.edit_student') }}">
                                     <input type="hidden" name="student_id" value="{{ student.id_student }}">
-                                    <button type="submit">Edytuj</button>
+                                    <button class="btn_edytuj" type="submit">Edytuj</button>
                                 </form>                                                                                           
                             </td>
                             <td>{{ student.parentEmail }}</td>
