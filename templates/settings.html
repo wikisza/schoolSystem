@@ -2,7 +2,10 @@
 
 {% block content %}
 <div class="partialView">
-    <h1>Ustawienia</h1>
+    <div class="header">
+        <button class="back-button" onclick="history.back()">Powrót</button>
+        <h1>Ustawienia</h1>
+    </div>
 
     <form method="POST" action="{{ url_for('settings.settings') }}">
         <h2>Dane osobowe</h2>
@@ -31,5 +34,78 @@
         <button type="submit">Zapisz zmiany</button>
     </form>
 </div>
+
+<style>
+    h1 {
+        color: white;
+    }
+    .partialView {
+        max-width: 600px;
+        margin: 50px auto;
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .partialView .header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .partialView h1 {
+        color: #333;
+        margin: 0;
+        font-size: 24px;
+    }
+    
+    .partialView form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .partialView label {
+        font-weight: bold;
+        color: #555;
+    }
+    
+    .partialView input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    .partialView button {
+        background: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    
+    .partialView button:hover {
+        background: #45a049;
+    }
+    
+    .back-button {
+        background: #007BFF;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .back-button:hover {
+        background: #0056b3;
+    }
+</style>
 
 {% endblock %}
