@@ -1,5 +1,5 @@
 import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 def update_user_data(user_id, firstName, lastName, email, phoneNumber, address, password, confirmPassword):
     """
