@@ -1,1 +1,109 @@
-<p>hello world</p>
+{% extends "teacher/teacherView.html" %}
+
+{% block mainContent %}
+<style>
+    #addBehaviorForm {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #addBehaviorForm label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        font-size: 1rem;
+        color: #1f7e75;
+    }
+
+    #addBehaviorForm select, 
+    #addBehaviorForm textarea, 
+    #addBehaviorForm button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    #addBehaviorForm select {
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    #addBehaviorForm textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    #addBehaviorForm button {
+        background-color: #1f7e75;
+        color: white;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #addBehaviorForm button:hover {
+        background-color: #145f54;
+    }
+
+    
+</style>
+
+<h1 style="font-size: 2rem; 
+color: #FF9F1C; 
+text-align: center; 
+margin-bottom: 20px;">Dodaj Zachowanie</h1>
+
+<form id="addBehaviorForm">
+    <!-- Dropdown dla rodzaju zachowania -->
+    <label for="behaviorType">Rodzaj Zachowania</label>
+    <select id="behaviorType" name="behaviorType" required>
+        <option value="" disabled selected>-- Wybierz --</option>
+        <option value="uwaga">Uwaga</option>
+        <option value="osiagniecie">Osiągnięcie</option>
+    </select>
+
+    <!-- Pole tekstowe dla szczegółów zachowania -->
+    <label for="behaviorNote">Szczegóły</label>
+    <textarea id="behaviorNote" name="behaviorNote" rows="4" placeholder="Opisz zachowanie..." required></textarea>
+
+    <!-- Przycisk zatwierdzenia -->
+    <button type="submit">Zatwierdź</button>
+</form>
+<script>
+    const idStudent = window.location.pathname.split('/')[2];  // Extract the ID from the URL
+    console.log(idStudent);
+document.getElementById('addBehaviorForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); 
+
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch(`/addBehavior/${idStudent}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message); // Show success message
+            this.reset(); // Clear the form
+        } else {
+            alert(result.error); // Show error message
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+    }
+});
+</script>
+{% endblock %}
