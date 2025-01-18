@@ -1,0 +1,142 @@
+{% extends "parent/parentView.html" %}
+
+{% block mainContent %}
+<style>
+    .behavior-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Flex container to hold both behavior sections */
+    .behavior-sections {
+        display: flex; /* Make sections align side by side */
+        gap: 30px; /* Add space between sections */
+        justify-content: space-between; /* Spread sections evenly */
+    }
+
+    /* Section styling for individual behavior sections */
+    .behavior-section {
+        flex: 1; /* Both sections take equal space */
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        min-width: 0; /* Prevent content overflow issues */
+        max-height: 400px;
+    }
+
+    /* Section header styling */
+    .behavior-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid;
+    }
+
+    /* Uwaga section header */
+    .uwaga-header {
+        color: #D9534F;
+        border-color: #D9534F;
+    }
+
+    /* Osiągnięcie section header */
+    .osiagniecie-header {
+        color: #5BC0DE;
+        border-color: #5BC0DE;
+    }
+
+    /* List styling for behavior items */
+    .behavior-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        max-height: 300px; /* Limit the height of the list */
+        overflow-y: auto; /* Enable vertical scrolling */
+    }
+
+    /* Individual behavior item styling */
+    .behavior-item {
+        display: flex;
+        flex-direction: column; /* Stack content vertically for better wrapping */
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        transition: background-color 0.3s;
+    }
+
+    /* Hover effect for behavior list items */
+    .behavior-item:hover {
+        background-color: #f4f4f4;
+    }
+
+    /* Remove bottom border for the last list item */
+    .behavior-list li:last-child {
+        border-bottom: none;
+    }
+
+    /* Styling for behavior details */
+    .behavior-details {
+        font-size: 1.1rem;
+        color: #333;
+        flex: 1;
+        word-wrap: break-word; /* Forces long words to wrap */
+        overflow-wrap: break-word; /* Works in most modern browsers */
+        line-height: 1.5; /* Improves readability */
+    }
+
+    /* Styling for the timestamp */
+    .behavior-timestamp {
+        font-size: 0.9rem;
+        color: #888;
+    }
+
+    /* Responsive behavior sections for smaller screens */
+   
+</style>
+
+<h1 style="font-size: 2rem; color: #FF9F1C; text-align: center; margin-bottom: 20px;">Zachowanie : <span style="color: #1f7e75;;">{{student_name}}</span> </h1>
+<div id="student-behavior-container" class="behavior-container">
+    <!-- Behavior Sections -->
+    <div class="behavior-sections">
+        <!-- Uwaga Section -->
+        <section id="uwaga-section" class="behavior-section">
+            <h2 class="behavior-header uwaga-header">Uwagi</h2>
+            <ul id="uwaga-list" class="behavior-list">
+                {% if uwagi %}
+                        {% for uwaga in uwagi %}
+                            <li class="behavior-item">
+                                <span class="behavior-details">{{ uwaga.details }}</span>
+                                <span class="behavior-timestamp">{{ uwaga.created_at }}</span>
+                                <span class="behavior-creator">{{ uwaga.creator_first_name }} {{ uwaga.creator_last_name }}</span>
+                            </li>
+                        {% endfor %}
+                {% else %}
+                        <li class="behavior-item">Brak uwag</li>
+                {% endif %}
+            </ul>
+        </section>
+
+        <!-- Osiągnięcie Section -->
+        <section id="osiagniecie-section" class="behavior-section">
+            <h2 class="behavior-header osiagniecie-header">Osiągnięcie</h2>
+            <ul id="osiagniecie-list" class="behavior-list">
+                {% if osiagniecia %}
+                    {% for osiagniecie in osiagniecia %}
+                        <li class="behavior-item">
+                            <span class="behavior-details">{{ osiagniecie.details }}</span>
+                            <span class="behavior-timestamp">{{ osiagniecie.created_at }}</span>
+                            <span class="behavior-creator">{{ osiagniecie.creator_first_name }} {{ osiagniecie.creator_last_name }}</span>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="behavior-item">Brak osiągnięć</li>
+                {% endif %}
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}
