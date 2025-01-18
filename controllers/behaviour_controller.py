@@ -47,3 +47,23 @@ def get_classes_from_db():
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return []
+    
+def add_behaviour(id_student, behavior_type, behavior_note, current_user):
+    try:
+        # Connect to the database
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+
+        # Query to insert behavior into the database
+        query = """
+        INSERT INTO student_behaviours (id_student, behaviour_type, created_at, created_by, details)
+        VALUES (?, ?, datetime('now'), ?, ?)
+        """
+        cursor.execute(query, (id_student, behavior_type, current_user, behavior_note))
+        conn.commit()
+        conn.close()
+
+        # Return response data as a dictionary (no jsonify here)
+        return {"message": "Behavior added successfully"}, 200
+    except sqlite3.Error as e:
+        return {"error": f"Database error: {e}"}, 500

@@ -41,19 +41,34 @@ def behaviourParent():
 @login_required
 def addBehaviour(id_student):
     # Fetch details about the student using student_id if needed
-    print(id_student)
+    
     return render_template(
         'teacher/addBehaviour.html', 
         firstName=current_user.firstName, 
         lastName=current_user.lastName, 
         profession=current_user.profession, 
     )
+@behaviour_blueprint.route('/addBehavior/<int:id_student>', methods=['POST'])
+@login_required
+def add_behavior(id_student):
+    """
+    Route for adding a behavior for a specific student.
+    """
+    # Retrieve form data from the request
+    behavior_type = request.form.get('behaviorType')
+    behavior_note = request.form.get('behaviorNote')
+    
+    
 
+    # Pass student_id, user_id, and other data to the controller
+    response, status_code = add_behaviour(id_student, behavior_type, behavior_note, current_user.id)
 
+    # Return a JSON response using jsonify and pass the status code
+    return jsonify(response), status_code
 @behaviour_blueprint.route('/getStudents/<class_id>', methods=['GET'])
 @login_required
 def getStudents(class_id):
     students = get_students_from_db(class_id)
-    print(students)
+    
     return jsonify(students)
 
