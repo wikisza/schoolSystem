@@ -58,7 +58,6 @@ def behaviourStudent():
 @login_required
 def behaviourParent():
     user_id = current_user.id
-    print(f"Current user ID: {user_id}")
 
     # Get the parent ID based on the user ID
     parent_response, parent_status_code = get_parent_id(user_id)
@@ -69,18 +68,28 @@ def behaviourParent():
     parent_id = parent_response['parent_id']
 
     # Get the student ID(s) based on the parent ID
-    response, status_code = get_child_by_parent_id(parent_id)
+    children_response, status_code = get_child_by_parent_id(parent_id)
     
     if status_code != 200:
-        return jsonify(response), status_code
+        return jsonify(children_response), status_code
 
     # Assuming response is a list of children
-    if not response:
+    if not children_response:
         return jsonify({"message": "No children found for this parent"}), 404
 
-    # For simplicity, let's assume we are dealing with the first child
-    student_id = response[0]['id_student']
-    student_name = response[0]['first_name'] + " " + response[0]['last_name']
+    # Get the selected student ID from query parameters
+    student_id = request.args.get('student_id')
+    if not student_id:
+        student_id = children_response[0]['id_student']
+        student_name = children_response[0]['first_name'] + " " + children_response[0]['last_name']
+    else:
+        student = next((child for child in children_response if child['id_student'] == int(student_id)), None)
+        if student:
+            student_name = student['first_name'] + " " + student['last_name']
+        else:
+            student_id = children_response[0]['id_student']
+            student_name = children_response[0]['first_name'] + " " + children_response[0]['last_name']
+
 
     # Get the behaviors based on the student ID
     behaviours, status_code = get_behaviours_from_db(student_id)
@@ -92,8 +101,8 @@ def behaviourParent():
     uwagi = [b for b in behaviours if b['behaviour_type'] == 'uwaga']
     osiagniecia = [b for b in behaviours if b['behaviour_type'] == 'osiagniecie']
 
-    # Pass uwagi and osiagniecia to the template
-    return render_template('parent/behaviourParent.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession, uwagi=uwagi, osiagniecia=osiagniecia, student_name=student_name)
+    # Pass uwagi, osiagniecia, and children to the template
+    return render_template('parent/behaviourParent.html', firstName=current_user.firstName, lastName=current_user.lastName, profession=current_user.profession, uwagi=uwagi, osiagniecia=osiagniecia, children=children_response, selected_student_name=student_name)
 
 @behaviour_blueprint.route('/addBehaviour/<id_student>')
 @login_required
