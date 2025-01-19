@@ -1,15 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
-from controllers.attendance_controller import (
-    get_classes,
-    get_existing_attendance,
-    get_lessons_with_presence,
-    get_student_id,
-    get_subjects,
-    get_attendance_data,
-    get_lessons,
-    save_attendance_changes
-)
+from controllers.attendance_controller import *
 
 from controllers.classSchedule_controller import get_student_class
 
@@ -83,3 +74,47 @@ def getThisStudentLessonsAndPresences_routes():
     classes = get_lessons_with_presence(id_class, id_student)
 
     return classes
+
+
+
+@attendance_blueprint.route('/get_logged_in_parent', methods=['GET'])
+@login_required
+def get_logged_in_parent():
+    user_id = current_user.id
+    parent_id = get_parent_id(user_id)
+    if parent_id:
+        return jsonify({"parent_id": parent_id})
+    else:
+        return jsonify({"message": "No parent found for this user"}), 404
+
+@attendance_blueprint.route('/get_children', methods=['GET'])
+@login_required
+def get_children():
+    parent_id = request.args.get('parent_id')
+    if not parent_id:
+        return jsonify({"message": "Parent ID is required"}), 400
+
+    children = get_children_by_parent_id(parent_id)
+    if children:
+        return jsonify({"children": children})
+    else:
+        return jsonify({"message": "No children found for this parent"}), 404
+
+
+############
+@attendance_blueprint.route('/get_selected_child_lessons', methods=['GET'])
+@login_required
+def get_selected_child_lessons():
+    child_id = request.args.get('child_id')
+    if not child_id:
+        return jsonify({"error": "Child ID is required"}), 400
+
+    # Pobierz klasę dziecka na podstawie ID ucznia
+    id_class = get_student_class_by_id(child_id)
+    if not id_class:
+        return jsonify({"error": "Class not found for this child"}), 404
+
+    # Pobierz lekcje i obecności dla danego dziecka
+    lessons_with_presence = get_lessons_with_presence(id_class, child_id)
+    return lessons_with_presence
+
