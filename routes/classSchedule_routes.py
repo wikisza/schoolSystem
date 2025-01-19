@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from controllers.classSchedule_controller import *
 from datetime import datetime, timedelta
 from controllers.classSchedule_controller import addClass, addGroup, search_items,getClassData, getStudentsInClass, editThisClass, get_teachers, assign_students_to_class, get_lessons, getAllClasses, getSubjectsList, addNewSubjectToPlan, get_teacher_lessons, get_id_teacher, get_student_class, SubjectTeacherConnection
-from controllers.classSchedule_controller import get_teachers_without_class, getThisTeacherSubjects
+from controllers.classSchedule_controller import get_teachers_without_class, getThisTeacherSubjects, get_parent_id, get_this_parent_kids
 
 classSchedule_blueprint = Blueprint('classSchedule', __name__)
 
@@ -191,6 +191,29 @@ def getThisStudenLessons_route():
     classes = get_lessons(id_class)  
 
     return classes
+
+@classSchedule_blueprint.route('/getThisParentKidsLessons', methods=['GET'])
+def getThisParentKidsLessons_route():
+    id_user = current_user.id 
+
+    id_parent = get_parent_id(id_user)
+
+    id_class = get_student_class(id_student)
+
+    classes = get_lessons(id_class)  
+
+    return classes
+
+@classSchedule_blueprint.route('/get_kid_from_list', methods=['GET'])
+def get_kid_from_list_route():
+    id_user = current_user.id 
+
+    id_parent = get_parent_id(id_user)
+    
+    kids_list = get_this_parent_kids(id_parent) 
+
+    return kids_list
+
 
 @classSchedule_blueprint.route('/getAllClasses', methods=['GET'])
 def getAllClasses_route():

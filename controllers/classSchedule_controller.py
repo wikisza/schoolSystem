@@ -288,6 +288,61 @@ def get_student_class(id_user):
     
     return id_class
 
+def get_this_parent_kids(id_parent):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT students.id_student, users.firstName||' '||users.lastName AS student_name, classes.class_name, classes.id_class
+    FROM students
+    JOIN users ON students.id_user = users.id
+    JOIN classes ON students.id_class = classes.id_class
+    WHERE id_parent = ?
+    '''
+    
+    cursor.execute(query, (id_parent,))
+    students = cursor.fetchall()  
+    conn.close()
+
+    result = []
+
+    for student in students:
+        
+        id_student = student[0]
+        student_name = student[1]
+        class_name = student[2]
+        id_class = student[3]
+
+        # Dodajemy lekcję do wyników
+        lesson_for_day = {
+            'id_student': id_student,
+            'student_name': student_name,
+            'class_name': class_name,
+            'id_class':id_class
+        }
+
+        result.append(lesson_for_day)
+
+    return jsonify(result)
+
+
+def get_parent_id(id_user):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT id_parent
+    FROM parents
+    WHERE id_user = ?
+    '''
+    
+    cursor.execute(query, (id_user,))
+    result = cursor.fetchone()
+    conn.close()
+
+    parent_id = result[0] if result else None
+    
+    return parent_id
 
 #wszystkie przedmioty
 

@@ -3,20 +3,135 @@
 {% block mainContent %}
 
 <div class="partialView">
-    <div id="calendar"></div>
+    <section>
+        <label for="student-select">Wybierz ucznia:</label>
+        <select id="student-select" class="btn">
+            <option value="" disabled selected>Wybierz ucznia</option>
+        </select>
+    </section>
+
+    <div id="calendar2"></div>
+
+    <div id="lessonModal" class="modalEdit">
+        <div class="modalEdit-content">
+            <span class="closeEdit">&times;</span>
+            <h2>Informacje o lekcji</h2>
+            <p><strong>Przedmiot:</strong> <span id="lessonSubject"></span></p>
+            <p><strong>Nauczyciel:</strong> <span id="lessonTeacher"></span></p>
+            <p><strong>Godzina rozpoczęcia:</strong> <span id="lessonStartTime"></span></p>
+            <p><strong>Numer sali:</strong> <span id="lessonRoom"></span></p>
+        </div>
+    </div>
 
 </div>
 
-<!--Struktura okienka wyskakujacego po kliknieciu na zajęcia w planie zajęć-->
-<dialog id="eventDialog">
-    <div class="dialog-header">
-        <h2 class="dialog-title"></h2>
-        <button class="close-button" onclick="document.getElementById('eventDialog').close();">X</button>
-    </div>
-    <div class="dialog-content">
-        <p class="dialog-description"></p>
-        <div class="dialog-details"></div> <!-- Nowe miejsce na szczegóły -->
-    </div>
-</dialog>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar2');
+        var studentSelect = document.getElementById('student-select');
+        document.getElementById('lessonModal').style.display = 'none';
+
+        // Funkcja renderowania kalendarza dla wybranej klasy
+        function renderCalendar(id_class) {
+            if (window.currentCalendar) {
+                window.currentCalendar.destroy(); // Zniszcz istniejący kalendarz, jeśli jest
+            }
+
+            fetch('/get_lessons', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id_class: id_class }) // Przekazanie ID klasy
+            })
+                .then(response => response.json())
+                .then(events => {
+                    // Tworzenie nowego kalendarza
+                    window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+                        firstDay: 1,
+                        height: 650,
+                        initialView: 'dayGridMonth',
+                        slotMinTime: '08:00:00',
+                        slotMaxTime: '20:00:00',
+                        events: events,
+                        locale: 'pl',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        buttonText: {
+                            today: 'Dziś',
+                            month: 'Miesiąc',
+                            week: 'Tydzień',
+                            day: 'Dzień'
+                        },
+                        eventClick: function (info) {
+                            // Uzupełnienie modal z danymi o lekcji
+                            document.getElementById('lessonSubject').innerText = info.event.title;
+                            document.getElementById('lessonTeacher').innerText = info.event.extendedProps.teacher;
+                            document.getElementById('lessonStartTime').innerText = info.event.start.toLocaleString(); // Data i godzina
+                            document.getElementById('lessonRoom').innerText = info.event.extendedProps.room;
+
+                            // Wyświetlenie modala
+                            document.getElementById('lessonModal').style.display = 'block';
+                        }
+                    });
+
+                    window.currentCalendar.render(); // Renderowanie kalendarza
+                })
+                .catch(error => failureCallback(error));
+        }
+
+        // Zamknięcie modala po kliknięciu na "X"
+        document.querySelector('.closeEdit').onclick = function () {
+            document.getElementById('lessonModal').style.display = 'none';
+        };
+
+        // Zamknięcie modala, jeśli klikniesz poza jego obszarem
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('lessonModal')) {
+                document.getElementById('lessonModal').style.display = 'none';
+            }
+        };
+
+        // Funkcja do wypełniania selecta klasami
+        function populateStudentsSelect(students) {
+            studentSelect.innerHTML = '<option value="" disabled selected>Wybierz ucznia</option>'; // Wyczyść istniejące opcje
+            students.forEach(std => {
+                const option = document.createElement('option');
+                option.value = std.id_class; // Ustaw id_class jako wartość
+                option.textContent = std.student_name; // Wyświetl class_name
+                studentSelect.appendChild(option);
+            });
+        }
+
+        // Pobierz klasy z backendu
+        fetch('/get_kid_from_list', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(students => {
+                if (students.length > 0) {
+                    populateStudentsSelect(students); // Wypełnij select klasami
+                } else {
+                    console.error('Brak uczniów w bazie danych.');
+                }
+            })
+            .catch(error => console.error('Błąd podczas pobierania uczniów:', error));
+
+        // Nasłuchuj zmian w select i renderuj kalendarz
+        studentSelect.addEventListener('change', function () {
+            const selectedStudent = studentSelect.value; // Pobierz wybraną klasę
+            if (selectedStudent) {
+                renderCalendar(selectedStudent); // Renderuj kalendarz dla wybranej klasy
+            }
+        });
+    });
+
+</script>
 
 {% endblock %}
