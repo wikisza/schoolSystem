@@ -30,7 +30,7 @@
     <button class="status-btn" data-status="s">s - spóźniony</button>
 </div>
 
-<div class="attendance attendance-table-container">
+<div class="attendance attendance-table-container" style="overflow-x: auto; overflow-y: auto; max-height: 400px; max-width: 100%;">
     <table>
         <thead>
             <tr>
@@ -59,8 +59,8 @@
 document.getElementById('confirm-btn').addEventListener('click', getLessonsData);
 
 function getLessonsData() {
-    var classId = document.getElementById('class-select').value;
-    var subjectId = document.getElementById('subject-select').value;
+    var classId = parseInt(document.getElementById('class-select').value);
+    var subjectId = parseInt(document.getElementById('subject-select').value);
 
     fetch('/get-lessons', {
         method: 'POST',
@@ -70,7 +70,8 @@ function getLessonsData() {
         body: JSON.stringify({ classId: classId, subjectId: subjectId }),
     })
     .then(response => response.json())
-    .then(data => displayLessonsData(data));
+    .then(data => displayLessonsData(data))
+    .catch(error => console.error('Error:', error));
 }
 
 function displayLessonsData(data) {
@@ -117,21 +118,79 @@ function displayLessonsData(data) {
 
         tbody.appendChild(tr);
     });
+
+    // Dodanie obsługi strzałek
+    addArrowNavigation();
 }
 
+function addArrowNavigation() {
+    const inputs = document.querySelectorAll('.attendance-input');
 
+    inputs.forEach(input => {
+        input.addEventListener('keydown', function(e) {
+            const key = e.key;
+            const currentInput = e.target;
+            const currentRow = currentInput.parentElement.parentElement;
+            const currentColumnIndex = Array.from(currentRow.children).indexOf(currentInput.parentElement);
+            const currentRowIndex = Array.from(currentRow.parentElement.children).indexOf(currentRow);
+            
+            switch (key) {
+                case "ArrowUp":
+                    if (currentRowIndex > 0) {
+                        e.preventDefault();
+                        currentRow.parentElement.children[currentRowIndex - 1].children[currentColumnIndex].querySelector('input').focus();
+                    }
+                    break;
+                case "ArrowDown":
+                    if (currentRowIndex < currentRow.parentElement.children.length - 1) {
+                        e.preventDefault();
+                        currentRow.parentElement.children[currentRowIndex + 1].children[currentColumnIndex].querySelector('input').focus();
+                    }
+                    break;
+                case "ArrowLeft":
+                    if (currentColumnIndex > 0) {
+                        e.preventDefault();
+                        currentRow.children[currentColumnIndex - 1].querySelector('input').focus();
+                    }
+                    break;
+                case "ArrowRight":
+                    if (currentColumnIndex < currentRow.children.length - 1) {
+                        e.preventDefault();
+                        currentRow.children[currentColumnIndex + 1].querySelector('input').focus();
+                    }
+                    break;
+            }
+        });
+    });
+}
 
 document.getElementById('save-btn').addEventListener('click', saveAttendanceChanges);
 
 function saveAttendanceChanges() {
     var inputs = document.querySelectorAll('.attendance-input');
     var attendanceData = [];
+    var validStatuses = ['o', '-', 'u', '', 's', /^u\(.+\)$/];
 
     inputs.forEach(input => {
+        const value = input.value.trim();
+        const isValid = validStatuses.some(status => {
+            if (typeof status === 'string') {
+                return value === status;
+            } else {
+                return status.test(value);  // Sprawdzenie regex
+            }
+        });
+
+        if (!isValid) {
+            alert(`Niepoprawna wartość: ${value}. Dozwolone wartości to: o, -, s, u(powód)`);
+            input.focus();
+            throw new Error(`Invalid value: ${value}`);
+        }
+
         attendanceData.push({
             lessonId: input.dataset.lessonId,
             studentId: input.dataset.studentId,
-            status: input.value.trim(),
+            status: value,
         });
     });
 
