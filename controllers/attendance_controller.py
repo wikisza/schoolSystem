@@ -245,5 +245,69 @@ def get_lessons_with_presence(class_id, id_student):
 
     return jsonify(result)
 
+#widok rodzica
+
+def get_parent_id(user_id):
+    """
+    Pobiera id rodzica na podstawie id użytkownika.
+    """
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+
+        query = '''
+        SELECT id_parent
+        FROM parents
+        WHERE id_user = ?
+        '''
+        cursor.execute(query, (user_id,))
+        parent_id = cursor.fetchone()
+
+        conn.close()
+
+        return parent_id[0] if parent_id else None
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None
+
+def get_children_by_parent_id(parent_id):
+    """
+    Pobiera listę dzieci na podstawie id rodzica.
+    """
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        
+        query = '''
+        SELECT s.id_student, u.firstName, u.lastName
+        FROM students s
+        JOIN users u ON s.id_user = u.id
+        WHERE s.id_parent = ?
+        '''
+        cursor.execute(query, (parent_id,))
+        children = cursor.fetchall()
+        
+        conn.close()
+        
+        children_list = [
+            {"id_student": child[0], "first_name": child[1], "last_name": child[2]}
+            for child in children
+        ]
+        
+        return children_list
+        
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []
 
 
+#dziala dalej nw
+
+def get_student_class_by_id(id_student):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    query = ''' SELECT id_class FROM students WHERE id_student = ? '''
+    cursor.execute(query, (id_student,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None
