@@ -1,7 +1,7 @@
 {% extends "student/studentView.html" %}
 
 {% block mainContent %}
-
+<h1>Frekwencja</h1>
 <div class="partialView">
     <div id="calendar2"></div>
 
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '-': '#dc3545',  // czerwony
         'u': '#ffc107',  // żółty
         's': '#6f42c1',  // fioletowy
-        default: '#FFFFFF'    // bez koloru
+        default: '#d3d3d3'    // jasno szary
     };
 
     // Funkcja renderowania kalendarza dla wybranej klasy
@@ -46,9 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     slotMinTime: '08:00:00',
                     slotMaxTime: '20:00:00',
                     events: events.map(event => {
-                        // Ustawianie kolorów tła i obramowania
-                        event.backgroundColor = backgroundColors[event.status] || backgroundColors['default'];
-                        event.borderColor = backgroundColors[event.status] || backgroundColors['default'];
+                        // Ustawianie kolorów tła i obramowania za pomocą regex
+                        const match = event.status.match(/^u\(.+\)$/);
+                        const statusKey = match ? 'u' : event.status;
+                        event.backgroundColor = backgroundColors[statusKey] || backgroundColors.default;
+                        event.borderColor = backgroundColors[statusKey] || backgroundColors.default;
                         return event;
                     }),
                     locale: 'pl',
@@ -64,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         day: 'Dzień'
                     },
                     eventClick: function (info) {
-                        var translatedStatus = statusTranslation[info.event.extendedProps.status] || 'Nie wprowadzono frekwencji';
+                        var translatedStatus = statusTranslation[info.event.extendedProps.status.split('(')[0]] || 'Nie wprowadzono frekwencji';
                         alert(`Przedmiot: ${info.event.title}\nW sali numer: ${info.event.extendedProps.room}\nStatus: ${translatedStatus}`);
                     }
                 });

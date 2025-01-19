@@ -78,39 +78,6 @@ def get_lessons(class_id, subject_id):
     conn.close()
     return lessons, students
 
-
-
-def save_attendance_changes(attendance_data):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-
-    for entry in attendance_data:
-        lesson_id = entry['lessonId']
-        student_id = entry['studentId']
-        status = entry['status']
-
-        # Sprawdzenie czy wpis już istnieje
-        cursor.execute('''
-            SELECT id_presence FROM presences WHERE id_lesson = ? AND id_student = ?
-        ''', (lesson_id, student_id))
-        existing_entry = cursor.fetchone()
-
-        if existing_entry:
-            # Jeśli wpis istnieje, zaktualizuj go
-            cursor.execute('''
-                UPDATE presences SET status = ? WHERE id_lesson = ? AND id_student = ?
-            ''', (status, lesson_id, student_id))
-        else:
-            # Jeśli wpis nie istnieje, wstaw nowy rekord
-            cursor.execute('''
-                INSERT INTO presences (id_student, id_lesson, status) 
-                VALUES (?, ?, ?)
-            ''', (student_id, lesson_id, status))
-
-    conn.commit()
-    conn.close()
-    return {'message': 'Attendance saved successfully'}
-
 def get_existing_attendance(class_id, subject_id):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -128,7 +95,6 @@ def get_existing_attendance(class_id, subject_id):
     existing_attendance = cursor.fetchall()
     conn.close()
 
-    # Konwersja wyników na słownik dla łatwiejszego użycia w widoku
     attendance_dict = {}
     for lesson_id, student_id, status in existing_attendance:
         if lesson_id not in attendance_dict:
@@ -136,6 +102,56 @@ def get_existing_attendance(class_id, subject_id):
         attendance_dict[lesson_id][student_id] = status
 
     return attendance_dict
+
+
+
+import time
+
+def save_attendance_changes(attendance_data):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # Ustawienie PRAGMA busy_timeout
+    cursor.execute('PRAGMA busy_timeout = 3000')  # Czas oczekiwania na odblokowanie (w milisekundach)
+
+    for entry in attendance_data:
+        lesson_id = entry['lessonId']
+        student_id = entry['studentId']
+        status = entry['status']
+
+        attempt = 0
+        max_attempts = 5
+        while attempt < max_attempts:
+            try:
+                # Sprawdzenie czy wpis już istnieje
+                cursor.execute('''
+                    SELECT id_presence FROM presences WHERE id_lesson = ? AND id_student = ?
+                ''', (lesson_id, student_id))
+                existing_entry = cursor.fetchone()
+
+                if existing_entry:
+                    # Jeśli wpis istnieje, zaktualizuj go
+                    cursor.execute('''
+                        UPDATE presences SET status = ? WHERE id_lesson = ? AND id_student = ?
+                    ''', (status, lesson_id, student_id))
+                else:
+                    # Jeśli wpis nie istnieje, wstaw nowy rekord
+                    cursor.execute('''
+                        INSERT INTO presences (id_student, id_lesson, status) 
+                        VALUES (?, ?, ?)
+                    ''', (student_id, lesson_id, status))
+
+                conn.commit()
+                break
+            except sqlite3.OperationalError as e:
+                if "database is locked" in str(e):
+                    attempt += 1
+                    time.sleep(1)  # Czekaj 1 sekundę przed ponowną próbą
+                else:
+                    raise e
+    conn.close()
+    return {'message': 'Attendance saved successfully'}
+
 
 
 def get_student_id(id_user):
@@ -223,13 +239,20 @@ def get_lessons_with_presence(class_id, id_student):
 
         # Dodajemy lekcję do wyników
         lesson_for_day = {
+            'id': lesson_id,  # ID lekcji jako 'id'
             'title': subject_name,
             'start': start_datetime.isoformat(),  # Format ISO 8601
             'end': end_datetime.isoformat(),
             'room': room_number,
             'teacher': teacher_name,
             'status': presence_status,
-            'description': f'Lekcja w sali {room_number}'
+            'description': f'Lekcja w sali {room_number}',
+            'extendedProps': {
+                'lessonId': lesson_id,
+                'studentId': id_student,
+                'status': presence_status,
+                'room': room_number
+            }
         }
 
         result.append(lesson_for_day)
@@ -244,6 +267,7 @@ def get_lessons_with_presence(class_id, id_student):
         })
 
     return jsonify(result)
+
 
 #widok rodzica
 

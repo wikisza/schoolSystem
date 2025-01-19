@@ -1,71 +1,3 @@
-<!-- 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zachowanie Twojego Dziecka</title>
-    <style>
-        .behavior-container {
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            max-width: 600px;
-            margin: auto;
-        }
-        .no-data {
-            font-size: 1rem;
-            color: #888;
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <h1 style="font-size: 2rem; color: #1f7e75; text-align: center; margin-bottom: 20px;">Dzieci Twojego Dziecka</h1>
-
-    <div class="behavior-container">
-        <label style="font-weight: bold; font-size: 1rem; color: #333;" for="child-select">Wybierz dziecko:</label>
-        <select style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: white; font-size: 1rem; cursor: pointer;" id="child-select">
-    
-        </select>
-        <div id="no-children" class="no-data" style="display: none;">Brak dzieci dla tego rodzica</div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/get_logged_in_parent')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.parent_id) {
-                        fetch(`/get_children?parent_id=${data.parent_id}`)
-                            .then(response => response.json())
-                            .then(childrenData => {
-                                const childSelect = document.getElementById('child-select');
-                                const noChildrenDiv = document.getElementById('no-children');
-
-                                if (childrenData.children && childrenData.children.length > 0) {
-                                    childrenData.children.forEach(child => {
-                                        const option = document.createElement('option');
-                                        option.value = child.id_student;
-                                        option.textContent = `${child.first_name} ${child.last_name}`;
-                                        childSelect.appendChild(option);
-                                    });
-                                } else {
-                                    noChildrenDiv.style.display = 'block';
-                                }
-                            });
-                    }
-                });
-        });
-    </script>
-</body>
-</html>
-
- -->
-
 {% extends "parent/parentView.html" %}
 
 {% block mainContent %}
@@ -86,93 +18,143 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const calendarEl = document.getElementById('calendar2');
-        const childSelect = document.getElementById('child-select');
-        const noChildrenDiv = document.getElementById('no-children');
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar2');
+    const childSelect = document.getElementById('child-select');
+    const noChildrenDiv = document.getElementById('no-children');
 
-        const statusTranslation = {
-            'o': 'Obecny',
-            '-': 'Nieobecny',
-            'u': 'Usprawiedliwiony',
-            's': 'Spóźniony'
-        };
-        const backgroundColors = {
-            'o': '#28a745', // zielony
-            '-': '#dc3545', // czerwony
-            'u': '#ffc107', // żółty
-            's': '#6f42c1', // fioletowy
-            default: '#FFFFFF'
-        };
+    const statusTranslation = {
+        'o': 'Obecny',
+        '-': 'Nieobecny',
+        'u': 'Usprawiedliwiony',
+        's': 'Spóźniony'
+    };
+    const backgroundColors = {
+        'o': '#28a745', // zielony
+        '-': '#dc3545', // czerwony
+        'u': '#ffc107', // żółty
+        's': '#6f42c1', // fioletowy
+        'default': '#d3d3d3' // jasno szary
+    };
 
-        function renderCalendar(childId) {
-            fetch(`/get_selected_child_lessons?child_id=${childId}`)
-                .then(response => response.json())
-                .then(events => {
-                    if (window.currentCalendar) {
-                        window.currentCalendar.destroy();
-                    }
-                    window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
-                        firstDay: 1,
-                        height: 650,
-                        initialView: 'dayGridMonth',
-                        events: events.map(event => ({
+    function renderCalendar(childId) {
+        fetch(`/get_selected_child_lessons?child_id=${childId}`)
+            .then(response => response.json())
+            .then(events => {
+                if (window.currentCalendar) {
+                    window.currentCalendar.destroy();  // Zniszczenie poprzedniego kalendarza
+                }
+                window.currentCalendar = new FullCalendar.Calendar(calendarEl, {
+                    firstDay: 1,
+                    height: 650,
+                    initialView: 'dayGridMonth',
+                    events: events.map(event => {
+                        // Użycie regex, aby rozpoznać 'u(coś tam)'
+                        const match = event.status.match(/^u\(.+\)$/);
+                        const statusKey = match ? 'u' : event.status;
+                        return {
                             ...event,
-                            backgroundColor: backgroundColors[event.status] || backgroundColors.default,
-                            borderColor: backgroundColors[event.status] || backgroundColors.default,
-                        })),
-                        locale: 'pl',
-                        headerToolbar: {
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'dayGridMonth,timeGridWeek,timeGridDay',
-                        },
-                        buttonText: {
-                            today: 'Dziś',
-                            month: 'Miesiąc',
-                            week: 'Tydzień',
-                            day: 'Dzień',
-                        },
-                        eventClick: function (info) {
-                            const translatedStatus = statusTranslation[info.event.extendedProps.status] || 'Nie wprowadzono frekwencji';
-                            alert(`Przedmiot: ${info.event.title}\nW sali numer: ${info.event.extendedProps.room}\nStatus: ${translatedStatus}`);
-                        },
-                    });
-                    window.currentCalendar.render();
-                })
-                .catch(error => {
-                    console.error('Error fetching lessons:', error);
-                    alert('Wystąpił błąd podczas pobierania danych lekcji.');
-                });
-        }
+                            backgroundColor: backgroundColors[statusKey] || backgroundColors.default,
+                            borderColor: backgroundColors[statusKey] || backgroundColors.default,
+                        };
+                    }),
+                    locale: 'pl',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                    },
+                    buttonText: {
+                        today: 'Dziś',
+                        month: 'Miesiąc',
+                        week: 'Tydzień',
+                        day: 'Dzień',
+                    },
+                    eventClick: function (info) {
+                        const translatedStatus = statusTranslation[info.event.extendedProps.status.split('(')[0]] || 'Nie wprowadzono frekwencji';
+                        let statusMessage = `Przedmiot: ${info.event.title}\nW sali numer: ${info.event.extendedProps.room}\nStatus: ${translatedStatus}`;
 
-        function fetchChildren() {
-            fetch('/get_logged_in_parent')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.parent_id) {
-                        fetch(`/get_children?parent_id=${data.parent_id}`)
-                            .then(response => response.json())
-                            .then(childrenData => {
-                                if (childrenData.children && childrenData.children.length > 0) {
-                                    childrenData.children.forEach(child => {
-                                        const option = document.createElement('option');
-                                        option.value = child.id_student;
-                                        option.textContent = `${child.first_name} ${child.last_name}`;
-                                        childSelect.appendChild(option);
-                                    });
-                                    childSelect.addEventListener('change', () => {
-                                        renderCalendar(childSelect.value);
-                                    });
-                                } else {
-                                    noChildrenDiv.style.display = 'block';
-                                }
-                            });
+                        // Jeśli status to "-", umożliw usprawiedliwienie
+                        if (info.event.extendedProps.status === '-') {
+                            const reason = prompt('Podaj powód usprawiedliwienia:');
+                            if (reason) {
+                                const lessonId = info.event.extendedProps.lessonId;  // Używamy `lessonId` z extendedProps
+                                const studentId = info.event.extendedProps.studentId;  // ID ucznia
+
+                                // Zapisz zmiany w bazie danych
+                                fetch('/update-attendance-status', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        lessonId: lessonId,  // Przekazujemy lessonId
+                                        studentId: studentId,  // ID ucznia
+                                        newStatus: `u(${reason})` // Zapisz status z powodem w polu `status`
+                                    }),
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert(`Usprawiedliwienie zapisane.\nPowód: ${reason}`);
+                                        renderCalendar(childId);  // Aktualizuj widok kalendarza
+                                    } else {
+                                        alert('Wystąpił błąd przy zapisywaniu usprawiedliwienia.');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Błąd podczas zapisywania:', error);
+                                    alert('Wystąpił błąd podczas zapisywania usprawiedliwienia.');
+                                });
+                            }
+                        } else {
+                            // Wyświetl informację o statusie
+                            alert(statusMessage);
+                        }
                     }
                 });
-        }
+                window.currentCalendar.render();  // Renderowanie kalendarza
+            })
+            .catch(error => {
+                console.error('Error fetching lessons:', error);
+                alert('Wystąpił błąd podczas pobierania danych lekcji.');
+            });
+    }
 
-        fetchChildren();
-    });
+    function fetchChildren() {
+        fetch('/get_logged_in_parent')
+            .then(response => response.json())
+            .then(data => {
+                if (data.parent_id) {
+                    fetch(`/get_children?parent_id=${data.parent_id}`)
+                        .then(response => response.json())
+                        .then(childrenData => {
+                            if (childrenData.children && childrenData.children.length > 0) {
+                                childrenData.children.forEach((child, index) => {
+                                    const option = document.createElement('option');
+                                    option.value = child.id_student;
+                                    option.textContent = `${child.first_name} ${child.last_name}`;
+                                    childSelect.appendChild(option);
+
+                                    // Automatycznie wybierz pierwsze dziecko i załaduj jego kalendarz
+                                    if (index === 0) {
+                                        renderCalendar(child.id_student);
+                                        childSelect.value = child.id_student;
+                                    }
+                                });
+
+                                childSelect.addEventListener('change', () => {
+                                    renderCalendar(childSelect.value);
+                                });
+                            } else {
+                                noChildrenDiv.style.display = 'block';
+                            }
+                        });
+                }
+            });
+    }
+
+    fetchChildren();
+});
 </script>
 {% endblock %}

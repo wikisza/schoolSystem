@@ -41,17 +41,26 @@ def attendanceTeacher():
 def fetch_lessons_view():
     class_id = request.json.get('classId')
     subject_id = request.json.get('subjectId')
+
     if not class_id or not subject_id:
         return jsonify({'error': 'classId and subjectId are required'}), 400
 
-    lessons, students = get_lessons(class_id, subject_id)
-    existing_attendance = get_existing_attendance(class_id, subject_id)
-    return jsonify({
-        'lessons': lessons, 
-        'students': students, 
-        'attendance': existing_attendance
-    })
+    lessons, students = get_lessons(int(class_id), int(subject_id))
+    existing_attendance = get_existing_attendance(int(class_id), int(subject_id))
+    
+    # Upewnijmy się, że klucze i wartości w existing_attendance są typu str
+    existing_attendance_str_keys = {
+        str(key): {
+            str(inner_key): value
+            for inner_key, value in inner_dict.items()
+        } for key, inner_dict in existing_attendance.items()
+    }
 
+    return jsonify({
+        'lessons': lessons,
+        'students': students,
+        'attendance': existing_attendance_str_keys
+    })
 
 @attendance_blueprint.route('/save-attendance', methods=['POST'])
 @login_required
@@ -60,10 +69,12 @@ def save_attendance():
     if not data:
         return jsonify({'error': 'No attendance data provided'}), 400
 
-    # Zapisz dane do bazy
-    result = save_attendance_changes(data)
-    return jsonify(result)
-
+    try:
+        # Zapisz dane do bazy
+        result = save_attendance_changes(data)
+        return jsonify(result)
+    except sqlite3.OperationalError as e:
+        return jsonify({'error': 'Database is locked, please try again later.'}), 500
 
 @attendance_blueprint.route('/getThisStudentLessonsAndPresences', methods=['GET'])
 def getThisStudentLessonsAndPresences_routes():
@@ -118,3 +129,31 @@ def get_selected_child_lessons():
     lessons_with_presence = get_lessons_with_presence(id_class, child_id)
     return lessons_with_presence
 
+
+##
+
+@attendance_blueprint.route('/update-attendance-status', methods=['POST'])
+@login_required
+def update_attendance_status():
+    data = request.json
+    lesson_id = data.get('lessonId')
+    student_id = data.get('studentId')
+    new_status = data.get('newStatus')  # Zawiera status z powodem
+
+    if not (lesson_id and student_id and new_status):
+        return jsonify({'success': False, 'message': 'Brak wymaganych danych.'}), 400
+
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE presences
+            SET status = ?
+            WHERE id_lesson = ? AND id_student = ?
+        ''', (new_status, lesson_id, student_id))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Status zaktualizowany pomyślnie.'})
+    except sqlite3.Error as e:
+        print(f"Błąd bazy danych: {e}")
+        return jsonify({'success': False, 'message': 'Wystąpił błąd bazy danych.'}), 500
