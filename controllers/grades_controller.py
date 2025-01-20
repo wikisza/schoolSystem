@@ -1,10 +1,9 @@
 import sqlite3
+from flask import jsonify
 from datetime import datetime
 
 import logging
 
-import sqlite3
-from datetime import datetime
 
 def get_student_grades(student_id):
     """
@@ -62,6 +61,69 @@ def get_student_grades(student_id):
 
     return grouped_grades
 
+def get_class_grades(class_id):
+    """
+    Pobiera oceny wszystkich uczniów w danej klasie, pogrupowane według uczniów i kategorii.
+    """
+    import sqlite3
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    query = '''
+    SELECT
+        students.id_student,
+        users.firstName || ' ' || users.lastName AS student_name,
+        grades_category.nazwa AS category_name,
+        grades_category.waga AS category_weight,
+        grades.value,
+        grades.date,
+        grades.comment
+    FROM grades
+    JOIN students ON grades.id_student = students.id_student
+    JOIN grades_category ON grades.id_category = grades_category.id_category
+    JOIN users ON students.id_user = users.id
+    WHERE students.id_class = ?
+    ORDER BY users.lastName, users.firstName, grades_category.id_category;
+    '''
+    cursor.execute(query, (class_id,))
+    grades = cursor.fetchall()
+
+    conn.close()
+
+    # Zgrupowanie ocen według uczniów i kategorii
+    grouped_grades = {}
+    for grade in grades:
+        student_id = grade[0]
+        student_name = grade[1]
+        category = grade[2]
+        weight = grade[3]
+        value = grade[4]
+        date = grade[5]
+        comment = grade[6]
+
+        if student_id not in grouped_grades:
+            grouped_grades[student_id] = {
+                "student_name": student_name,
+                "categories": {
+                    "sprawdzian": [],
+                    "prace klasowe": [],
+                    "zadania domowe": [],
+                    "aktywność": []  # Nowa kategoria
+                }
+            }
+
+        grade_data = {"value": value, "category": category, "weight": weight, "date": date, "comment": comment}
+        if category == "sprawdzian":
+            grouped_grades[student_id]["categories"]["sprawdzian"].append(grade_data)
+        elif category == "praca klasowa":
+            grouped_grades[student_id]["categories"]["prace klasowe"].append(grade_data)
+        elif category == "zadanie domowe":
+            grouped_grades[student_id]["categories"]["zadania domowe"].append(grade_data)
+        elif category == "aktywność":  # Obsługa aktywności
+            grouped_grades[student_id]["categories"]["aktywność"].append(grade_data)
+
+    return grouped_grades
 
 
 def get_teacher_grades(id_teacher):
@@ -158,8 +220,6 @@ def get_student_id(user_id):
 
     return student_id[0] if student_id else None
 
-
-import sqlite3
 
 def get_parent_children(parent_id):
     """
@@ -268,3 +328,25 @@ def get_parent_id(user_id):
     conn.close()
 
     return parent_id[0] if parent_id else None
+
+
+# OCENY NAUCZYCIEL
+
+def add_grade(id_student, id_subject, value, comment, date, id_category, id_teacher):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    try:
+        # Wstawienie danych do tabeli grades
+        cursor.execute('''
+            INSERT INTO grades (id_student, id_subject, value, comment, date, id_category, id_teacher)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (id_student, id_subject, value, comment, date, id_category, id_teacher))
+
+        conn.commit()  # Zatwierdzenie zmian
+        conn.close()
+
+        return jsonify({"message": "Ocena została pomyślnie dodana!"}), 200
+    except Exception as e:
+        conn.close()
+        return jsonify({"error": str(e)}), 500
