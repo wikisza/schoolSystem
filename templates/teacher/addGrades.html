@@ -8,72 +8,140 @@
     <a href="/gradesTeacher">Wróć</a>
 </div>
 
-<div class="addingGrade">
+<div class="addingGrades">
+    <h1>Dodaj Oceny</h1>
+    <form id="gradeForm">
+        <label for="id_student">ID Studenta:</label>
+        <input type="number" id="id_student" required>
 
-    <div class="decision-bar">
+        <label for="id_subject">ID Przedmiotu:</label>
+        <input type="number" id="id_subject" required>
 
-        <select name="classSelect" id="classSelect">
-            <option selected hidden>Wybierz klasę</option>
-            <option value="class1">Klasa 1</option>
-            <option value="class2">Klasa 2</option>
-            <option value="class3">Klasa 3</option>
-            <option value="class4">Klasa 4</option>
-            <option value="class5">Klasa 5</option>
-            <option value="class6">Klasa 6</option>
-            <option value="class7">Klasa 7</option>
-            <option value="class8">Klasa 8</option>
-        </select>
-        
-        <button id="openDialog" name="openDialog" type="button">Dodaj nowe oceny</button>
-    </div>
+        <label for="value">Ocena:</label>
+        <input type="number" id="value" min="1" max="6" required>
 
-    <dialog id="gradeDialog">
-        <form method="dialog">
+        <label for="comment">Komentarz:</label>
+        <textarea id="comment"></textarea>
 
-            <h3>Wybierz kategorię oceny:</h3>
-            <select id="gradesTypes">
-                <option value="sprawdzian">Sprawdzian</option>
-                <option value="praca_klasowa">Praca klasowa</option>
-                <option value="kartkowka">Kartkówka</option>
-                <option value="zadanie_domowe">Zadanie domowe</option>
-                <option value="inne">Inne</option>
-            </select>
+        <label for="date">Data:</label>
+        <input type="date" id="date" required>
 
-            <h3>Opis oceny</h3>
-            <input type="text">
-            <div class="dialog-buttons">
-                <button type="button" class="cancel">Anuluj</button>
-                <button type="submit" class="confirm">Potwierdź</button>
-            </div>
-        </form>
-    </dialog>
+        <label for="id_category">Kategoria:</label>
+        <input type="number" id="id_category" required>
 
-    <div id="tableAddGrade">
+        <label for="id_teacher">ID Nauczyciela:</label>
+        <input type="number" id="id_teacher" required>
 
-        <table>
-            <thead id="headAddGrade">
-                <tr>
-                    <th>Imię i nazwisko</th>
-                </tr>
-            </thead>
-            <tbody id="bodyAddGrade">
-
-            </tbody>
-        </table>
-    </div>
-
-    <!-- tu bedzie dodana funkcja dodawania ocen do bazy danych-->
-
-    <div class="submitGradeButton">
-
-        <button name="confirmGrades" id="confirmGrades">Potwierdź oceny</button>
-        
-    </div>
-
+        <button type="submit">Dodaj Ocene</button>
+    </form>
+    <div id="responseMessage"></div>
 </div>
 
+<script>
+    document.getElementById('gradeForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const newGrade = {
+        id_student: document.getElementById('id_student').value,
+        id_subject: document.getElementById('id_subject').value,
+        value: document.getElementById('value').value,
+        comment: document.getElementById('comment').value || '-',
+        date: document.getElementById('date').value,
+        id_category: document.getElementById('id_category').value,
+        id_teacher: document.getElementById('id_teacher').value
+    };
+
+    try {
+        const response = await fetch('/addNewGrade', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newGrade)
+        });
+
+        const result = await response.json();
+        const messageElement = document.getElementById('responseMessage');
+        if (response.ok) {
+            messageElement.textContent = result.message;
+            messageElement.style.color = 'green';
+        } else {
+            messageElement.textContent = result.error || 'Wystąpił błąd';
+            messageElement.style.color = 'red';
+        }
+    } catch (error) {
+        document.getElementById('responseMessage').textContent = 'Wystąpił błąd: ' + error;
+    }
+});
+
+</script>
 
 
+<style>
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+    .addingGrades {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, textarea, button {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#responseMessage {
+    text-align: center;
+    margin-top: 20px;
+}
+</style>
 
 {% endblock %}
